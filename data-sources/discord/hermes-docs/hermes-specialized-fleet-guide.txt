@@ -1,0 +1,477 @@
+# Hermes Specialized Agent Fleet — Setup Guide
+
+## What You're Building
+
+A fleet of specialized Hermes agents, each with:
+- Its own identity (SOUL.md)
+- Only the skills it needs (focused skill bundles)
+- Only the tools it uses (stripped toolset)
+- Its own memory, session history, and learning
+- Kanban as the coordination layer (profiles as durable workers, not ephemeral subagents)
+
+Result: each profile learns in its own domain, Hermes's self-evolution actually
+works (clean signal, no noise), and you ship faster.
+
+---
+
+## Step 1: Plan Your Fleet
+
+Decide what roles you need. A minimal dev setup:
+
+| Profile | Role | Model | Tools |
+|---------|------|-------|-------|
+| `dev-orch` | decomposes goals, creates+links tasks | Claude Sonnet (judgment) | terminal, skills |
+| `dev-coder` | implements features, writes tests, debugs | Gemini Pro (budget) | terminal, file, web, skills |
+| `dev-review` | security/quality audits, catches bugs | Claude Sonnet (reasoning) | terminal, file, web, skills |
+| `dev-research` | web research, docs lookup, data gathering | Gemini Flash (cheap) | web, terminal, file, browser, skills |
+
+Add more as needed: `scraper` (browser automation), `devops` (CI/CD), `writer` (docs).
+
+---
+
+## Step 2: Create the Profiles
+
+```bash
+hermes profile create dev-coder
+hermes profile create dev-review
+hermes profile create dev-orch
+hermes profile create dev-research
+```
+
+Verify they exist:
+```bash
+hermes profile list
+```
+
+Each gets its own directory:
+```
+~/.hermes/profiles/dev-coder/
+├── SOUL.md        ← personality (edit this)
+├── config.yaml    ← model, tools, cwd
+├── .env           ← API keys (separate from other profiles)
+├── sessions/      ← own chat history
+├── memories/      ← own persistent memory
+├── skills/        ← own skill repository
+├── logs/          ← own logs
+└── cron/          ← own scheduled jobs
+```
+
+---
+
+## Step 3: Write SOUL.md for Each Profile
+
+The SOUL.md is the agent's identity. It determines what the agent cares about,
+how it thinks, and what it considers worth remembering.
+
+### dev-coder/SOUL.md
+
+```markdown
+You are a senior backend software engineer. You write clean, tested code.
+
+## Rules
+- ALWAYS run tests after changes. If tests fail, debug — don't skip.
+- Prefer readability over cleverness.
+- When implementing: code → tests → verify both pass.
+- If you discover a reusable pattern or tricky pitfall, save it as a skill
+  with skill_manage. This is how you get better over time.
+
+## Your Tools
+- terminal + file: code, test, build, commit
+- web: look up docs, API references, library changelogs
+- skills: load and save procedural knowledge
+
+## Working Directory
+~/projects
+```
+
+### dev-review/SOUL.md
+
+```markdown
+You are a thorough code reviewer. Catch bugs and security issues BEFORE merge.
+
+## Review Framework
+🔴 BLOCKER: must fix (security, data loss, crash)
+🟡 SHOULD-FIX: important (race condition, tech debt)
+🔵 NICE-TO-HAVE: readability, naming
+
+## What You Check
+1. Security: SQL injection, missing auth, exposed secrets, crypto misuse
+2. Correctness: edge cases, error handling, null safety
+3. Architecture: coupling, dependency direction
+4. Tests: coverage, edge cases, meaningful assertions
+5. Style: consistent naming, clear intent, no dead code
+
+## Rules
+- Be SPECIFIC. Point to exact lines. Suggest concrete fixes.
+- Do NOT rewrite code. Explain the issue, let the author fix it.
+- If you catch the same bug class repeatedly, save it as a review-checklist
+  skill. This is how you get better over time.
+```
+
+### dev-orch/SOUL.md
+
+```markdown
+You are a task orchestrator. DECOMPOSE, DON'T EXECUTE.
+
+## Workflow
+1. Discover available profiles: `hermes profile list`
+2. Decompose the user's goal into independent subtasks
+3. Create Kanban tasks with clear assignees and context
+4. Link dependent tasks (parent → child)
+5. Report the task graph to the user
+
+## Rules
+- Split work into parallel lanes whenever possible
+- Use parent/child links ONLY when one task needs another's output
+- Never invent profile names — if a role doesn't exist, tell the user
+- Each task body must include enough context for the worker to succeed
+
+## Your Tools
+- terminal: run `hermes profile list`, `hermes kanban create/link/list`
+- skills: load kanban-orchestrator for decomposition patterns
+```
+
+---
+
+## Step 4: Assign Models (Budget vs Quality)
+
+Be strategic — not every agent needs Claude:
+
+```bash
+# Premium model for judgment-heavy roles
+dev-orch config set model.default "anthropic/claude-sonnet-4"
+dev-orch config set model.provider "nous"
+dev-review config set model.default "anthropic/claude-sonnet-4"
+dev-review config set model.provider "nous"
+
+# Budget model for implementation (most coding doesn't need Claude)
+dev-coder config set model.default "google/gemini-2.5-pro"
+dev-coder config set model.provider "openrouter"
+
+# Cheapest model for web research
+dev-research config set model.default "google/gemini-2.5-flash"
+dev-research config set model.provider "openrouter"
+```
+
+---
+
+## Step 5: Strip Tools to Only What Each Profile Uses
+
+Every disabled tool = less prompt bloat = better cache hits = lower cost:
+
+```bash
+# Coder: needs terminal, file, web, skills. NOTHING else.
+dev-coder tools enable terminal file web skills
+
+# Reviewer: same — needs to read code and reference docs
+dev-review tools enable terminal file web skills
+
+# Orchestrator: just needs terminal (CLI) and skills
+dev-orch tools enable terminal skills
+
+# Researcher: web + browser for scraping, terminal for persistence
+dev-research tools enable web browser terminal file skills
+```
+
+---
+
+## Step 6: Set Up Skill Bundles (Focused Skills Per Role)
+
+**Note:** `hermes bundles` is documented but not yet in your v0.13.0. Here's
+how to achieve the same effect with `hermes skills config`:
+
+```bash
+# Interactive — opens a curses UI to enable/disable per skill
+dev-coder skills config
+```
+
+Or configure directly in config.yaml (per profile):
+
+```yaml
+# ~/.hermes/profiles/dev-coder/config.yaml
+skills:
+  external_dirs: []
+  auto_load:
+    - code-quality
+    - runtime-debugging
+    - planning
+    - github-developer-tools
+```
+
+What to enable per profile:
+
+| Profile | Enable these skills | Disable everything else |
+|---------|-------------------|------------------------|
+| dev-coder | `code-quality`, `runtime-debugging`, `planning`, `github-developer-tools`, `claude-code` | songwriting, pixel-art, polymarket, home-automation... |
+| dev-review | `code-quality`, `runtime-debugging`, `planning` | all creative, media, data-science skills |
+| dev-orch | `kanban-orchestrator`, `kanban-worker` | all implementation skills |
+| dev-research | `research-knowledge`, `scrapling`, `blogwatcher`, `youtube-content` | all dev skills |
+
+Why this matters: when `dev-coder` sees a skill list, it should only see
+coding-relevant skills. When it creates a new skill from experience, it
+won't accidentally create one about flight prices or song lyrics.
+
+---
+
+## Step 7: Install Browser Skills from the Hub
+
+Search for and install browser/web scraping skills:
+
+```bash
+# See what's available
+hermes skills search "browser"
+hermes skills search "scrape"
+hermes skills search "web"
+
+# Install a stealth browser scraper (available now)
+echo "y" | hermes skills install "official/research/scrapling"
+
+# Install in a specific profile
+hermes -p dev-research skills install "official/research/scrapling"
+```
+
+Results from `hermes skills search "browser"`:
+- `scrapling` — Web scraping with Scrapling (stealth browser, HTTP fetching)
+- `browse` — Fast headless browser for QA testing and dogfooding
+- `scrape` — Pull data from a web page
+- `browser-testing` — Agent browser testing skills
+- `setup-browser-session` — Import cookies from real browser
+
+---
+
+## Step 8: Set Up Kanban Orchestration
+
+### Initialize
+
+```bash
+hermes kanban init
+```
+
+This creates `~/.hermes/kanban.db` and discovers all profiles as potential
+assignees.
+
+### Start the Gateway (Runs the Dispatcher)
+
+```bash
+hermes gateway start
+```
+
+The dispatcher runs inside the gateway, ticking every 60 seconds. It:
+1. Scans for `ready` tasks with matching assignees
+2. Spawns a full Hermes process: `hermes -p dev-coder` with `HERMES_KANBAN_TASK=t_abc`
+3. The worker sees only its own profile (SOUL.md, tools, skills, memory)
+
+### Decompose a Goal with the Orchestrator
+
+```bash
+dev-orch chat
+```
+
+Example prompt to the orchestrator:
+```
+Decompose this into Kanban tasks:
+
+"Add passwordless WebAuthn authentication to the FastAPI backend.
+Research best practices first, then implement, then security review."
+
+Available profiles: dev-coder (backend engineer), dev-review (code reviewer),
+dev-research (web researcher).
+```
+
+The orchestrator creates:
+```
+T1: Research WebAuthn best practices    → assignee: dev-research  (independent)
+T2: Implement auth endpoints            → assignee: dev-coder     (after T1)
+T3: Review auth implementation          → assignee: dev-review    (after T2)
+```
+
+### Create Tasks Manually
+
+```bash
+# Independent research task
+hermes kanban create "Research WebAuthn security best practices" \
+  --assignee dev-research \
+  --body "Focus: RP ID scoping, credential storage, attestation,
+          session binding. Use web search and browser if needed."
+
+# Implementation task
+hermes kanban create "Implement WebAuthn auth endpoints" \
+  --assignee dev-coder \
+  --body "Add to ~/projects/api-server. Use python-webauthn.
+          Create /register/begin, /register/complete,
+          /login/begin, /login/complete. Write tests."
+
+# Review task — gates on implementation
+hermes kanban create "Review WebAuthn implementation" \
+  --assignee dev-review \
+  --body "Security review. Check: credential validation,
+          session binding, replay protection, RP ID scoping."
+
+# Link: review waits for implementation
+hermes kanban link <implementation-task-id> <review-task-id>
+```
+
+### Gating Explained
+
+```
+T1 (research) ──┐
+                ├──→ T2 (implement) ──→ T3 (review)
+                │
+                │  T2 promotes to 'ready' ONLY when T1 completes
+                │  T3 promotes to 'ready' ONLY when T2 completes
+```
+
+The dispatcher handles promotion automatically.
+
+---
+
+## Step 9: How Context Stays Clean Between Profiles
+
+Each profile has its own EVERYTHING. Here's proof:
+
+```
+Profile        Sessions DB          Memory DB              Skills Dir
+dev-coder      profiles/dev-coder/  profiles/dev-coder/    profiles/dev-coder/
+               sessions/            memories/              skills/
+dev-review     profiles/dev-review/ profiles/dev-review/   profiles/dev-review/
+               sessions/            memories/               skills/
+dev-orch       profiles/dev-orch/   profiles/dev-orch/     profiles/dev-orch/
+               sessions/            memories/               skills/
+```
+
+When `dev-coder` is spawned as a Kanban worker:
+- It loads `~/.hermes/profiles/dev-coder/SOUL.md`
+- It sees `~/.hermes/profiles/dev-coder/skills/` (only dev skills enabled)
+- It reads/writes `~/.hermes/profiles/dev-coder/memories/`
+- Its session is saved to `~/.hermes/profiles/dev-coder/sessions/`
+- It NEVER sees dev-review's memory or sessions
+
+When `dev-review` is spawned:
+- Completely separate universe
+- Its memory contains review patterns, not implementation details
+- Its skills are review checklists, not coding patterns
+
+**The Kanban board is the ONLY shared surface** — task bodies, comments,
+and completion summaries. Everything else is isolated.
+
+---
+
+## Step 10: The Self-Evolution Payoff
+
+Here's why isolation makes Hermes's self-improvement actually work:
+
+### Week 1: dev-coder hits an async FastAPI deadlock
+
+```
+dev-coder: "Learned: never await inside a sync context manager.
+           Pattern: use asyncio.to_thread() for DB operations inside
+           FastAPI dependency functions."
+→ skill_manage(action='create', name='fastapi-async-patterns',
+    content='# FastAPI Async Patterns...')
+```
+
+This skill lives in `dev-coder/skills/`. It's pure domain knowledge.
+
+### Week 2: dev-coder gets another FastAPI task
+
+```
+dev-coder loads "fastapi-async-patterns" → avoids deadlock → 60% faster
+```
+
+### Week 3: dev-review catches JWT-without-expiry (3rd time)
+
+```
+dev-review: "Pattern: JWT tokens without exp claim are a 🔴 BLOCKER.
+            Checklist: verify exp, iat, nbf, aud, iss on every JWT.
+            Common mistakes: missing exp, clock skew, alg=none."
+→ skill_manage(action='create', name='review-checklist-jwt',
+    content='# JWT Security Checklist...')
+```
+
+### Week 5: Cross-pollinate
+
+```bash
+# Copy the reviewer's JWT checklist to the coder
+cp -r ~/.hermes/profiles/dev-review/skills/review-checklist-jwt \
+      ~/.hermes/profiles/dev-coder/skills/
+```
+
+Now `dev-coder` catches JWT issues BEFORE review. Zero rework.
+
+### The Compounding Chart
+
+```
+                dev-coder skills          dev-review skills         Fleet IQ
+Week 1          fastapi-async (1)         —                         +1
+Week 2          fastapi-async (1)         —                         +1
+Week 3          fastapi-async (1)         jwt-checklist (1)         +2
+Week 4          fastapi-async (1)         jwt-checklist (1)         +2
+                go-concurrency (2)        sql-injection (2)         +4
+Week 5          fastapi-async (1)         jwt-checklist (1)         +4
+                go-concurrency (2)        sql-injection (2)
+                jwt-checklist (3) ← copied
+Week 6          fastapi-async (1)         jwt-checklist (1)
+                go-concurrency (2)        sql-injection (2)         +6
+                jwt-checklist (3)         api-versioning (3)
+                pytest-fixtures (4)       error-propagation (4)
+```
+
+Each profile evolves in its lane. Cross-pollination multiplies the gains.
+
+### Why This Beats One General Agent
+
+| Aspect | One General Agent | Specialized Fleet |
+|--------|-------------------|-------------------|
+| Memory quality | "fixed auth bug" + "flight LAX→NRT $340" + "user likes dark mode" | "async deadlock pattern" + "pytest fixture cleanup" (pure dev) |
+| Skill signal | 80% noise — saves skills about everything | 100% domain-relevant |
+| Token budget | 60+ skills loaded (~10K tokens of bloat) | 6-8 focused skills (~1K tokens) |
+| Prompt caching | Context changes constantly | Stable system prompt = high cache hits |
+| Evolution speed | Slow — learns about everything, masters nothing | Fast — deep expertise in narrow domains |
+
+---
+
+## Quick Reference
+
+```bash
+# Profiles
+hermes profile create <name>
+hermes profile list
+hermes profile delete <name>
+
+# Per-profile config
+<profile> config set model.default "anthropic/claude-sonnet-4"
+<profile> config set model.provider "nous"
+<profile> tools enable terminal file web skills
+<profile> tools disable browser tts image_gen
+<profile> skills config              # interactive enable/disable
+
+# Skill discovery
+hermes skills search "browser"
+hermes skills search "scrape"
+hermes skills install "official/research/scrapling"
+
+# Kanban
+hermes kanban init
+hermes kanban list
+hermes kanban create "title" --assignee <profile>
+hermes kanban link <parent-id> <child-id>
+hermes kanban show <id>
+hermes dashboard               # → http://127.0.0.1:9119
+
+# Gateway (dispatcher runs inside)
+hermes gateway start
+hermes gateway status
+
+# Cross-pollinate skills
+cp -r ~/.hermes/profiles/dev-review/skills/<skill> \
+      ~/.hermes/profiles/dev-coder/skills/
+```
+
+## Docs
+
+- Profiles: https://hermes-agent.nousresearch.com/docs/user-guide/profiles
+- Skills system: https://hermes-agent.nousresearch.com/docs/user-guide/features/skills
+- Skills catalog: https://hermes-agent.nousresearch.com/docs/reference/skills-catalog
+- Browser automation: https://hermes-agent.nousresearch.com/docs/user-guide/features/browser
+- Kanban: https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban
+- Kanban orchestrator: https://hermes-agent.nousresearch.com/docs/user-guide/skills/bundled/devops/devops-kanban-orchestrator

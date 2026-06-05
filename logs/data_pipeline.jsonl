@@ -1,0 +1,29 @@
+{"action": "download", "dataset": "nemotron-sft-agentic-v2", "files": 0, "timestamp": "2026-06-05T13:53:31.396716"}
+{"action": "skip", "dataset": "nemotron-sft-v1", "reason": "requires_agreement", "timestamp": "2026-06-05T13:53:31.397117"}
+{"action": "download", "dataset": "hermes-reasoning-tool-use", "files": 0, "timestamp": "2026-06-05T13:53:31.448108"}
+{"action": "download_fail", "dataset": "hermes-agent-traces", "error": "Traceback (most recent call last):\n  File \"<string>\", line 3, in <module>\n  File \"/home/sovthpaw/.local/lib/python3.12/site-packages/datasets/load.py\", line 2061, in load_dataset\n    builder_instance = load_dataset_builder(\n                       ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/sovthpaw/.local/l", "timestamp": "2026-06-05T13:53:34.171109"}
+{"action": "download_fail", "dataset": "nemotron-cascade-2-sft", "error": "Traceback (most recent call last):\n  File \"<string>\", line 3, in <module>\n  File \"/home/sovthpaw/.local/lib/python3.12/site-packages/datasets/load.py\", line 2061, in load_dataset\n    builder_instance = load_dataset_builder(\n                       ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/sovthpaw/.local/l", "timestamp": "2026-06-05T13:53:34.500923"}
+{"action": "download", "dataset": "hermes-agent-traces-filtered", "files": 0, "timestamp": "2026-06-05T13:53:39.658533"}
+{"action": "download", "dataset": "nemotron-toolscale", "files": 0, "timestamp": "2026-06-05T13:53:40.059349"}
+{"action": "download_fail", "dataset": "nemotron-post-training-v2", "error": "Traceback (most recent call last):\n  File \"<string>\", line 3, in <module>\n  File \"/home/sovthpaw/.local/lib/python3.12/site-packages/datasets/load.py\", line 2061, in load_dataset\n    builder_instance = load_dataset_builder(\n                       ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/sovthpaw/.local/l", "timestamp": "2026-06-05T13:53:41.916744"}
+{"action": "download", "dataset": "hermes-function-calling-v1", "files": 0, "timestamp": "2026-06-05T13:53:45.059303"}
+{"action": "download", "dataset": "nemotron-cascade-rl-swe", "files": 0, "timestamp": "2026-06-05T13:53:47.694090"}
+{"action": "download", "dataset": "hermes-function-calling-thinking", "files": 0, "timestamp": "2026-06-05T13:53:50.548479"}
+{"action": "download", "dataset": "nemotron-instruction-following-chat", "files": 0, "timestamp": "2026-06-05T13:53:53.141391"}
+{"action": "download", "dataset": "hermes-3-dataset", "files": 0, "timestamp": "2026-06-05T13:53:56.016090"}
+{"action": "download", "dataset": "nemotron-sft-swe-v2", "files": 0, "timestamp": "2026-06-05T13:53:58.247599"}
+{"action": "download", "dataset": "carnice-dpo", "files": 0, "timestamp": "2026-06-05T13:54:01.668302"}
+{"action": "download", "dataset": "nemotron-rl-safety-v1", "files": 0, "timestamp": "2026-06-05T13:54:03.655765"}
+{"action": "download_fail", "dataset": "carnice-agent-traces", "error": "Traceback (most recent call last):\n  File \"<string>\", line 3, in <module>\n  File \"/home/sovthpaw/.local/lib/python3.12/site-packages/datasets/load.py\", line 2061, in load_dataset\n    builder_instance = load_dataset_builder(\n                       ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/sovthpaw/.local/l", "timestamp": "2026-06-05T13:54:04.196333"}
+{"action": "download_fail", "dataset": "carnice-glm5-hermes", "error": "Traceback (most recent call last):\n  File \"<string>\", line 3, in <module>\n  File \"/home/sovthpaw/.local/lib/python3.12/site-packages/datasets/load.py\", line 2061, in load_dataset\n    builder_instance = load_dataset_builder(\n                       ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/sovthpaw/.local/l", "timestamp": "2026-06-05T13:54:07.354473"}
+{"action": "download", "dataset": "nemotron-rl-knowledge-openqa", "files": 0, "timestamp": "2026-06-05T13:54:09.173417"}
+{"action": "download", "dataset": "nemotron-agentic-v1", "files": 0, "timestamp": "2026-06-05T13:54:12.665171"}
+{"action": "download", "dataset": "nemotron-research-goosereason", "files": 0, "timestamp": "2026-06-05T13:54:14.553306"}
+{"action": "download", "dataset": "nemotron-sft-competitive-programming-v2", "files": 0, "timestamp": "2026-06-05T13:54:19.810923"}
+{"action": "download", "dataset": "nemotron-competitive-programming-v1", "files": 0, "timestamp": "2026-06-05T13:54:25.280219"}
+{"action": "download", "dataset": "nemotron-math-v2", "files": 0, "timestamp": "2026-06-05T13:54:30.601509"}
+{"action": "download", "dataset": "nemotron-mind", "files": 0, "timestamp": "2026-06-05T13:54:37.756316"}
+{"action": "download", "dataset": "nemotron-rl-structured-outputs", "files": 0, "timestamp": "2026-06-05T13:54:43.251006"}
+{"action": "download_fail", "dataset": "xlam-function-calling-60k", "error": "Traceback (most recent call last):\n  File \"<string>\", line 3, in <module>\n  File \"/home/sovthpaw/.local/lib/python3.12/site-packages/datasets/load.py\", line 2061, in load_dataset\n    builder_instance = load_dataset_builder(\n                       ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/sovthpaw/.local/l", "timestamp": "2026-06-05T13:54:44.855870"}
+{"action": "download", "dataset": "nemotron-sft-math-v3", "files": 0, "timestamp": "2026-06-05T13:54:49.991931"}
+{"action": "download", "dataset": "nemotron-sft-multilingual-v1", "files": 0, "timestamp": "2026-06-05T13:54:55.375463"}

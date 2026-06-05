@@ -1,0 +1,1137 @@
+# Long-Horizon Autonomous Operations — Full Blueprint
+
+## What This Covers
+
+This is a complete operational blueprint for building **self-sustaining, multi-phase autonomous workflows** in Hermes Agent. It combines every orchestration primitive Hermes has into a single coherent system that can:
+
+- Run for days/weeks without manual intervention
+- Decompose complex objectives into specialist workstreams
+- Self-monitor, self-heal, and self-report
+- Continuously operate on schedules and events
+- Accumulate knowledge over time
+
+The five pillars:
+
+| Pillar | Tool | Role |
+|--------|------|------|
+| **Planning** | `/plan` (writing-plans skill) | Structured spec before execution begins |
+| **Execution** | `/goal` + `/subgoal` | Persistent autonomous loop with judge-driven completion |
+| **Orchestration** | Kanban | Multi-agent decomposition, parallel workstreams, dependency gating |
+| **Scheduling** | CRON | Recurring tasks on time-based triggers |
+| **Events** | Webhooks | Event-driven activation (CI/CD, GitHub, external APIs) |
+
+---
+
+## Concrete Scenario
+
+We'll use a real-world scenario throughout this guide:
+
+> **"Research, build, deploy, and continuously monitor a production RL training pipeline for Hermes-3 models — including automated evaluation, regression detection, and weekly research syncs."**
+
+This is the kind of long-horizon task that no single tool handles alone. It needs research, planning, multi-agent implementation, autonomous verification, scheduled monitoring, and event-driven reactions.
+
+---
+
+## Phase 0: Infrastructure Setup (One-Time)
+
+### 0A. Create Specialist Profiles
+
+Each profile gets its own SOUL.md (persona), config, memory, and skills. They're independent workers.
+
+```bash
+# Research specialist — reads papers, surveys implementations, writes findings
+hermes profile create researcher
+
+# Planning specialist — decomposes goals into implementation plans
+hermes profile create planner
+
+# ML engineer — writes training code, configs, evaluation scripts
+hermes profile create ml-engineer
+
+# DevOps/ops — deployments, monitoring, infrastructure
+hermes profile create ops
+
+# QA/reviewer — tests, evaluation, approval gating
+hermes profile create reviewer
+
+# Writer — documentation, reports, user-facing guides
+hermes profile create writer
+```
+
+### 0B. Write Profile Personas
+
+```bash
+# Researcher
+cat > ~/.hermes/profiles/researcher/SOUL.md << 'EOF'
+You are a research specialist. Your job is to gather facts, survey
+implementations, read papers, and produce structured findings.
+You DO NOT implement code. You deliver research reports that
+implementers can act on.
+EOF
+
+# Planner
+cat > ~/.hermes/profiles/planner/SOUL.md << 'EOF'
+You are a planning specialist. Your job is to decompose goals into
+bite-sized implementation tasks with exact file paths, exact code,
+exact commands. Every plan follows TDD. You DO NOT execute plans.
+EOF
+
+# ML Engineer
+cat > ~/.hermes/profiles/ml-engineer/SOUL.md << 'EOF'
+You are a senior ML engineer. You write production-quality training
+code, configs, and evaluation scripts. You follow TDD rigorously.
+You commit after every passing test. You ask for clarification
+rather than guessing.
+EOF
+
+# Ops
+cat > ~/.hermes/profiles/ops/SOUL.md << 'EOF'
+You are a DevOps specialist. You handle deployments, monitoring,
+infrastructure, CI/CD, and alerting. You write scripts that are
+idempotent and idempotent-safe.
+EOF
+
+# Reviewer
+cat > ~/.hermes/profiles/reviewer/SOUL.md << 'EOF'
+You are a QA and review specialist. You verify implementations
+against acceptance criteria. You run tests, check edge cases,
+and either approve or block with specific feedback.
+EOF
+
+# Writer
+cat > ~/.hermes/profiles/writer/SOUL.md << 'EOF'
+You are a technical writer. You write clear, user-facing
+documentation, guides, and reports. You match existing doc style.
+EOF
+```
+
+### 0C. Initialize Kanban Board
+
+```bash
+# Create a dedicated board for this project
+hermes kanban boards create rl-pipeline \
+    --name "RL Training Pipeline" \
+    --description "Research, build, deploy, monitor RL pipeline for Hermes-3"
+
+# Switch to the board
+hermes kanban boards switch rl-pipeline
+
+# Start the gateway (runs the dispatcher automatically)
+hermes gateway start
+```
+
+### 0D. Configure Judge Model (for /goal)
+
+```yaml
+# ~/.hermes/config.yaml
+goals:
+  max_turns: 50          # Long-horizon goals need more turns
+
+auxiliary:
+  goal_judge:
+    provider: openrouter
+    model: google/gemini-3-flash-preview   # Cheap, fast judge
+```
+
+---
+
+## Phase 1: Research — Build the Knowledge Base
+
+### 1A. Initialize the LLM Wiki
+
+```
+/skill research-knowledge
+> "Create an LLM Wiki at ~/wiki-rl-pipeline covering RL training
+> techniques for LLMs. Focus on: GRPO, PPO, DPO, reward modeling,
+> evaluation harnesses, and production deployment patterns."
+```
+
+### 1B. Ingest Research Sources
+
+```
+> "Search arXiv for GRPO papers from 2024-2026 and ingest the top 5 cited ones"
+> "Search arXiv for production RLHF/RL pipeline architectures and ingest 3 papers"
+> "Ingest this blog post about scaling GRPO: https://example.com/grpo-at-scale"
+```
+
+The wiki accumulates knowledge with cross-references. Entity pages, concept pages, and comparison pages build up organically.
+
+### 1C. Query the Wiki Before Planning
+
+```
+> "Query the wiki: what are the known failure modes of GRPO training
+> at scale, and what mitigations have been documented?"
+```
+
+This gives you compiled, cross-referenced knowledge — not raw search results. The wiki is persistent across sessions.
+
+---
+
+## Phase 2: Plan — Generate the Implementation Spec
+
+### 2A. Write the Master Plan
+
+```
+/skill writing-plans
+> "Using the findings from ~/wiki-rl-pipeline, write a comprehensive
+> implementation plan for the RL training pipeline. The plan should cover:
+>
+> 1. Dataset preparation pipeline (preference pair extraction, quality filtering)
+> 2. Reward model training (DPO-based, with evaluation)
+> 3. GRPO training configuration (Axolotl YAML, group sizes, eval intervals)
+> 4. Evaluation harness integration (lm-eval-harness on MMLU, GSM8K, custom)
+> 5. Production deployment (model registry, checkpoint management, rollback)
+> 6. Monitoring and alerting (WandB, Prometheus, regression detection)
+>
+> Save the plan to docs/plans/2026-05-24-rl-pipeline.md"
+```
+
+### 2B. Plan Output Structure
+
+The plan will be saved with this structure:
+
+```
+docs/plans/2026-05-24-rl-pipeline.md
+├── # RL Pipeline Implementation Plan
+│   ├── **Goal:** Build end-to-end RL training pipeline for Hermes-3
+│   ├── **Architecture:** Dataset → Reward Model → GRPO → Eval → Deploy
+│   └── **Tech Stack:** Axolotl, TRO, vLLM, sglang, WandB, lm-eval-harness
+│
+├── ## Phase 1: Dataset Preparation
+│   ├── Task 1.1: Create preference pair extractor
+│   ├── Task 1.2: Implement quality filtering pipeline
+│   └── Task 1.3: Write dataset validation tests
+│
+├── ## Phase 2: Reward Model
+│   ├── Task 2.1: Configure DPO training for reward model
+│   ├── Task 2.2: Implement reward model evaluation
+│   └── Task 2.3: Threshold calibration script
+│
+├── ## Phase 3: GRPO Training
+│   ├── Task 3.1: Write Axolotl GRPO config YAML
+│   ├── Task 3.2: Implement training launch script
+│   └── Task 3.3: WandB integration + metrics dashboard
+│
+├── ## Phase 4: Evaluation
+│   ├── Task 4.1: lm-eval-harness integration script
+│   ├── Task 4.2: Custom benchmark runner
+│   └── Task 4.3: Regression detection (delta comparison)
+│
+├── ## Phase 5: Deployment
+│   ├── Task 5.1: Model registry integration
+│   ├── Task 5.2: Checkpoint management (save, prune, rollback)
+│   └── Task 5.3: Production serving (vLLM config)
+│
+└── ## Phase 6: Monitoring
+    ├── Task 6.1: Prometheus metrics exporter
+    ├── Task 6.2: Alert rules (loss regression, eval drop)
+    └── Task 6.3: Weekly summary report generator
+```
+
+Each task is bite-sized (2-5 min), TDD-formatted, with exact files/paths/commands.
+
+---
+
+## Phase 3: Execute — Goal + Kanban Orchestration
+
+This is where the long-horizon operation comes alive. The `/goal` sets the overall objective, and Kanban handles the multi-agent decomposition.
+
+### 3A. Set the Master Goal
+
+```
+/goal Build the complete RL training pipeline for Hermes-3 following
+the implementation plan at docs/plans/2026-05-24-rl-pipeline.md.
+Use Kanban to decompose work across specialist profiles. Each phase
+must pass review before the next phase begins.
+```
+
+### 3B. Add Acceptance Criteria as Subgoals
+
+```
+# Dataset phase criteria
+/subgoal Dataset pipeline: 500+ preference pairs extracted with quality score > 0.8
+/subgoal Dataset pipeline: validation tests pass (test_dataset.py > 95% coverage)
+
+# Reward model criteria
+/subgoal Reward model: DPO training converges (loss < 0.5 after 1000 steps)
+/subgoal Reward model: evaluation alignment score > 0.7 on holdout set
+
+# GRPO training criteria
+/subgoal GRPO: training runs 2500 steps with loss convergence verified in WandB
+/subgoal GRPO: checkpoint saved every 100 steps with automatic pruning
+
+# Evaluation criteria
+/subgoal Evaluation: lm-eval-harness runs on MMLU and GSM8K with results logged
+/subgoal Evaluation: regression detection flags any >3% accuracy drop
+
+# Deployment criteria
+/subgoal Deployment: model served via vLLM with < 200ms p99 latency
+/subgoal Deployment: rollback to previous checkpoint works in < 5 minutes
+
+# Monitoring criteria
+/subgoal Monitoring: Prometheus exports training metrics (loss, reward, eval scores)
+/subgoal Monitoring: alert fires when eval accuracy drops >5% between checkpoints
+/subgoal Monitoring: weekly summary report auto-generated and delivered to Discord
+```
+
+### 3C. Kanban Task Decomposition (What the Orchestrator Creates)
+
+When the goal loop runs, the orchestrator profile decomposes the work:
+
+```python
+# ═══════════════════════════════════════════════════
+# PHASE 1: Dataset Preparation (parallel research + implementation)
+# ═══════════════════════════════════════════════════
+
+t1 = kanban_create(
+    title="Research: Survey existing Hermes-3 conversation data",
+    assignee="researcher",
+    body="""
+    Catalog all existing Hermes-3 conversation data available for preference
+    pair extraction. Check:
+    1. Session transcripts in ~/.hermes/sessions/
+    2. Published datasets on HuggingFace (NousResearch/*)
+    3. Community datasets on the Discord
+    Output: markdown report with dataset names, sizes, formats, quality estimates.
+    """,
+    priority="high",
+)
+
+t2 = kanban_create(
+    title="Implement: Preference pair extraction pipeline",
+    assignee="ml-engineer",
+    body="""
+    Following Task 1.1 in docs/plans/2026-05-24-rl-pipeline.md:
+    - Write scripts/data/extract_pairs.py
+    - Extract chosen/rejected pairs from conversation histories
+    - Include quality scoring (response length, coherence, tool use)
+    - TDD: write tests first, verify they fail, then implement
+    """,
+    parents=[t1],  # Waits for research to complete
+)
+
+t3 = kanban_create(
+    title="Review: Dataset pipeline tests and quality",
+    assignee="reviewer",
+    body="""
+    Verify the dataset pipeline from T2:
+    - Run test_dataset.py and confirm >95% coverage
+    - Spot-check 50 extracted pairs for quality
+    - Verify quality score threshold (>0.8) is enforced
+    - Block if any tests fail or quality is below threshold.
+    """,
+    parents=[t2],
+)
+
+# ═══════════════════════════════════════════════════
+# PHASE 2: Reward Model (gated by Phase 1 review)
+# ═══════════════════════════════════════════════════
+
+t4 = kanban_create(
+    title="Implement: DPO reward model training config",
+    assignee="ml-engineer",
+    body="""
+    Following Task 2.1 in docs/plans/2026-05-24-rl-pipeline.md:
+    - Write configs/reward-model-dpo.yaml (Axolotl format)
+    - Base model: NousResearch/Hermes-3-Llama-3.1-8B
+    - Dataset: output from T2's pipeline
+    - Implement training/run_reward_model.sh
+    - Include WandB logging
+    """,
+    parents=[t3],  # Gated by dataset review approval
+)
+
+t5 = kanban_create(
+    title="Implement: Reward model evaluation script",
+    assignee="ml-engineer",
+    body="""
+    Following Task 2.2 in docs/plans/2026-05-24-rl-pipeline.md:
+    - Write scripts/eval/eval_reward_model.py
+    - Input: trained reward model checkpoint
+    - Output: alignment score on holdout set
+    - Threshold: alignment score must exceed 0.7
+    - Include A/B test against random baseline
+    """,
+    parents=[t4],
+)
+
+t6 = kanban_create(
+    title="Review: Reward model quality gate",
+    assignee="reviewer",
+    body="""
+    Verify reward model from T4+T5:
+    - Run eval_reward_model.py and check alignment score > 0.7
+    - Verify DPO loss converged (< 0.5 after 1000 steps)
+    - Check WandB dashboard for loss curves
+    - Block if alignment score is below threshold.
+    """,
+    parents=[t5],
+)
+
+# ═══════════════════════════════════════════════════
+# PHASE 3: GRPO Training (gated by Phase 2 review)
+# ═══════════════════════════════════════════════════
+
+t7 = kanban_create(
+    title="Implement: GRPO training config and launcher",
+    assignee="ml-engineer",
+    body="""
+    Following Task 3.1 + 3.2 in docs/plans/2026-05-24-rl-pipeline.md:
+    - Write configs/grpo-training.yaml (Axolotl GRPO format)
+    - group_size: 16, total_steps: 2500, steps_per_eval: 25
+    - Reward model: checkpoint from T4
+    - Write scripts/training/run_grpo.sh
+    - Checkpoint every 100 steps, auto-prune to keep latest 5
+    """,
+    parents=[t6],
+)
+
+t8 = kanban_create(
+    title="Implement: WandB metrics dashboard for GRPO",
+    assignee="ops",
+    body="""
+    Following Task 3.3 in docs/plans/2026-05-24-rl-pipeline.md:
+    - Configure WandB project and run naming
+    - Log: training loss, reward scores, eval metrics, GPU utilization
+    - Create WandB dashboard panels for monitoring
+    - Write scripts/monitoring/wandb_setup.py
+    """,
+    parents=[t7],  # Can run in parallel if no strict dependency
+)
+
+t9 = kanban_create(
+    title="Review: GRPO training convergence",
+    assignee="reviewer",
+    body="""
+    After T7 completes training:
+    - Verify training ran full 2500 steps
+    - Check WandB: loss convergence (decreasing curve)
+    - Check WandB: reward scores trending upward
+    - Verify checkpoints saved every 100 steps
+    - Block if loss didn't converge or reward plateaued early.
+    """,
+    parents=[t7, t8],
+)
+
+# ═══════════════════════════════════════════════════
+# PHASE 4: Evaluation (gated by Phase 3 review)
+# ═══════════════════════════════════════════════════
+
+t10 = kanban_create(
+    title="Implement: lm-eval-harness integration",
+    assignee="ml-engineer",
+    body="""
+    Following Task 4.1 in docs/plans/2026-05-24-rl-pipeline.md:
+    - Write scripts/eval/run_eval_harness.sh
+    - Evaluate on: MMLU, GSM8K, ARC-Challenge, HellaSwag
+    - Output: JSON results file + WandB logging
+    - Compare against base model (Hermes-3 pre-GRPO)
+    """,
+    parents=[t9],
+)
+
+t11 = kanban_create(
+    title="Implement: Regression detection system",
+    assignee="ml-engineer",
+    body="""
+    Following Task 4.3 in docs/plans/2026-05-24-rl-pipeline.md:
+    - Write scripts/eval/regression_detect.py
+    - Input: current eval results + baseline results file
+    - Logic: flag any task where accuracy drops > 3% from baseline
+    - Output: regression report (JSON + human-readable)
+    - Exit code 1 if regression detected (blocks deployment)
+    """,
+    parents=[t10],
+)
+
+t12 = kanban_create(
+    title="Review: Evaluation results and regressions",
+    assignee="reviewer",
+    body="""
+    Verify evaluation pipeline from T10+T11:
+    - Run eval harness and check MMLU ≥ 75%, GSM8K ≥ 70%
+    - Run regression_detect.py — must exit 0 (no regressions)
+    - Compare results against base model benchmarks
+    - Block if any regression detected or scores below threshold.
+    """,
+    parents=[t11],
+)
+
+# ═══════════════════════════════════════════════════
+# PHASE 5: Deployment (gated by Phase 4 review)
+# ═══════════════════════════════════════════════════
+
+t13 = kanban_create(
+    title="Implement: Model registry and serving setup",
+    assignee="ops",
+    body="""
+    Following Tasks 5.1 + 5.2 + 5.3 in docs/plans/2026-05-24-rl-pipeline.md:
+    - Write scripts/deploy/register_model.py (uploads to HF Hub)
+    - Write scripts/deploy/serve_vllm.sh (vLLM serving config)
+    - Write scripts/deploy/rollback.sh (revert to previous checkpoint)
+    - Rollback must complete in < 5 minutes
+    - Serve with: max_model_len=8192, gpu_memory_utilization=0.9
+    """,
+    parents=[t12],
+)
+
+t14 = kanban_create(
+    title="Review: Deployment and rollback",
+    assignee="reviewer",
+    body="""
+    Verify deployment from T13:
+    - Deploy model and verify it responds to API calls
+    - Run latency benchmark: p99 must be < 200ms
+    - Execute rollback script and verify it reverts in < 5 min
+    - After rollback, verify original model still serves correctly
+    - Block if any latency/rollback requirement fails.
+    """,
+    parents=[t13],
+)
+
+# ═══════════════════════════════════════════════════
+# PHASE 6: Monitoring (parallel with Phase 5)
+# ═══════════════════════════════════════════════════
+
+t15 = kanban_create(
+    title="Implement: Prometheus metrics and alerting",
+    assignee="ops",
+    body="""
+    Following Tasks 6.1 + 6.2 in docs/plans/2026-05-24-rl-pipeline.md:
+    - Write scripts/monitoring/prometheus_exporter.py
+    - Metrics: train_loss, reward_score, eval_mmlu, eval_gsm8k,
+      checkpoint_age_hours, serving_latency_p99
+    - Write alert rules YAML:
+      * eval_accuracy drops > 5% between checkpoints → critical
+      * train_loss stagnant for 200+ steps → warning
+      * checkpoint_age > 48 hours → warning (training stalled)
+    """,
+    parents=[t12],  # Can start once eval pipeline is done
+)
+
+t16 = kanban_create(
+    title="Implement: Weekly summary report generator",
+    assignee="writer",
+    body="""
+    Following Task 6.3 in docs/plans/2026-05-24-rl-pipeline.md:
+    - Write scripts/reports/weekly_summary.py
+    - Pulls from WandB API: training metrics, eval scores, model versions
+    - Generates: markdown report + Discord message
+    - Sections: Training Progress, Eval Trends, Issues, Next Steps
+    - Template matches existing Hermes project documentation style
+    """,
+    parents=[t15],
+)
+
+t17 = kanban_create(
+    title="Final Review: Complete pipeline integration test",
+    assignee="reviewer",
+    body="""
+    End-to-end pipeline validation:
+    - Run full pipeline on a small test dataset (50 pairs)
+    - Verify: dataset → reward model → GRPO → eval → deploy → monitor
+    - Check all scripts run without manual intervention
+    - Verify monitoring alerts fire correctly
+    - Verify weekly report generates valid output
+    - Block if any integration gap found.
+    """,
+    parents=[t14, t16],
+)
+```
+
+### 3D. The Task Dependency Graph
+
+```
+                    ┌─────────────────────────────────────────────────┐
+                    │           PHASE 1: DATASET                      │
+                    │                                                 │
+                    │  T1 (researcher)                                │
+                    │  "Survey existing data"                         │
+                    │       │                                         │
+                    │       ▼                                         │
+                    │  T2 (ml-engineer)                               │
+                    │  "Preference pair extraction"                   │
+                    │       │                                         │
+                    │       ▼                                         │
+                    │  T3 (reviewer) ──── APPROVAL GATE ─────────────┼──┐
+                    └─────────────────────────────────────────────────┘  │
+                    ┌─────────────────────────────────────────────────┐  │
+                    │           PHASE 2: REWARD MODEL                 │  │
+                    │                                                 │◄─┘
+                    │  T4 (ml-engineer)                               │
+                    │  "DPO reward model config"                      │
+                    │       │                                         │
+                    │       ▼                                         │
+                    │  T5 (ml-engineer)                               │
+                    │  "Reward model evaluation"                      │
+                    │       │                                         │
+                    │       ▼                                         │
+                    │  T6 (reviewer) ──── APPROVAL GATE ─────────────┼──┐
+                    └─────────────────────────────────────────────────┘  │
+                    ┌─────────────────────────────────────────────────┐  │
+                    │           PHASE 3: GRPO TRAINING                │  │
+                    │                                                 │◄─┘
+                    │  T7 (ml-engineer) ──────┐                       │
+                    │  "GRPO config+launcher" │ (parallel)            │
+                    │       │                 ▼                       │
+                    │       │            T8 (ops)                     │
+                    │       │            "WandB dashboard"            │
+                    │       ▼                 │                       │
+                    │  T9 (reviewer) ◄────────┘                       │
+                    │  REVIEW: convergence ─── APPROVAL GATE ────────┼──┐
+                    └─────────────────────────────────────────────────┘  │
+                    ┌─────────────────────────────────────────────────┐  │
+                    │           PHASE 4: EVALUATION                   │  │
+                    │                                                 │◄─┘
+                    │  T10 (ml-engineer)                              │
+                    │  "lm-eval-harness integration"                  │
+                    │       │                                         │
+                    │       ▼                                         │
+                    │  T11 (ml-engineer)                              │
+                    │  "Regression detection"                         │
+                    │       │                                         │
+                    │       ▼                                         │
+                    │  T12 (reviewer) ─── APPROVAL GATE ─────────────┼──┐
+                    └─────────────────────────────────────────────────┘  │
+                    ┌──────────────────────────────────────────────┐     │
+                    │        PHASE 5 + 6: DEPLOY + MONITOR         │     │
+                    │                                             │◄────┘
+                    │  T13 (ops)          T15 (ops)               │
+                    │  "Deploy+rollback"  "Prometheus+alerts"     │
+                    │       │                   │ (parallel)      │
+                    │       ▼                   ▼                 │
+                    │  T14 (reviewer)      T16 (writer)           │
+                    │  "Deploy review"     "Weekly report"        │
+                    │       │                   │                 │
+                    │       └─────────┬─────────┘                 │
+                    │                 ▼                            │
+                    │  T17 (reviewer)                             │
+                    │  "FINAL INTEGRATION TEST"                   │
+                    └─────────────────────────────────────────────┘
+```
+
+### 3E. What Happens During Execution
+
+1. **Gateway dispatcher** runs every 60 seconds
+2. T1 (researcher) is `ready` — dispatcher spawns researcher profile
+3. Researcher completes → T2 auto-promotes to `ready` (dependency satisfied)
+4. T2 (ml-engineer) spawns → implements extraction pipeline
+5. T3 (reviewer) spawns → reviews, approves or blocks
+6. If T3 blocks → T4 stays in `todo` (phase 2 can't start)
+7. If T3 approves → T4 auto-promotes → phase 2 begins
+8. T7 and T8 run **in parallel** (no dependency between them)
+9. T9 waits for both T7 and T8 to complete (fan-in)
+10. T13 and T15 run **in parallel** (no dependency between them)
+11. T17 waits for both T14 and T16 (final integration gate)
+
+**Circuit breaker:** If any worker crashes 3 times, the task auto-blocks and you get a Discord/Telegram notification. Use `hermes kanban reclaim` or the dashboard to retry.
+
+---
+
+## Phase 4: Cron — Scheduled Continuous Operations
+
+Once the pipeline is built and deployed, cron jobs handle the **ongoing operational tasks** that run on a schedule.
+
+### 4A. Weekly Research Sync
+
+Every Monday at 9 AM, scan for new RL papers and update the wiki.
+
+```
+# Create via Hermes CLI
+hermes cron create "0 9 * * 1" \
+    --name "weekly-research-sync" \
+    --deliver discord:HOME_CHANNEL_ID \
+    --skills research-knowledge \
+    --profile researcher
+```
+
+**Cron prompt** (the self-contained instruction the cron agent receives):
+
+```
+Search arXiv for recent papers on GRPO, RLHF, and reward modeling
+from the past 7 days. For the top 3 most relevant papers:
+1. Read the full paper via web_extract
+2. Ingest findings into the wiki at ~/wiki-rl-pipeline
+3. Cross-reference with existing wiki pages
+4. Generate a 1-page summary of new findings
+
+Deliver the summary as a Discord message to the home channel.
+Include links to the papers and which wiki pages were updated.
+```
+
+### 4B. Daily Evaluation Run
+
+Every day at 2 AM, run the evaluation harness against the latest model checkpoint.
+
+```
+hermes cron create "0 2 * * *" \
+    --name "daily-eval" \
+    --deliver discord:HOME_CHANNEL_ID \
+    --profile ml-engineer
+```
+
+**Cron prompt:**
+
+```
+Run the RL pipeline evaluation:
+1. Find the latest checkpoint in ./checkpoints/ (most recent by mtime)
+2. Run scripts/eval/run_eval_harness.sh against it
+3. Run scripts/eval/regression_detect.py against the baseline
+4. If regression detected (exit code 1):
+   - Post a CRITICAL alert to Discord with:
+     * Which benchmarks regressed
+     * How much they dropped
+     * Link to WandB run for comparison
+5. If no regression:
+   - Post a brief status update: all scores, delta from previous run
+6. Log results to ~/wiki-rl-pipeline/queries/eval-YYYY-MM-DD.md
+```
+
+### 4C. Training Loss Watchdog (Every 4 Hours)
+
+Check if training is stalled or diverging.
+
+```
+hermes cron create "every 4h" \
+    --name "training-watchdog" \
+    --deliver discord:HOME_CHANNEL_ID \
+    --profile ops
+```
+
+**Cron prompt:**
+
+```
+Check RL training health:
+1. Query WandB API for the latest training metrics
+2. Check if train_loss has been stagnant (±0.001) for 200+ steps
+3. Check if reward_score is trending downward over last 50 steps
+4. Check checkpoint age — warn if > 48 hours old
+5. If any issue detected:
+   - Post a WARNING to Discord with the specific issue
+   - Include: steps since last improvement, current values, recommended action
+6. If everything healthy:
+   - Silently exit (output nothing — watchdog pattern)
+```
+
+**Key pattern:** Empty stdout = silent. Non-empty = alert. This is the **watchdog pattern** — no spam when things are fine.
+
+### 4D. Weekly Summary Report
+
+Every Friday at 5 PM, generate and deliver the weekly summary.
+
+```
+hermes cron create "0 17 * * 5" \
+    --name "weekly-report" \
+    --deliver discord:HOME_CHANNEL_ID \
+    --profile writer
+```
+
+**Cron prompt:**
+
+```
+Generate this week's RL pipeline summary:
+1. Run scripts/reports/weekly_summary.py
+2. Pull training metrics from WandB for the past 7 days
+3. Pull evaluation scores and trends
+4. List any regressions or issues detected this week
+5. List any new research ingested into the wiki
+6. Format as a clean Discord message with sections:
+   - 🏋️ Training Progress (loss curve, reward trend)
+   - 📊 Evaluation Trends (benchmark scores, deltas)
+   - ⚠️ Issues This Week (regressions, stalls, alerts)
+   - 📚 Research Updates (new papers, wiki changes)
+   - 🎯 Next Steps (upcoming tasks, recommendations)
+7. Deliver the formatted report
+```
+
+### 4E. Cron Job Management
+
+```bash
+# List all cron jobs
+hermes cron list
+
+# Check one job's status
+hermes cron list | grep weekly-research
+
+# Pause a job temporarily
+hermes cron pause <job-id>
+
+# Manually trigger a job now (for testing)
+hermes cron run <job-id>
+
+# Edit schedule
+hermes cron edit <job-id> --schedule "0 9 * * 1,4"  # Mon + Thu at 9am
+```
+
+---
+
+## Phase 5: Webhooks — Event-Driven Continuous Operation
+
+Webhooks let external systems **push events into Hermes**, triggering agent responses without polling. This is how you connect your pipeline to the real world.
+
+### 5A. Setting Up Webhooks
+
+```bash
+# Create webhook endpoints
+hermes webhook subscribe github-ci     # GitHub CI/CD events
+hermes webhook subscribe wandb-alert   # WandB alert callbacks
+hermes webhook submit model-approved   # Manual approval events
+```
+
+Routes are created at `/webhooks/<name>` on the gateway server.
+
+### 5B. GitHub CI/CD Webhook
+
+**When:** A PR is merged into main that touches the training pipeline.
+
+**GitHub webhook config:**
+- URL: `https://your-server:port/webhooks/github-ci`
+- Events: Push (to main branch), Pull Request (merged)
+- Secret: your shared HMAC secret
+
+**Webhook prompt** (configured via `hermes webhook edit github-ci`):
+
+```
+A GitHub event was received:
+{{webhook_payload}}
+
+If this is a push to main that touches scripts/training/ or configs/:
+1. Run the test suite: pytest tests/training/ -v
+2. If all tests pass, trigger a new training run with the updated code
+3. Post a summary to Discord: what changed, test results, training run ID
+
+If this is a merged PR:
+1. Update the wiki with a changelog entry
+2. Post PR summary to Discord
+```
+
+### 5C. WandB Alert Webhook
+
+**When:** WandB fires an alert (loss divergence, eval regression, run completion).
+
+**WandB webhook config** (in WandB Alert settings):
+- URL: `https://your-server:port/webhooks/wandb-alert`
+- Trigger: alert conditions met
+
+**Webhook prompt:**
+
+```
+A WandB alert was received:
+{{webhook_payload}}
+
+Parse the alert and take appropriate action:
+
+If alert type is "loss_divergence":
+1. Post CRITICAL alert to Discord with run details
+2. Pause the current training run (kill the process)
+3. Create a Kanban task for ml-engineer: "Investigate loss divergence in run {{run_id}}"
+4. Log the alert in ~/wiki-rl-pipeline/queries/alerts/
+
+If alert type is "eval_regression":
+1. Post WARNING to Discord
+2. Run regression_detect.py to confirm the regression
+3. Block the deployment pipeline (kanban_block on T13)
+4. Create investigation task
+
+If alert type is "run_complete":
+1. Post completion status to Discord
+2. Queue the evaluation pipeline
+3. Update wiki log with run results
+```
+
+### 5D. Model Approval Webhook (Human-in-the-Loop)
+
+**When:** A human reviewer approves a model for deployment.
+
+```bash
+hermes webhook subscribe model-approved
+```
+
+**Triggered manually** via curl or a simple web form:
+
+```bash
+curl -X POST https://your-server:port/webhooks/model-approved \
+  -H "Content-Type: application/json" \
+  -d '{"checkpoint": "checkpoint-step-2500", "approved_by": "sovthpaw", "notes": "Eval scores look great"}'
+```
+
+**Webhook prompt:**
+
+```
+Model approval received:
+{{webhook_payload}}
+
+1. Validate the checkpoint exists
+2. Run scripts/deploy/register_model.py with the approved checkpoint
+3. Run scripts/deploy/serve_vllm.sh to start serving
+4. Run a smoke test against the deployed model (10 sample prompts)
+5. Post deployment confirmation to Discord:
+   - Model name and version
+   - Eval scores at time of approval
+   - Approver name and notes
+   - Serving endpoint URL
+6. Update wiki log: "Model {{checkpoint}} deployed by {{approved_by}}"
+7. Mark deployment Kanban tasks as complete
+```
+
+### 5E. GitHub Release Webhook (Upstream Updates)
+
+**When:** Axolotl or TRL releases a new version that might affect training.
+
+**Webhook prompt:**
+
+```
+A new release was detected:
+{{webhook_payload}}
+
+1. Parse the release notes for breaking changes
+2. Check if the release affects: Axolotl, TRL, vLLM, sglang, or lm-eval-harness
+3. If breaking changes detected:
+   - Post to Discord: "Upstream release {{package}} {{version}} may affect pipeline"
+   - Create Kanban task for researcher: "Assess impact of {{package}} {{version}} on our pipeline"
+4. If non-breaking:
+   - Silently log the release to ~/wiki-rl-pipeline/queries/upstream-releases.md
+```
+
+---
+
+## Phase 6: The Complete Continuous Operation Loop
+
+Here's how all the pieces fit together into a self-sustaining system:
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    RESEARCH LAYER (Cron)                            │
+│                                                                     │
+│  Every Monday 9AM: researcher profile scans arXiv, updates wiki     │
+│  Every release: webhook triggers impact assessment                  │
+│                                                                     │
+│  Output: Updated wiki, new findings, impact reports                 │
+└─────────────────────────────┬───────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    PLANNING LAYER (Kanban)                          │
+│                                                                     │
+│  Orchestrator decomposes research findings into tasks               │
+│  Planner profile writes implementation specs                        │
+│  Reviewer validates plans before implementation begins              │
+│                                                                     │
+│  Output: Structured task graph with acceptance criteria             │
+└─────────────────────────────┬───────────────────────────────────────┘
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                    EXECUTION LAYER (Goal + Kanban)                  │
+│                                                                     │
+│  /goal drives the overall objective                                 │
+│  Kanban dispatcher spawns specialist workers                        │
+│  Reviewer gates each phase with approval checks                     │
+│  /subgoal criteria ensure measurable completion                     │
+│                                                                     │
+│  Output: Working pipeline code, tests, configs, docs                │
+└─────────────┬───────────────────────────────────────┬───────────────┘
+              │                                       │
+              ▼                                       ▼
+┌────────────────────────────────┐  ┌─────────────────────────────────┐
+│  DEPLOYMENT (Webhook-triggered)│  │  MONITORING (Cron)              │
+│                                │  │                                 │
+│  Human approves model          │  │  Every 2AM: daily eval          │
+│  → webhook deploys to vLLM     │  │  Every 4h: training watchdog    │
+│  → smoke test + announce       │  │  Every Friday: weekly report    │
+│                                │  │                                 │
+│  On CI push:                   │  │  On WandB alert:                │
+│  → webhook runs tests          │  │  → webhook pauses training      │
+│  → retriggers training         │  │  → kanban creates debug task    │
+└────────────────────────────────┘  └─────────────────────────────────┘
+```
+
+### The Feedback Loop
+
+```
+1. Research finds a new GRPO variant that's 15% more data-efficient
+2. Cron job ingests the paper → wiki updated → impact assessment task created
+3. Orchestrator creates Kanban tasks: "Implement new GRPO variant" → "Evaluate against
+   current" → "If better, retrain reward model" → "Deploy and monitor"
+4. ml-engineer implements the change → reviewer gates → ops deploys
+5. Daily eval cron confirms improvement → weekly report includes the result
+6. Research cron finds the next paper → cycle repeats
+```
+
+This is **continuous operation** — the system keeps improving itself without manual intervention, only requiring human approval at deployment gates.
+
+---
+
+## Monitoring and Observability
+
+### Dashboard
+
+```bash
+hermes dashboard    # http://127.0.0.1:9119
+```
+
+Shows all Kanban tasks, their status, run history, and which profiles are working on what.
+
+### Cron Status
+
+```bash
+hermes cron list            # All jobs and next run time
+hermes cron status          # Scheduler health
+hermes cron list --all      # Include disabled jobs
+```
+
+### Tail Live Updates
+
+```bash
+hermes kanban tail          # Live feed of task state changes
+```
+
+### Webhook Testing
+
+```bash
+hermes webhook test github-ci    # Send test POST to verify endpoint
+hermes webhook list              # All registered endpoints
+```
+
+### Session History
+
+```bash
+hermes sessions list --older-than 7d     # Find cron-spawned sessions
+hermes sessions stats                    # Storage usage
+hermes insights --days 30                # Usage analytics (tokens, costs)
+```
+
+---
+
+## Configuration Summary
+
+### config.yaml
+
+```yaml
+goals:
+  max_turns: 50
+
+auxiliary:
+  goal_judge:
+    provider: openrouter
+    model: google/gemini-3-flash-preview
+
+kanban:
+  dispatch_in_gateway: true
+  # dispatch_interval: 60 (default, seconds)
+```
+
+### Cron Jobs Summary
+
+| Job | Schedule | Profile | Purpose |
+|-----|----------|---------|---------|
+| weekly-research-sync | `0 9 * * 1` | researcher | Scan arXiv, update wiki |
+| daily-eval | `0 2 * * *` | ml-engineer | Run evals, check regressions |
+| training-watchdog | `every 4h` | ops | Health check, stall detection |
+| weekly-report | `0 17 * * 5` | writer | Summary report to Discord |
+
+### Webhooks Summary
+
+| Endpoint | Trigger | Action |
+|----------|---------|--------|
+| github-ci | PR merged, push to main | Run tests, retrain if needed |
+| wandb-alert | WandB alert fires | Pause training, create debug task |
+| model-approved | Human approval POST | Deploy model, smoke test |
+| upstream-release | New dep release | Impact assessment |
+
+---
+
+## Recovery and Resilience
+
+### When a Kanban Task Gets Stuck
+
+```bash
+# Check the dashboard for ⚠ badges
+hermes dashboard
+
+# Reclaim a stuck task (kills worker, resets to ready)
+hermes kanban reclaim <task-id>
+
+# Reassign to a different profile
+hermes kanban reassign <task-id> reviewer --reclaim
+
+# Check run history
+hermes kanban runs <task-id>
+```
+
+### When a Cron Job Fails
+
+```bash
+# Check cron output
+hermes cron list   # See last run status
+
+# Manually rerun
+hermes cron run <job-id>
+
+# Check logs
+grep "cron" ~/.hermes/logs/agent.log | tail -20
+```
+
+### When a Webhook Endpoint Fails
+
+```bash
+# Test the endpoint
+hermes webhook test <name>
+
+# Check gateway logs
+grep "webhook" ~/.hermes/logs/gateway.log | tail -20
+```
+
+### Gateway Crashes
+
+```bash
+# Reset failed state and restart
+systemctl --user reset-failed hermes-gateway
+systemctl --user restart hermes-gateway
+
+# Enable linger so gateway survives SSH logout
+sudo loginctl enable-linger $USER
+```
+
+---
+
+## The Complete Quick-Start Checklist
+
+### One-Time Setup
+- [ ] Create specialist profiles (researcher, planner, ml-engineer, ops, reviewer, writer)
+- [ ] Write SOUL.md for each profile
+- [ ] Initialize Kanban board (`hermes kanban boards create rl-pipeline`)
+- [ ] Start gateway (`hermes gateway start`)
+- [ ] Configure judge model in config.yaml
+- [ ] Set up wiki (`/skill research-knowledge`)
+
+### Per-Operation
+- [ ] Research phase: ingest sources into wiki
+- [ ] Planning phase: `/plan` generates implementation spec
+- [ ] Execution: `/goal` with subgoals for acceptance criteria
+- [ ] Kanban: orchestrator decomposes into task graph
+- [ ] Monitor: `hermes dashboard` + `hermes kanban tail`
+
+### Continuous Operations
+- [ ] Set up cron: weekly research, daily eval, watchdog, weekly report
+- [ ] Set up webhooks: GitHub CI, WandB alerts, model approval
+- [ ] Test all webhooks: `hermes webhook test <name>`
+- [ ] Verify cron delivery: `hermes cron run <job-id>` (manual trigger)
+
+### Ongoing Maintenance
+- [ ] Check dashboard daily for stuck tasks
+- [ ] Review cron outputs weekly
+- [ ] Update wiki with new findings
+- [ ] Prune old sessions: `hermes sessions prune --older-than 30`
+
+---
+
+## Docs
+
+- Goals: https://hermes-agent.nousresearch.com/docs/user-guide/features/goals
+- Kanban: https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban
+- Kanban Tutorial: https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban-tutorial
+- Cron: https://hermes-agent.nousresearch.com/docs/user-guide/features/cron
+- Webhooks: https://hermes-agent.nousresearch.com/docs/user-guide/features/webhooks
+- Writing Plans: https://hermes-agent.nousresearch.com/docs/user-guide/skills/bundled/software-development/software-development-writing-plans
+- Profiles: https://hermes-agent.nousresearch.com/docs/user-guide/profiles
