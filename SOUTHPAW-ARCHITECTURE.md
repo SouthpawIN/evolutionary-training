@@ -126,7 +126,7 @@ The **Nous Girl** agent — a voice-to-voice note-taking, music, and vibe copilo
 ```
 OmniSenter Spark 20A4B
 ├── OmniStep 12A3B ──────── Base omnimodal capabilities
-├── LFM2.5 8A1B ─────────── Tool calling & agentic reasoning
+├── Qwen3-8B ─────────── Tool calling & agentic reasoning
 │   └── 8B total, 1B active — lightweight but capable at function calling
 ├── Nemotron 3 ──────────── Additional training data & alignment
 ├── Hermes-Agent training ── Reasoning traces, tool calls from Discord
@@ -264,7 +264,7 @@ OmniStep 12A3B (base)
     │         │
     │         └── ... (infinite generations)
     │
-    ├─── + LFM2.5 8A1B → OmniSenter Spark
+    ├─── + Qwen3-8B → OmniSenter Spark
     │         │
     │         └── Same Darwin loop on Spark
     │

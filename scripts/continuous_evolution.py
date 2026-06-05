@@ -32,8 +32,8 @@ GENOMES_DIR = BASE_DIR / "genomes"
 
 # === Model Registry ===
 MODEL_REGISTRY = {
-    "lfm-cosmos": {
-        "name": "LFM2.5 × Cosmos3-Nano",
+    "qwen-cosmos": {
+        "name": "Qwen3-8B × Cosmos3-Nano",
         "parent_a": {
             "name": "Cosmos3-Nano",
             "hf_repo": "nvidia/Cosmos3-Nano",
@@ -42,16 +42,16 @@ MODEL_REGISTRY = {
             "lm_head_key": "thinker.lm_head.weight",
         },
         "parent_b": {
-            "name": "LFM2.5-8B-A1B",
-            "hf_repo": "LiquidAI/LFM2.5-8B-A1B",
+            "name": "Qwen3-8B",
+            "hf_repo": "Qwen/Qwen3-8B",
             "local_path": None,
             "text_prefix": "model.",
             "lm_head_key": "lm_head.weight",
         },
-        "merge_script": str(BASE_DIR / "scripts" / "lfm_cosmos_darwin_merge.py"),
+        "merge_script": str(BASE_DIR / "scripts" / "qwen_cosmos_darwin_merge.py"),
         "benchmark_suite": "quick",
-        "hf_upload_repo": "sovthpaw/lfm-cosmos-evo",
-        "hf_train_repo": "sovthpaw/lfm-cosmos-train",
+        "hf_upload_repo": "sovthpaw/qwen-cosmos-evo",
+        "hf_train_repo": "sovthpaw/qwen-cosmos-train",
         "min_improvement_pct": 0.5,
         "evolution": {
             "pop_size": 4,
@@ -67,7 +67,7 @@ MODEL_REGISTRY = {
             "hf_repo": "sovthpaw/omnistep-12a3b",
             "local_path": str(MODELS_DIR / "omnistep-12a3b"),
         },
-        "merge_script": str(BASE_DIR / "scripts" / "lfm_cosmos_darwin_merge.py"),
+        "merge_script": str(BASE_DIR / "scripts" / "qwen_cosmos_darwin_merge.py"),
         "benchmark_suite": "quick",
         "hf_upload_repo": "sovthpaw/omnistep-evo",
         "hf_train_repo": "sovthpaw/omnistep-train",
@@ -250,7 +250,7 @@ class EvolutionPipeline:
         cmd = [
             sys.executable, self.config["merge_script"],
             "--cosmos-path", self.config["parent_a"]["local_path"],
-            "--lfm-path", self.config["parent_b"]["local_path"],
+            "--qwen-path", self.config["parent_b"]["local_path"],
             "--output", output_dir,
             "--genome-json", str(genome_path),
         ]
@@ -292,8 +292,8 @@ class EvolutionPipeline:
     def upload_to_hf(self, model_path: str, generation: int, fitness: float, stage="evo"):
         """Upload best model to HuggingFace as a staged generation.
         
-        stage="evo" → sovthpaw/lfm-cosmos-evo-gen0
-        stage="train" → sovthpaw/lfm-cosmos-train-gen0
+        stage="evo" → sovthpaw/qwen-cosmos-evo-gen0
+        stage="train" → sovthpaw/qwen-cosmos-train-gen0
         """
         if stage == "evo":
             repo = f"{self.config['hf_upload_repo']}-gen{generation}"
@@ -415,7 +415,7 @@ class EvolutionPipeline:
 
 def main():
     parser = argparse.ArgumentParser(description="Continuous Evolution Pipeline")
-    parser.add_argument("--model", choices=list(MODEL_REGISTRY.keys()), default="lfm-cosmos")
+    parser.add_argument("--model", choices=list(MODEL_REGISTRY.keys()), default="qwen-cosmos")
     parser.add_argument("--cycle", action="store_true", help="Run one cycle")
     parser.add_argument("--daemon", action="store_true", help="Run continuously")
     parser.add_argument("--interval", type=int, default=3600, help="Seconds between cycles")

@@ -10,7 +10,7 @@ Hey everyone! I've been building something I'm really excited to share — a ded
 • Reports to Discord with status updates
 
 **The Three Merge Lines:**
-• **OmniSenter** = Cosmos3-Nano + LFM2.5 → agentic/tool-calling beast
+• **OmniSenter** = Cosmos3-Nano + Qwen3-8B → agentic/tool-calling beast
 • **OmniStep** = Cosmos3-Nano + AceStep 4B → music/omnimodal
 • **OmniSS** = Best of both → the ultimate combo
 

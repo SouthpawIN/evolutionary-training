@@ -81,7 +81,7 @@ def log(entry):
         f.write(json.dumps(entry) + "\n")
 
 
-def get_best_evolved_model(model_key="lfm-cosmos"):
+def get_best_evolved_model(model_key="qwen-cosmos"):
     """Find the best evolved model from the evolution pipeline."""
     evo_dir = EVO_DIR / model_key
     if not evo_dir.exists():

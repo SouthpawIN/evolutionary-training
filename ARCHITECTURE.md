@@ -9,7 +9,7 @@
 │  All modalities in/out: voice, music, video, text        │
 │  Streaming ASR → real-time voice-to-voice                │
 ├─────────────────────────────────────────────────────────┤
-│  + LFM2.5 8A1B (tool calling + agentic capabilities)    │
+│  + Qwen3-8B (tool calling + agentic capabilities)    │
 │                    ↓                                      │
 │              OMNISENTER SPARK 20A4B                       │
 │  Voice-to-voice note-taking agent in Hermes              │
@@ -51,7 +51,7 @@
 - **Type:** Music generation model
 - **Role in OmniStep:** Music/audio generation backbone
 
-### LFM2.5 8A1B
+### Qwen3-8B
 - **Type:** Small language model with tool calling
 - **Role in OmniSenter Spark:** Agentic capabilities, function calling
 - **Active params:** 1B per token (8A = 8 total, 1B active)

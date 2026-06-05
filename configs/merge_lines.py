@@ -4,7 +4,7 @@ ARCHITECTURE REQUIREMENT: For real Darwin merges (not just tensor copying),
 parents must share the same architecture family and hidden dimensions.
 Cosmos3-Nano text backbone = Qwen3-VL (hidden=4096, 36L, vocab=151936)
 Qwen3-8B = Qwen3 (hidden=4096, 36L, vocab=151936) ← PERFECT MATCH
-LFM2.5 = Lfm2Moe (hidden=2048, 24L) ← CROSS-ARCH (mostly keep one parent)
+Qwen3-8B = Qwen3 (hidden=4096, 36L) ← PERFECT ARCHITECTURE MATCH
 AceStep 4B = Qwen3 (hidden=2560, 28L) ← SMALLER (mostly keep parent A)
 """
 

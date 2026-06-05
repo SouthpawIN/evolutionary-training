@@ -86,7 +86,7 @@ def main():
     parser.add_argument("--all", action="store_true", help="Report all models")
     args = parser.parse_args()
 
-    models = ["lfm-cosmos", "omnistep"] if args.all else [args.model or "lfm-cosmos"]
+    models = ["qwen-cosmos", "omnistep"] if args.all else [args.model or "qwen-cosmos"]
     statuses = [get_evolution_status(m) for m in models]
     report = format_discord_report(statuses)
     print(report)

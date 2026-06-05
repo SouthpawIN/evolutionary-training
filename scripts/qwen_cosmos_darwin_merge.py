@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """
-Darwin Family Merge: LFM2.5 8B-A1B × Cosmos3-Nano
+Darwin Family Merge: Qwen3-8B × Cosmos3-Nano
 
 Cross-architecture Darwin merge of:
 - Parent A: Cosmos3-Nano (15.75B, Cosmos3ForConditionalGeneration, omnimodal)
-- Parent B: LFM2.5 8B-A1B (8.47B total/1B active, Lfm2MoeForCausalLM, tool-calling)
+- Parent B: Qwen3-8B (8B dense, Qwen3ForCausalLM, tool-calling)
 
 Architecture Mapper handles dimension mismatches by SKIPPING (keeps parent A).
 Per-tensor MRI-Trust Fusion on shape-matched tensors.
 Modality heads from Cosmos3-Nano attached separately (NOT merged).
 
 Usage:
-  python3 lfm_cosmos_darwin_merge.py \
+  python3 qwen_cosmos_darwin_merge.py \
     --cosmos-path /path/to/Cosmos3-Nano \
-    --lfm-path /path/to/LFM2.5-8B-A1B \
+    --qwen-path /path/to/Qwen3-8B-8B-A1B \
     --output /path/to/output \
     [--rho-b 0.5] [--tau 0.4] [--genome-json genome.json]
 """
@@ -77,10 +77,10 @@ def extract_cosmos_text(tensors):
     return out
 
 
-def extract_lfm_text(tensors):
-    """Extract text body from LFM2.5 8B-A1B.
+def extract_qwen_text(tensors):
+    """Extract text body from Qwen3-8B.
     
-    LFM2.5 uses Lfm2MoeForCausalLM:
+    Qwen3-8B uses Qwen3ForCausalLM:
     - model.* for the MoE backbone
     - lm_head.weight for the language head
     - MoE expert weights are in model.layers.*.experts.*
@@ -91,7 +91,7 @@ def extract_lfm_text(tensors):
             out[k.replace("model.", "", 1)] = v
         elif k in ("lm_head.weight",):
             out["lm_head.weight"] = v
-    print(f"  [LFM2.5] extracted {len(out)} text tensors "
+    print(f"  [Qwen3-8B] extracted {len(out)} text tensors "
           f"(lm_head={'lm_head.weight' in out})")
     return out
 
@@ -192,7 +192,7 @@ def save_sharded(tensors, output_dir, max_shard_bytes=5_000_000_000):
         json.dump(index, f, indent=2)
 
 
-def copy_config_and_tokenizers(cosmos_path, lfm_path, output_dir):
+def copy_config_and_tokenizers(cosmos_path, qwen_path, output_dir):
     """Copy config and tokenizer files from parent A (Cosmos3-Nano)."""
     output_dir = Path(output_dir)
     config_files = [
@@ -202,7 +202,7 @@ def copy_config_and_tokenizers(cosmos_path, lfm_path, output_dir):
         "generation_config.json",
     ]
     for fname in config_files:
-        for src in [Path(cosmos_path) / fname, Path(lfm_path) / fname]:
+        for src in [Path(cosmos_path) / fname, Path(qwen_path) / fname]:
             if src.exists():
                 shutil.copy2(src, output_dir / fname)
                 print(f"  Copied {fname} from {src.parent.name}")
@@ -210,9 +210,9 @@ def copy_config_and_tokenizers(cosmos_path, lfm_path, output_dir):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Darwin Merge: LFM2.5 × Cosmos3-Nano")
+    parser = argparse.ArgumentParser(description="Darwin Merge: Qwen3-8B × Cosmos3-Nano")
     parser.add_argument("--cosmos-path", required=True, help="Path to Cosmos3-Nano model")
-    parser.add_argument("--lfm-path", required=True, help="Path to LFM2.5-8B-A1B model")
+    parser.add_argument("--qwen-path", required=True, help="Path to Qwen3-8B-8B-A1B model")
     parser.add_argument("--output", required=True, help="Output directory")
     parser.add_argument("--rho-b", type=float, default=0.5, help="Parent B density (genome)")
     parser.add_argument("--tau", type=float, default=TAU_DEFAULT, help="MRI-Trust coefficient")
@@ -231,10 +231,10 @@ def main():
         print(f"  Loaded genome: rho_b={rho_b:.4f}, tau={tau:.4f}")
 
     print(f"\n{'='*60}")
-    print(f"Darwin Family Merge: LFM2.5 × Cosmos3-Nano")
+    print(f"Darwin Family Merge: Qwen3-8B × Cosmos3-Nano")
     print(f"{'='*60}")
     print(f"  Parent A: Cosmos3-Nano ({args.cosmos_path})")
-    print(f"  Parent B: LFM2.5 8B-A1B ({args.lfm_path})")
+    print(f"  Parent B: Qwen3-8B ({args.qwen_path})")
     print(f"  rho_b={rho_b:.4f}, tau={tau:.4f}")
     print(f"  Output: {args.output}")
     print()
@@ -244,22 +244,22 @@ def main():
     cosmos_raw = load_sf(args.cosmos_path)
     cosmos_text = extract_cosmos_text(cosmos_raw)
 
-    print("\n[2/5] Loading LFM2.5 tensors...")
-    lfm_raw = load_sf(args.lfm_path)
-    lfm_text = extract_lfm_text(lfm_raw)
+    print("\n[2/5] Loading Qwen3-8B tensors...")
+    qwen_raw = load_sf(args.qwen_path)
+    qwen_text = extract_qwen_text(qwen_raw)
 
     if args.dry_run:
-        shared = set(cosmos_text.keys()) & set(lfm_text.keys())
-        shape_match = sum(1 for k in shared if cosmos_text[k].shape == lfm_text[k].shape)
+        shared = set(cosmos_text.keys()) & set(qwen_text.keys())
+        shape_match = sum(1 for k in shared if cosmos_text[k].shape == qwen_text[k].shape)
         print(f"\n  DRY RUN: {len(shared)} shared keys, {shape_match} shape-matched")
-        print(f"  A-only: {len(set(cosmos_text.keys()) - set(lfm_text.keys()))}")
-        print(f"  B-only: {len(set(lfm_text.keys()) - set(cosmos_text.keys()))}")
+        print(f"  A-only: {len(set(cosmos_text.keys()) - set(qwen_text.keys()))}")
+        print(f"  B-only: {len(set(qwen_text.keys()) - set(cosmos_text.keys()))}")
         return
 
     # Darwin merge
     print("\n[3/5] Running Darwin merge (MRI-Trust Fusion)...")
     t0 = time.time()
-    merged = darwin_merge(cosmos_text, lfm_text, rho_b=rho_b, tau=tau)
+    merged = darwin_merge(cosmos_text, qwen_text, rho_b=rho_b, tau=tau)
     print(f"  Merge took {time.time()-t0:.1f}s")
 
     # Save
@@ -267,7 +267,7 @@ def main():
     save_sharded(merged, args.output)
 
     print("\n[5/5] Copying config and tokenizer files...")
-    copy_config_and_tokenizers(args.cosmos_path, args.lfm_path, args.output)
+    copy_config_and_tokenizers(args.cosmos_path, args.qwen_path, args.output)
 
     print(f"\n{'='*60}")
     print(f"Done! Merged model at: {args.output}")

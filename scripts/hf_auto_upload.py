@@ -18,25 +18,25 @@ EVOLUTION_DIR = BASE_DIR / "evolution"
 RESULTS_DIR = BASE_DIR / "benchmarks" / "results"
 
 {
-    "lfm-cosmos": {
-        "repo_prefix": "sovthpaw/lfm-cosmos-evo",
-        "name": "LFM2.5 x Cosmos3-Nano (Darwin Evolved)",
-        "description": "Cross-architecture Darwin Family merge of LiquidAI LFM2.5 8B-A1B and NVIDIA Cosmos3-Nano. Evolved via CMA-ES genome optimization.",
+    "qwen-cosmos": {
+        "repo_prefix": "sovthpaw/qwen-cosmos-evo",
+        "name": "Qwen3-8B x Cosmos3-Nano (Darwin Evolved)",
+        "description": "Cross-architecture Darwin Family merge of Qwen Qwen3-8B and NVIDIA Cosmos3-Nano. Evolved via CMA-ES genome optimization.",
         "parent_a": "nvidia/Cosmos3-Nano",
-        "parent_b": "LiquidAI/LFM2.5-8B-A1B",
+        "parent_b": "Qwen/Qwen3-8B",
     },
     "omnistep": {
         "repo_prefix": "sovthpaw/omnistep-evo",
         "name": "OmniStep Evolved (Darwin Family)",
         "description": "Darwin Family evolved OmniStep 12A3B. Self-improving omnimodal model.",
         "parent_a": "sovthpaw/omnistep-12a3b",
-        "parent_b": "LiquidAI/LFM2.5-8B-A1B",
+        "parent_b": "Qwen/Qwen3-8B",
     },
 }
 
 
 def get_repo_name(model_key, generation):
-    """Staged repo naming: sovthpaw/lfm-cosmos-evo-gen0, gen1, etc."""
+    """Staged repo naming: sovthpaw/qwen-cosmos-evo-gen0, gen1, etc."""
     prefix = MODEL_CONFIGS[model_key]["repo_prefix"]
     return f"{prefix}-gen{generation}"
 
@@ -133,7 +133,7 @@ def find_best_model(model_key):
 
 
 def get_repo_name(model_key, generation):
-    """Staged repo naming: sovthpaw/lfm-cosmos-evo-gen0, gen1, etc."""
+    """Staged repo naming: sovthpaw/qwen-cosmos-evo-gen0, gen1, etc."""
     prefix = MODEL_CONFIGS[model_key]["repo_prefix"]
     return f"{prefix}-gen{generation}"
 
@@ -184,7 +184,7 @@ def upload_model(model_key, dry_run=False):
 
 def main():
     parser = argparse.ArgumentParser(description="HF Auto-Upload for Evolved Models")
-    parser.add_argument("--model", choices=list(MODEL_CONFIGS.keys()), default="lfm-cosmos")
+    parser.add_argument("--model", choices=list(MODEL_CONFIGS.keys()), default="qwen-cosmos")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     upload_model(args.model, args.dry_run)

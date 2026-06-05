@@ -28,7 +28,7 @@ Both loops feed each other: evolution produces better base models for training, 
 
 | Line | Parent A | Parent B | Child | Role | Status |
 |------|----------|----------|-------|------|--------|
-| **Line 1** | [Cosmos3-Nano](https://huggingface.co/nvidia/Cosmos3-Nano) (15.75B) | [LFM2.5-8B-A1B](https://huggingface.co/LiquidAI/LFM2.5-8B-A1B) (8.47B) | **OmniSenter** | Agentic / tool-calling | 🟡 Downloading |
+| **Line 1** | [Cosmos3-Nano](https://huggingface.co/nvidia/Cosmos3-Nano) (15.75B) | [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) (8.47B) | **OmniSenter** | Agentic / tool-calling | 🟡 Downloading |
 | **Line 2** | [Cosmos3-Nano](https://huggingface.co/nvidia/Cosmos3-Nano) (15.75B) | [AceStep-5Hz-LM-4B](https://huggingface.co/ACE-Step/acestep-5Hz-lm-4B) (4B) | **OmniStep** | Music / omnimodal | 🟡 Downloading |
 | **Line 3** | Best OmniSenter | Best OmniStep | **OmniSS** | Ultimate combo | ⏳ Pending |
 
@@ -38,7 +38,7 @@ Each line evolves independently via CMA-ES. Line 3 merges the best of Lines 1 an
 
 - **Cosmos3-Nano** ([nvidia/Cosmos3-Nano](https://huggingface.co/nvidia/Cosmos3-Nano)) — NVIDIA's omnimodal world model. Understands text, image, video, audio, and action commands. Mixture-of-Transformers architecture trained on 1.3B data points across 393 datasets. This provides the foundational multimodal intelligence.
 
-- **LFM2.5-8B-A1B** ([LiquidAI/LFM2.5-8B-A1B](https://huggingface.co/LiquidAI/LFM2.5-8B-A1B)) — Liquid AI's MoE model with 8.47B total / 1B active parameters. Exceptional at tool calling, function execution, and agentic reasoning. 9 languages, 82K+ downloads. This provides the agentic backbone.
+- **Qwen3-8B** ([Qwen/Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B)) — Qwen3 dense model with 8.47B total / 1B active parameters. Exceptional at tool calling, function execution, and agentic reasoning. 9 languages, 82K+ downloads. This provides the agentic backbone.
 
 - **AceStep-5Hz-LM-4B** ([ACE-Step/acestep-5Hz-lm-4B](https://huggingface.co/ACE-Step/acestep-5Hz-lm-4B)) — ACE-Step's Qwen3-4B language model for music understanding. Chain-of-thought metadata synthesis, query rewriting, audio understanding. This provides the music intelligence.
 
@@ -187,7 +187,7 @@ Tensors below a compatibility threshold are **skipped** — parent A's value is 
 
 | Script | Purpose | Key Features |
 |--------|---------|-------------|
-| `lfm_cosmos_darwin_merge.py` | Paper-exact 2-parent Darwin merge | MRI-Trust Fusion, Architecture Mapper, cross-arch handling |
+| `qwen_cosmos_darwin_merge.py` | Paper-exact 2-parent Darwin merge | MRI-Trust Fusion, Architecture Mapper, cross-arch handling |
 | `continuous_evolution.py` | CMA-ES genome optimization daemon | 14-dim genome, adaptive sigma, hot-swap, HF upload |
 | `agentic_training_loop.py` | QLoRA/SFT training on Hermes data | 4-bit QLoRA, tool-calling eval, checkpointing |
 | `mega_training_data.py` | Download + format 50+ datasets | Multi-format converter (ShareGPT, Alpaca, Messages, DPO) |
@@ -244,7 +244,7 @@ optimizer: paged_adamw_8bit
 ## Scaling Strategy
 
 ```
-Small (8B):  LFM2.5 × Cosmos → constant evo + train
+Small (8B):  Qwen3-8B × Cosmos → constant evo + train
              ↓ plateaus?
 Medium:      Merge multiples → bigger MoE (fractal expert hierarchy)
              ↓ doesn't work?
@@ -296,7 +296,7 @@ evolutionary-training/
 ├── configs/
 │   └── merge_lines.py                 # 3 merge line definitions
 ├── scripts/
-│   ├── lfm_cosmos_darwin_merge.py     # Darwin merge engine
+│   ├── qwen_cosmos_darwin_merge.py     # Darwin merge engine
 │   ├── continuous_evolution.py        # CMA-ES daemon
 │   ├── agentic_training_loop.py       # SFT/GRPO training
 │   ├── mega_training_data.py          # Data pipeline (50+ datasets)
@@ -313,7 +313,7 @@ evolutionary-training/
 │       ├── unified_sft.jsonl          # 419MB, 24K+ conversations
 │       └── manifest.json              # Dataset manifest
 ├── evolution/
-│   ├── lfm-cosmos/                    # Line 1 evolution state
+│   ├── qwen-cosmos/                    # Line 1 evolution state
 │   └── omnistep/                      # Line 2 evolution state
 ├── genomes/                           # CMA-ES genome storage
 ├── benchmarks/
@@ -333,7 +333,7 @@ evolutionary-training/
 
 ### Models
 - NVIDIA Cosmos3-Nano: [nvidia/Cosmos3-Nano](https://huggingface.co/nvidia/Cosmos3-Nano) — 15.75B omnimodal world model. OpenMDW 1.1 License.
-- Liquid AI LFM2.5-8B-A1B: [LiquidAI/LFM2.5-8B-A1B](https://huggingface.co/LiquidAI/LFM2.5-8B-A1B) — 8.47B MoE (1B active). LFM1.0 License.
+- Qwen Qwen3-8B: [Qwen/Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B) — 8B dense. Apache 2.0 License.
 - ACE-Step 5Hz LM 4B: [ACE-Step/acestep-5Hz-lm-4B](https://huggingface.co/ACE-Step/acestep-5Hz-lm-4B) — Qwen3-4B music LM. MIT License.
 - Darwin-28B-REASON: [FINAL-Bench/Darwin-28B-REASON](https://huggingface.co/FINAL-Bench/Darwin-28B-REASON) — 27.6B dense, GPQA Diamond 89.39%.
 
@@ -366,7 +366,7 @@ MIT. Training data follows individual dataset licenses:
 
 - **Nous Research** — Hermes Agent framework, Hermes training data, community support
 - **NVIDIA** — Nemotron training suite, Cosmos3-Nano, partnership data access
-- **Liquid AI** — LFM2.5 MoE model
+- **Qwen** — Qwen3-8B MoE model
 - **ACE-Step** — Music generation foundation model
 - **MrTrenchTrucker** — TurboHaul Manager inference server
 - **Kim et al.** — Darwin Family paper (arXiv:2605.14386)
