@@ -1,0 +1,7 @@
+training-data/prepared/unified_sft.jsonl
+training-data/raw/
+evolution/
+genomes/
+benchmarks/results/
+logs/
+__pycache__/
