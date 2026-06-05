@@ -17,7 +17,9 @@ LINES = {
             "path": "/home/sovthpaw/Models/storage/Cosmos3-Nano",
             "text_prefix": "thinker.model.",
             "lm_head_key": "thinker.lm_head.weight",
-            "hidden": 15750,  # 15.75B
+            "hidden": 4096,  # actual hidden_size
+            "vocab": 151936,
+            "layers": 36,
             "hf_repo": "nvidia/Cosmos3-Nano",
         },
         "parent_b": {
@@ -25,7 +27,9 @@ LINES = {
             "path": "/home/sovthpaw/Models/storage/LFM2.5-8B-A1B",
             "text_prefix": "model.",
             "lm_head_key": "lm_head.weight",
-            "hidden": 8470,  # 8.47B
+            "hidden": 2048,  # actual hidden_size
+            "vocab": 128000,
+            "layers": 24,
             "hf_repo": "LiquidAI/LFM2.5-8B-A1B",
         },
         "merge_script": "lfm_cosmos_darwin_merge.py",
@@ -43,7 +47,9 @@ LINES = {
             "path": "/home/sovthpaw/Models/storage/Cosmos3-Nano",
             "text_prefix": "thinker.model.",
             "lm_head_key": "thinker.lm_head.weight",
-            "hidden": 15750,
+            "hidden": 4096,
+            "vocab": 151936,
+            "layers": 36,
             "hf_repo": "nvidia/Cosmos3-Nano",
         },
         "parent_b": {

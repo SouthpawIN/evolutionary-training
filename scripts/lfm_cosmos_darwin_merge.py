@@ -28,10 +28,17 @@ ALPHA_MRI = 0.5
 TAU_DEFAULT = 0.4
 
 
-def load_sf(p, prefix=None, max_files=None):
-    """Load safetensors, optionally filtering by key prefix."""
+def load_sf(p, prefix=None, max_files=None, recursive=True):
+    """Load safetensors, optionally filtering by key prefix.
+    
+    Searches recursively by default to handle models with subdirectories
+    (e.g., Cosmos3-Nano has transformer/, vision_encoder/, sound_tokenizer/).
+    """
     s = {}
-    files = sorted(Path(p).glob("*.safetensors"))
+    if recursive:
+        files = sorted(Path(p).rglob("*.safetensors"))
+    else:
+        files = sorted(Path(p).glob("*.safetensors"))
     if max_files:
         files = files[:max_files]
     for f in files:
@@ -48,22 +55,23 @@ def load_sf(p, prefix=None, max_files=None):
 def extract_cosmos_text(tensors):
     """Extract text LLM body from Cosmos3-Nano.
     
-    Cosmos3 uses Cosmos3ForConditionalGeneration with:
-    - thinker.model.* for the text backbone
-    - thinker.lm_head.weight for the language head
-    - Various modality encoders/decoders (drop these)
+    Cosmos3-Nano structure (Cosmos3ForConditionalGeneration):
+    - Direct: layers.*, embed_tokens.weight, lm_head.weight
+    - Modality: *_modality_embed (action, audio)
+    - MoE twins: layers.*.*_moe_gen.* (generation expert twins)
+    - Cross-attn: layers.*.self_attn.add_*/to_add_*/norm_added_*
+    - Separate dirs: transformer/, vision_encoder/, sound_tokenizer/, vae/
     """
     out = {}
     for k, v in tensors.items():
-        # Text backbone
-        if k.startswith("thinker.model."):
-            out[k.replace("thinker.model.", "", 1)] = v
-        elif k.startswith("model."):
-            out[k.replace("model.", "", 1)] = v
-        # lm_head (outside model.* prefix)
-        elif k in ("thinker.lm_head.weight", "lm_head.weight"):
+        # Text backbone (direct layers.*)
+        if k.startswith("layers."):
+            out[k] = v
+        elif k == "embed_tokens.weight":
+            out["embed_tokens.weight"] = v
+        elif k == "lm_head.weight":
             out["lm_head.weight"] = v
-        # Skip: visual.*, audio.*, talker.*, token2wav.*, world_model.*
+        # Skip: modality embeds, separate component dirs
     print(f"  [Cosmos3-Nano] extracted {len(out)} text tensors "
           f"(lm_head={'lm_head.weight' in out})")
     return out
