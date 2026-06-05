@@ -30,17 +30,17 @@ LINE1 = {
 # ═══════════════════════════════════════════════════════════════════
 # Line 2: OmniStep — Music / Audio / Beat Production
 # ═══════════════════════════════════════════════════════════════════
-#   Parent A: Qwen3-8B      (Qwen3, hidden=4096, 36L)    ← Best Qwen3 text backbone
+#   Parent A: Cosmos3-Nano  (Qwen3-VL, hidden=4096, 36L) ← OPEN omni backbone
 #   Parent B: AceStep 5Hz 4B (Qwen3, hidden=2560)         ← Music production LM
-#   Strategy: CROSS-DIM (keep Qwen3-8B for backbone, merge where possible)
+#   Strategy: CROSS-DIM (keep Cosmos for backbone, merge where possible)
 #   Result:  OmniStep       Omni Step — beat/music production
 #   HF:     sovthpaw/omnistep-evo-gen0 → gen1 → gen2 → ...
 LINE2 = {
     "name":       "omnistep",
-    "parent_a":   "~/Models/storage/Qwen3-8B",
+    "parent_a":   "~/Models/storage/Cosmos3-Nano",
     "parent_b":   "~/Models/hf/Ace-Step1.5/acestep-5Hz-lm-4B",
     "hf_repo":    "sovthpaw/omnistep-evo",
-    "description": "Qwen3-8B × AceStep-4B → music production omni",
+    "description": "Cosmos3-Nano × AceStep-4B → music production omni",
     "merge_type":  "cross_dim",  # Different hidden sizes
 }
 

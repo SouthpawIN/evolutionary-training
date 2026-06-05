@@ -81,14 +81,14 @@ The Gym Trainer manages three evolutionary lineages:
 | Line | Parents | Child | Role |
 |------|---------|-------|------|
 | **Line 1** | Cosmos3-Nano + Qwen3-8B | **OmniSenter** | Agentic / tool-calling |
-| **Line 2** | Qwen3-8B + AceStep-4B | **OmniStep** | Music / omnimodal |
+| **Line 2** | Cosmos3-Nano + AceStep-4B | **OmniStep** | Music / omnimodal |
 | **Line 3** | Best L1 + Best L2 | **OmniSS** | Ultimate combo |
 
 ### Architecture Notes
 
 **Line 1** uses two parents with the same architecture (Qwen3-family, hidden=4096, 36L, vocab=151936). This enables **real Darwin blending** — every tensor can be merged via MRI-Trust Fusion (398/398 tensors shape-matched). Cosmos3-Nano contributes multimodal capabilities; Qwen3-8B contributes fresh Qwen3 reasoning.
 
-**Line 2** uses Qwen3-8B as parent A and AceStep-4B as parent B (hidden=2560). Cross-dimension merge — keeps Qwen3-8B backbone, blends where possible.
+**Line 2** uses Cosmos3-Nano as parent A and AceStep-4B as parent B (hidden=2560). Cross-dimension merge — keeps Cosmos backbone, blends where possible.
 
 **Line 3** merges the best evolved candidates from Lines 1 and 2 when both mature.
 
