@@ -80,11 +80,17 @@ The Gym Trainer manages three evolutionary lineages:
 
 | Line | Parents | Child | Role |
 |------|---------|-------|------|
-| **Line 1** | Cosmos3-Nano + LFM2.5-8B-A1B | **OmniSenter** | Agentic / tool-calling |
-| **Line 2** | Cosmos3-Nano + AceStep-4B | **OmniStep** | Music / omnimodal |
+| **Line 1** | Cosmos3-Nano + Qwen3-8B | **OmniSenter** | Agentic / tool-calling |
+| **Line 2** | Qwen3-8B + AceStep-4B | **OmniStep** | Music / omnimodal |
 | **Line 3** | Best L1 + Best L2 | **OmniSS** | Ultimate combo |
 
-Each line evolves independently. Line 3 merges the best of Lines 1 and 2 when they mature.
+### Architecture Notes
+
+**Line 1** uses two parents with the same architecture (Qwen3-family, hidden=4096, 36L, vocab=151936). This enables **real Darwin blending** — every tensor can be merged via MRI-Trust Fusion (398/398 tensors shape-matched). Cosmos3-Nano contributes multimodal capabilities; Qwen3-8B contributes fresh Qwen3 reasoning.
+
+**Line 2** uses Qwen3-8B as parent A and AceStep-4B as parent B (hidden=2560). Cross-dimension merge — keeps Qwen3-8B backbone, blends where possible.
+
+**Line 3** merges the best evolved candidates from Lines 1 and 2 when both mature.
 
 ## Training Data Sources
 
@@ -205,7 +211,7 @@ All at `~/projects/evolutionary-training/scripts/`:
 
 | Script | What It Does |
 |--------|-------------|
-| `lfm_cosmos_darwin_merge.py` | Paper-exact 2-parent Darwin merge |
+| `cosmos_qwen3_darwin_merge.py` | Paper-exact 2-parent Darwin merge (Cosmos3 × Qwen3-8B) |
 | `continuous_evolution.py` | CMA-ES genome optimization daemon |
 | `agentic_training_loop.py` | QLoRA/SFT training on Hermes data |
 | `mega_training_data.py` | Download + format 50+ datasets |
@@ -221,6 +227,7 @@ All at `~/projects/evolutionary-training/scripts/`:
 Models are uploaded as **staged generations** so the lineage is visible:
 
 ```
+sovthpaw/OmniSenter-Base-16B    ← Gen-0 base model (Cosmos3 × Qwen3-8B)
 sovthpaw/omnisenter-evo-gen0    ← first evolved (Darwin merge)
 sovthpaw/omnisenter-train-gen0  ← first trained (SFT on Hermes data)
 sovthpaw/omnisenter-evo-gen1    ← second evolved (from trained-gen0)
@@ -259,11 +266,11 @@ Daily status reports include:
 ## Scaling Path
 
 ```
-Small (8B):  LFM2.5 × Cosmos → constant evo + train
-             ↓ plateaus?
-Medium:      Merge multiples → bigger MoE (fractal expert hierarchy)
-             ↓ doesn't work?
-Large:       Step up to Nemotron Nano 30A3B backbone
+Small (16B):  Cosmos3 × Qwen3-8B → constant evo + train
+              ↓ plateaus?
+Medium:       Merge multiples → bigger MoE (fractal expert hierarchy)
+              ↓ doesn't work?
+Large:        Step up to Nemotron Nano 30A3B backbone
 ```
 
 ## License

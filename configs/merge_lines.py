@@ -1,165 +1,79 @@
-#!/usr/bin/env python3
+"""Evolutionary Training — Three Merge Lines
+═══════════════════════════════════════════
+ARCHITECTURE REQUIREMENT: For real Darwin merges (not just tensor copying),
+parents must share the same architecture family and hidden dimensions.
+Cosmos3-Nano text backbone = Qwen3-VL (hidden=4096, 36L, vocab=151936)
+Qwen3-8B = Qwen3 (hidden=4096, 36L, vocab=151936) ← PERFECT MATCH
+LFM2.5 = Lfm2Moe (hidden=2048, 24L) ← CROSS-ARCH (mostly keep one parent)
+AceStep 4B = Qwen3 (hidden=2560, 28L) ← SMALLER (mostly keep parent A)
 """
-Multi-Line Evolution Pipeline Configuration
 
-Three Darwin merge lines:
-  Line 1: Cosmos + LFM2.5 → OmniSenter (agentic/tool-calling)
-  Line 2: Cosmos + AceStep → OmniStep (music/omnimodal)
-  Line 3: Best of L1 + Best of L2 → OmniSS (the ultimate combo)
-"""
-
-LINES = {
-    # === LINE 1: Cosmos + LFM2.5 → OmniSenter ===
-    "omnisenter": {
-        "name": "OmniSenter (Cosmos + LFM2.5)",
-        "parent_a": {
-            "name": "Cosmos3-Nano",
-            "path": "/home/sovthpaw/Models/storage/Cosmos3-Nano",
-            "text_prefix": "thinker.model.",
-            "lm_head_key": "thinker.lm_head.weight",
-            "hidden": 4096,  # actual hidden_size
-            "vocab": 151936,
-            "layers": 36,
-            "hf_repo": "nvidia/Cosmos3-Nano",
-        },
-        "parent_b": {
-            "name": "LFM2.5-8B-A1B",
-            "path": "/home/sovthpaw/Models/storage/LFM2.5-8B-A1B",
-            "text_prefix": "model.",
-            "lm_head_key": "lm_head.weight",
-            "hidden": 2048,  # actual hidden_size
-            "vocab": 128000,
-            "layers": 24,
-            "hf_repo": "LiquidAI/LFM2.5-8B-A1B",
-        },
-        "merge_script": "lfm_cosmos_darwin_merge.py",
-        "hf_evo_repo": "sovthpaw/omnisenter-evo",
-        "hf_train_repo": "sovthpaw/omnisenter-train",
-        "role": "agentic",
-        "target_capabilities": ["tool-calling", "reasoning", "agent", "function-execution"],
-    },
-    
-    # === LINE 2: Cosmos + AceStep → OmniStep ===
-    "omnistep": {
-        "name": "OmniStep (Cosmos + AceStep)",
-        "parent_a": {
-            "name": "Cosmos3-Nano",
-            "path": "/home/sovthpaw/Models/storage/Cosmos3-Nano",
-            "text_prefix": "thinker.model.",
-            "lm_head_key": "thinker.lm_head.weight",
-            "hidden": 4096,
-            "vocab": 151936,
-            "layers": 36,
-            "hf_repo": "nvidia/Cosmos3-Nano",
-        },
-        "parent_b": {
-            "name": "AceStep-5Hz-LM-4B",
-            "path": "/home/sovthpaw/Models/hf/Ace-Step1.5/acestep-5Hz-lm-4B",
-            "text_prefix": "model.",
-            "lm_head_key": "lm_head.weight",
-            "hidden": 4000,  # 4B
-            "hf_repo": "ACE-Step/acestep-5Hz-lm-4B",
-            "note": "Qwen3-4B, hidden=2560, 36L — larger model, better music understanding",
-        },
-        "merge_script": "lfm_cosmos_darwin_merge.py",
-        "hf_evo_repo": "sovthpaw/omnistep-evo",
-        "hf_train_repo": "sovthpaw/omnistep-train",
-        "role": "music",
-        "target_capabilities": ["music-generation", "voice", "omnimodal"],
-    },
-    
-    # === LINE 3: Best L1 + Best L2 → OmniSS ===
-    "omniss": {
-        "name": "OmniSS (OmniSenter + OmniStep)",
-        "parent_a": {
-            "name": "Best-OmniSenter",
-            "path": None,  # Set dynamically from L1 best
-            "text_prefix": "",  # Already merged
-            "lm_head_key": "lm_head.weight",
-            "hf_repo": "sovthpaw/omnisenter-evo",
-        },
-        "parent_b": {
-            "name": "Best-OmniStep",
-            "path": None,  # Set dynamically from L2 best
-            "text_prefix": "",  # Already merged
-            "lm_head_key": "lm_head.weight",
-            "hf_repo": "sovthpaw/omnistep-evo",
-        },
-        "merge_script": "lfm_cosmos_darwin_merge.py",
-        "hf_evo_repo": "sovthpaw/omniss-evo",
-        "hf_train_repo": "sovthpaw/omniss-train",
-        "role": "combined",
-        "target_capabilities": ["tool-calling", "reasoning", "agent", "music-generation", "voice", "omnimodal"],
-        "depends_on": ["omnisenter", "omnistep"],
-    },
+# ═══════════════════════════════════════════════════════════════════
+# Line 1: OmniSenter — Agentic / Tool-Calling / Reasoning
+# ═══════════════════════════════════════════════════════════════════
+#   Parent A: Cosmos3-Nano  (Qwen3-VL, hidden=4096, 36L) ← OPEN omni backbone
+#   Parent B: Qwen3-8B      (Qwen3, hidden=4096, 36L)    ← PERFECT architecture match
+#   Strategy: REAL BLEND — same hidden, same layers, same vocab
+#   Result:  OmniSenter     Omni Senter — agentic assistant
+#   HF:     sovthpaw/omnisenter-evo-gen0 → gen1 → gen2 → ...
+#   Why: Both are Qwen3-family with hidden=4096. Cosmos has omni training,
+#        Qwen3-8B has fresh Qwen3 reasoning. Darwin can actually blend weights.
+LINE1 = {
+    "name":       "omnisenter",
+    "parent_a":   "~/Models/storage/Cosmos3-Nano",
+    "parent_b":   "~/Models/storage/Qwen3-8B",
+    "hf_repo":    "sovthpaw/omnisenter-evo",
+    "description": "Cosmos3-Nano × Qwen3-8B → agentic omni assistant",
+    "merge_type":  "full_blend",  # Same arch = real blending
 }
 
-# CMA-ES config per line
-CMAES_CONFIG = {
-    "omnisenter": {
-        "pop_size": 4,
-        "sigma_init": 0.3,
-        "sigma_min": 0.05,
-        "generations_per_cycle": 2,
-        "min_improvement_pct": 0.5,
-    },
-    "omnistep": {
-        "pop_size": 4,
-        "sigma_init": 0.3,
-        "sigma_min": 0.05,
-        "generations_per_cycle": 2,
-        "min_improvement_pct": 0.5,
-    },
-    "omniss": {
-        "pop_size": 4,
-        "sigma_init": 0.2,
-        "sigma_min": 0.05,
-        "generations_per_cycle": 2,
-        "min_improvement_pct": 0.5,
-    },
+# ═══════════════════════════════════════════════════════════════════
+# Line 2: OmniStep — Music / Audio / Beat Production
+# ═══════════════════════════════════════════════════════════════════
+#   Parent A: Qwen3-8B      (Qwen3, hidden=4096, 36L)    ← Best Qwen3 text backbone
+#   Parent B: AceStep 5Hz 4B (Qwen3, hidden=2560)         ← Music production LM
+#   Strategy: CROSS-DIM (keep Qwen3-8B for backbone, merge where possible)
+#   Result:  OmniStep       Omni Step — beat/music production
+#   HF:     sovthpaw/omnistep-evo-gen0 → gen1 → gen2 → ...
+LINE2 = {
+    "name":       "omnistep",
+    "parent_a":   "~/Models/storage/Qwen3-8B",
+    "parent_b":   "~/Models/hf/Ace-Step1.5/acestep-5Hz-lm-4B",
+    "hf_repo":    "sovthpaw/omnistep-evo",
+    "description": "Qwen3-8B × AceStep-4B → music production omni",
+    "merge_type":  "cross_dim",  # Different hidden sizes
 }
 
-# Training data mapping per line
-TRAINING_DATA = {
-    "omnisenter": {
-        "priority_sources": [
-            "interstellarninja/hermes_reasoning_tool_use",
-            "NousResearch/hermes-function-calling-v1",
-            "Jofthomas/hermes-function-calling-thinking-V1",
-            "nvidia/Nemotron-Agentic-v1",
-            "axolotl-ai-co/carnice-dpo",
-            "kai-os/carnice-agent-trance-prompt-bank",
-            "lambda/hermes-agent-reasoning-traces",
-            "Salesforce/xlam-function-calling-60k",
-        ],
-        "secondary_sources": [
-            "NousResearch/Hermes-3-Dataset",
-            "glaiveai/glaive-function-calling-v2",
-            "Trelis/function_calling_v3",
-            "DeepNLP/Agent-RL-Open-Dataset",
-        ],
-    },
-    "omnistep": {
-        "priority_sources": [
-            "nvidia/Nemotron-Pretraining-SFT-v1",
-            "OusiaResearch/Aureth-SFT-Curriculum",
-            "NurtureAI/OpenHermes-2.5-flattened",
-        ],
-        "secondary_sources": [
-            "nvidia/Nemotron-Post-Training-Dataset-v2",
-            "nvidia/Nemotron-Math-v2",
-        ],
-    },
-    "omniss": {
-        "priority_sources": [
-            "interstellarninja/hermes_reasoning_tool_use",
-            "nvidia/Nemotron-Agentic-v1",
-            "axolotl-ai-co/carnice-dpo",
-            "NousResearch/hermes-function-calling-v1",
-        ],
-        "secondary_sources": [
-            "NousResearch/Hermes-3-Dataset",
-            "nvidia/Nemotron-Post-Training-Dataset-v2",
-        ],
-    },
+# ═══════════════════════════════════════════════════════════════════
+# Line 3: OmniSS — Ultimate Combo
+# ═══════════════════════════════════════════════════════════════════
+#   Parent A: Best from Line 1  (best OmniSenter candidate)
+#   Parent B: Best from Line 2  (best OmniStep candidate)
+#   Strategy: CROSS-RESULT (merge the best evolved from each line)
+#   Result:  OmniSS          Omni Southpaw — the ultimate
+#   HF:     sovthpaw/omniss-evo-gen0 → gen1 → gen2 → ...
+LINE3 = {
+    "name":       "omniss",
+    "parent_a":   "sovthpaw/omnisenter-evo:latest",   # placeholder — filled at runtime
+    "parent_b":   "sovthpaw/omnistep-evo:latest",     # placeholder — filled at runtime
+    "hf_repo":    "sovthpaw/omniss-evo",
+    "description": "Best OmniSenter × Best OmniStep → ultimate omni",
+    "merge_type":  "cross_result",
 }
+
+# ═══════════════════════════════════════════════════════════════════
+# Scaling Path (when line 1 saturates)
+# ═══════════════════════════════════════════════════════════════════
+#   Qwen3-8B is a small target. If it plateaus, scale up:
+#     1. Qwen3-Coder-30B-A3B   (hidden=2048, MoE, different arch — CROSS-ARCH)
+#     2. Nemotron Nano 30A3B   (hidden=1024, different arch — CROSS-ARCH)
+#     3. Qwen3-30B-A3B         (hidden=2048, MoE — CROSS-ARCH)
+#     4. Qwen3-32B             (hidden=4096, dense — SAME ARCH if available)
+SCALING_PATH = [
+    "Qwen3-8B → merge with Cosmos3-Nano (same arch = real blend)",
+    "If plateau: add Qwen3-Coder-30B-A3B as 3rd parent (cross-arch)",
+    "If plateau: scale to Qwen3-32B or Nemotron Nano 30A3B",
+    "Each scale-up = new generation in the upload staging (genN)"
+]
+
+ALL_LINES = [LINE1, LINE2, LINE3]
