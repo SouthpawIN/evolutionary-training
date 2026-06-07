@@ -24,7 +24,7 @@ from dataclasses import dataclass, asdict
 from typing import Optional, List, Dict
 
 BASE_DIR = Path(__file__).parent.parent
-MODELS_DIR = Path.home() / "Models" / "storage" / "gguf"
+MODELS_DIR = Path.home() / "Models" / "storage"
 EVOLUTION_DIR = BASE_DIR / "evolution"
 RESULTS_DIR = BASE_DIR / "benchmarks" / "results"
 LOGS_DIR = BASE_DIR / "logs"
@@ -32,50 +32,32 @@ GENOMES_DIR = BASE_DIR / "genomes"
 
 # === Model Registry ===
 MODEL_REGISTRY = {
-    "qwen-cosmos": {
-        "name": "Qwen3-8B × Cosmos3-Nano",
+    "omnisenter": {
+        "name": "Cosmos3-Nano × Qwen3-8B",
         "parent_a": {
             "name": "Cosmos3-Nano",
             "hf_repo": "nvidia/Cosmos3-Nano",
-            "local_path": None,  # set after download
+            "local_path": "/home/sovthpaw/Models/storage/Cosmos3-Nano",
             "text_prefix": "thinker.model.",
             "lm_head_key": "thinker.lm_head.weight",
         },
         "parent_b": {
             "name": "Qwen3-8B",
             "hf_repo": "Qwen/Qwen3-8B",
-            "local_path": None,
+            "local_path": "/home/sovthpaw/Models/storage/Qwen3-8B",
             "text_prefix": "model.",
             "lm_head_key": "lm_head.weight",
         },
-        "merge_script": str(BASE_DIR / "scripts" / "qwen_cosmos_darwin_merge.py"),
+        "merge_script": str(BASE_DIR / "scripts" / "cosmos_qwen3_darwin_merge.py"),
         "benchmark_suite": "quick",
-        "hf_upload_repo": "sovthpaw/qwen-cosmos-evo",
-        "hf_train_repo": "sovthpaw/qwen-cosmos-train",
+        "hf_upload_repo": "sovthpaw/omnisenter-evo",
+        "hf_train_repo": "sovthpaw/omnisenter-train",
         "min_improvement_pct": 0.5,
         "evolution": {
             "pop_size": 4,
             "generations_per_cycle": 2,
             "sigma_init": 0.3,
             "sigma_min": 0.05,
-        },
-    },
-    "omnistep": {
-        "name": "OmniStep 12A3B Evolution",
-        "parent_a": {
-            "name": "OmniStep-12A3B",
-            "hf_repo": "sovthpaw/omnistep-12a3b",
-            "local_path": str(MODELS_DIR / "omnistep-12a3b"),
-        },
-        "merge_script": str(BASE_DIR / "scripts" / "qwen_cosmos_darwin_merge.py"),
-        "benchmark_suite": "quick",
-        "hf_upload_repo": "sovthpaw/omnistep-evo",
-        "hf_train_repo": "sovthpaw/omnistep-train",
-        "min_improvement_pct": 0.5,
-        "evolution": {
-            "pop_size": 4,
-            "generations_per_cycle": 2,
-            "sigma_init": 0.3,
         },
     },
 }
@@ -262,38 +244,57 @@ class EvolutionPipeline:
         return Path(output_dir).exists()
 
     def run_benchmark(self, model_path: str) -> float:
-        """Run benchmark suite and return fitness score."""
-        bench_script = str(BASE_DIR / "scripts" / "darwin_benchmark.py")
+        """Run comprehensive benchmark suite and return fitness score."""
+        # Use the new comprehensive benchmark suite
+        bench_script = str(BASE_DIR / "scripts" / "benchmark_omnisenter.py")
         if not Path(bench_script).exists():
+            print(f"  Benchmark script not found: {bench_script}")
             return 0.0
 
+        # Run the benchmark suite
         result = subprocess.run(
-            [sys.executable, bench_script, "--model", self.model_key,
-             "--suite", self.config["benchmark_suite"]],
-            capture_output=True, text=True, timeout=600,
+            [sys.executable, bench_script, "--model", model_path,
+             "--benchmarks", "bfcl", "gpqa", "--output-dir", str(RESULTS_DIR)],
+            capture_output=True, text=True, timeout=1800,
         )
 
         if result.returncode != 0:
+            print(f"  Benchmark failed: {result.stderr[:200]}")
             return 0.0
 
         try:
-            results_files = sorted(RESULTS_DIR.glob(f"benchmark_{self.model_key}_*.json"))
+            # Find the latest benchmark results
+            results_files = sorted(RESULTS_DIR.glob("omnisenter_*.json"))
             if not results_files:
                 return 0.0
             with open(results_files[-1]) as f:
                 data = json.load(f)
-            success_rate = data.get("successful", 0) / max(data.get("total_questions", 1), 1)
-            avg_time = data.get("avg_response_time_s", 100)
-            speed_bonus = max(0, 1.0 - avg_time / 30.0)
-            return success_rate * 0.8 + speed_bonus * 0.2
-        except:
+            
+            # Calculate composite score from multiple benchmarks
+            bfcl_score = 0.0
+            gpqa_score = 0.0
+            
+            if "bfcl" in data.get("results", {}):
+                bfcl_data = data["results"]["bfcl"]
+                bfcl_score = bfcl_data.get("avg_score", 0.0)
+            
+            if "gpqa" in data.get("results", {}):
+                gpqa_data = data["results"]["gpqa"]
+                gpqa_score = gpqa_data.get("accuracy", 0.0)
+            
+            # Weighted composite score (function calling is more important for Hermes)
+            composite_score = bfcl_score * 0.7 + gpqa_score * 0.3
+            
+            return composite_score
+        except Exception as e:
+            print(f"  Error parsing benchmark results: {e}")
             return 0.0
 
     def upload_to_hf(self, model_path: str, generation: int, fitness: float, stage="evo"):
         """Upload best model to HuggingFace as a staged generation.
         
-        stage="evo" → sovthpaw/qwen-cosmos-evo-gen0
-        stage="train" → sovthpaw/qwen-cosmos-train-gen0
+        stage="evo" → sovthpaw/omnisenter-evo-gen0
+        stage="train" → sovthpaw/omnisenter-train-gen0
         """
         if stage == "evo":
             repo = f"{self.config['hf_upload_repo']}-gen{generation}"
@@ -415,7 +416,7 @@ class EvolutionPipeline:
 
 def main():
     parser = argparse.ArgumentParser(description="Continuous Evolution Pipeline")
-    parser.add_argument("--model", choices=list(MODEL_REGISTRY.keys()), default="qwen-cosmos")
+    parser.add_argument("--model", choices=list(MODEL_REGISTRY.keys()), default="omnisenter")
     parser.add_argument("--cycle", action="store_true", help="Run one cycle")
     parser.add_argument("--daemon", action="store_true", help="Run continuously")
     parser.add_argument("--interval", type=int, default=3600, help="Seconds between cycles")
