@@ -92,6 +92,7 @@ def main():
     parser.add_argument("--warmup-ratio", type=float, default=0.03)
     parser.add_argument("--logging-dir", type=str, default=None)
     parser.add_argument("--verbose", action="store_true", help="Verbose output")
+    parser.add_argument("--resume", action="store_true", help="Resume from the latest checkpoint in --output-dir")
     args = parser.parse_args()
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -126,7 +127,7 @@ def main():
     
     # Load training data
     print("[3/5] Loading training data...")
-    raw_data = load_training_data(DATA_DIR / "unified_sft.jsonl")
+    raw_data = load_training_data(DATA_DIR / "unified_sft_filtered.jsonl")
     print(f"  Loaded {len(raw_data)} conversations")
     
     # Format data
@@ -196,7 +197,21 @@ def main():
     print(f"{'='*60}")
     
     start_time = time.time()
-    trainer.train()
+    if args.resume:
+        # Find the latest checkpoint in output_dir
+        ckpts = sorted(
+            [p for p in Path(output_dir).iterdir() if p.is_dir() and p.name.startswith("checkpoint-")],
+            key=lambda p: int(p.name.split("-")[-1]),
+        )
+        if ckpts:
+            resume_from = str(ckpts[-1])
+            print(f"RESUMING from {resume_from}")
+            trainer.train(resume_from_checkpoint=resume_from)
+        else:
+            print("WARNING: --resume set but no checkpoint found, starting fresh")
+            trainer.train()
+    else:
+        trainer.train()
     train_time = time.time() - start_time
     
     # Save adapter

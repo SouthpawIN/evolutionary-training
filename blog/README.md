@@ -2,9 +2,20 @@
 
 Design posts, deep-dives, and announcements for the OmniSenter project.
 
-## Posts
+## Start here
 
-- **[OmniSenter: The Self-Evolving Multimodal Auxiliary for Hermes](./omnisenter-self-evolving.md)** (2026-06-07) — The 5-stage pipeline, Synthesia, and Ohm. The full vision doc, with images.
+The catalog is the master index — start with
+[**`CATALOG.md`**](./CATALOG.md) for the full reading order.
+
+The naming convention that every post uses is defined in
+[**`the-omni-family.md`**](./the-omni-family.md). Read that first if any
+of the names are confusing (Omni vs Senter vs Ohm vs Senter Ohm).
+
+## Master wiki
+
+The consolidated knowledge base (in catalog order) lives at
+[**`../wiki/README.md`**](https://github.com/SouthpawIN/evolutionary-training/blob/master/wiki/README.md).
+It cross-references every blog post + every concept + every entity.
 
 ## Image credits
 

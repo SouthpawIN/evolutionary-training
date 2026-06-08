@@ -5,3 +5,15 @@ genomes/
 benchmarks/results/
 logs/
 __pycache__/
+
+
+# Training outputs (huge — checkpoint files)
+training-output/
+training-output/omnisenter-sft-*/
+training-output/omnisenter-sft-*/checkpoint-*/
+
+# Large training data files (only keep small/curated)
+training-data/prepared/unified_sft.jsonl
+training-data/prepared/unified_sft_filtered.jsonl
+training-data/raw/**/*.parquet
+training-data/raw/**/*.bin
