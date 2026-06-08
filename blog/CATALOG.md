@@ -39,10 +39,11 @@ will **replace** these as it ships. They're foundation, not destination.
 
 | Post | What's in it | Read time |
 |---|---|---|
-| **[`senter-ohm-flagship.md`](./senter-ohm-flagship.md)** | The flagship post. Senter Ohm = ~32B-total / 8B-active MoE with the Ohm self-evolution engine bundled. The design doc. | 15 min |
-| **[`senter-ohm-32a8b-math.md`](./senter-ohm-32a8b-math.md)** | The math: per-layer params, active vs total, 4-bit vs bf16 disk, VRAM at inference, VRAM at training. | 8 min |
+| **[`omnisenter-flagship.md`](./omnisenter-flagship.md)** | The flagship post. OmniSenter Ohm = ~32B-total / 8B-active MoE with the Ohm self-evolution engine bundled. The design doc. *(renamed from `senter-ohm-flagship.md` 2026-06-08)* | 15 min |
+| **[`senter-ohm-32a8b-math.md`](./senter-ohm-32a8b-math.md)** | The math: per-layer params, active vs total, 4-bit vs bf16 disk, VRAM at inference, VRAM at training. *(name retained, content unchanged under the new naming)* | 8 min |
 | **[`the-5-stage-pipeline.md`](./the-5-stage-pipeline.md)** | The 5-stage build sequence: SFT → evolutionary merge → sparse upcycle → 256K YaRN → plugin+notebook+Ohm wiring. With wall times. | 10 min |
 | **[`sparse-upcycling-deep-dive.md`](./sparse-upcycling-deep-dive.md)** | Stage 3 deep dive: turning an 8B dense into a 32B MoE with 8B active. Math, script, design choices, wild cards. | 12 min |
+| **[`stages-2-to-4-prep.md`](./stages-2-to-4-prep.md)** | The exact copy-paste commands to go from a finished Stage 1 SFT checkpoint to a deployable 32A8B MoE with 256K context. The orchestration recipe. | 6 min |
 
 ### 🧠 The Concepts (what makes it special)
 
@@ -72,27 +73,29 @@ For a cold reader:
 1. **[`the-omni-family.md`](./the-omni-family.md)** — start here
 2. **[`the-omnimodal-fusion.md`](./the-omnimodal-fusion.md)** — what's
    the foundation
-3. **[`senter-ohm-flagship.md`](./senter-ohm-flagship.md)** — the
+3. **[`omnisenter-flagship.md`](./omnisenter-flagship.md)** — the
    flagship overview
 4. **[`senter-ohm-32a8b-math.md`](./senter-ohm-32a8b-math.md)** — the
    sizing math
 5. **[`the-5-stage-pipeline.md`](./the-5-stage-pipeline.md)** — how to
    build it
-6. **[`the-synthesia-layer.md`](./the-synthesia-layer.md)** — the
+6. **[`stages-2-to-4-prep.md`](./stages-2-to-4-prep.md)** — the
+   orchestration recipe
+7. **[`the-synthesia-layer.md`](./the-synthesia-layer.md)** — the
    cross-modal memory layer
-7. **[`the-ohm-runtime.md`](./the-ohm-runtime.md)** — the self-evolution
+8. **[`the-ohm-runtime.md`](./the-ohm-runtime.md)** — the self-evolution
    engine
-8. **[`the-omnisenter-architecture.md`](./the-omnisenter-architecture.md)**
+9. **[`the-omnisenter-architecture.md`](./the-omnisenter-architecture.md)**
    — the system overview
-9. **[`senter-as-hermes-auxiliary.md`](./senter-as-hermes-auxiliary.md)**
-   — the integration
-10. **[`the-notebook-schema.md`](./the-notebook-schema.md)** — the
+10. **[`senter-as-hermes-auxiliary.md`](./senter-as-hermes-auxiliary.md)**
+    — the integration
+11. **[`the-notebook-schema.md`](./the-notebook-schema.md)** — the
     notebook spec
-11. **[`sparse-upcycling-deep-dive.md`](./sparse-upcycling-deep-dive.md)**
+12. **[`sparse-upcycling-deep-dive.md`](./sparse-upcycling-deep-dive.md)**
     — the Stage 3 deep dive
-12. **[`the-omnistep-multimodal.md`](./the-omnistep-multimodal.md)** —
-    the destination unified model
-13. **[`generative-darwin-evolution.md`](./generative-darwin-evolution.md)**
+13. **[`the-omnistep-multimodal.md`](./the-omnistep-multimodal.md)** — the
+    destination unified model
+14. **[`generative-darwin-evolution.md`](./generative-darwin-evolution.md)**
     — the research direction
 
 ## HuggingFace models
@@ -103,7 +106,7 @@ For a cold reader:
 | [`sovthpaw/Omni-Senter-3B`](https://huggingface.co/sovthpaw/Omni-Senter-3B) | 3B | ✅ published (transitional) | Early Senter. LoRA + GGUF. Predecessor of OmniSenter 12B. |
 | [`sovthpaw/OmniSenter-Base-16B`](https://huggingface.co/sovthpaw/OmniSenter-Base-16B) | 16B | ✅ published (transitional) | Omni base. Qwen3-8B + Cosmos3-Nano Darwin merge. Predecessor of OmniSenter 12B + Senter Ohm. |
 | `sovthpaw/omnisenter-12b` | ~12B | ⏳ planned | The new OmniSenter 12B (small function calling + omnimodal fusion). |
-| `sovthpaw/senter-ohm-32a8b` | ~32B total / 8B active | ⏳ planned | The new Senter Ohm flagship MoE. |
+| `sovthpaw/omnisenter-ohm-32a8b` | ~32B total / 8B active | ⏳ planned | The new OmniSenter Ohm flagship MoE. *(was `senter-ohm-32a8b` in the old naming)* |
 
 ## GitHub repos (`SouthpawIN/`)
 
