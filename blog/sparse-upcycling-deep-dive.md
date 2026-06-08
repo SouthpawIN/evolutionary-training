@@ -1,14 +1,23 @@
-# Sparse Upcycling: Building a 32B MoE from an 8B Base
+# Sparse Upcycling: Building Senter Ohm's 32B MoE from an 8B Base
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl)
 
 ![A dense neural network being broken apart and reorganized into multiple parallel expert columns, in retro manga industrial style](assets/sparse-upcycling.png)
 
-This is the headline technical post of the catalog. **Sparse upcycling** is the technique that turns an 8B dense model into a 32B MoE with 8B active per token — the "32A8B" target of OmniSenter. The math, the script, the design choices, and the wild cards.
+> **Naming.** This post is about the **Stage 3** build of **Senter Ohm**,
+> the ~32A8B flagship. The smaller siblings — **OmniSenter 12B** (small
+> function calling + omnimodal fusion) and **OmniStep** (multimodal +
+> music) — are dense-ish models and don't go through sparse upcycling.
+> Read [`the-omni-family.md`](./the-omni-family.md) for the full taxonomy.
+
+This is the headline technical post of the catalog. **Sparse upcycling**
+is the technique that turns an 8B dense model into a 32B MoE with 8B
+active per token — the "32A8B" target of Senter Ohm. The math, the
+script, the design choices, and the wild cards.
 
 ## The problem
 
-You have a trained 8B dense model (the Stage 1 OmniSenter SFT). You want a bigger model — more capable, more knowledgeable, but still fast. Training from scratch is impossible (your 2× 3090 doesn't have the VRAM for full fine-tune of a 30B+ model). Sparse upcycling is the answer.
+You have a trained 8B dense model (the Stage 1 Senter SFT). You want a bigger model — more capable, more knowledgeable, but still fast. Training from scratch is impossible (your 2× 3090 doesn't have the VRAM for full fine-tune of a 30B+ model). Sparse upcycling is the answer.
 
 ## The technique
 
@@ -59,7 +68,7 @@ The math:
 - Active per token stays at 8B with top-1 (just pick one expert)
 - Adding more experts = more knowledge, same compute
 
-**The sweet spot for OmniSenter: 5-6 experts = 30-35B total, 8B active.** Fits 4-bit on a single 3090 for inference (18-22GB VRAM), training is tight on 2× 3090 (~50GB peak with QLoRA).
+**The sweet spot for Senter Ohm: 5-6 experts = 30-35B total, 8B active.** Fits 4-bit on a single 3090 for inference (18-22GB VRAM), training is tight on 2× 3090 (~50GB peak with QLoRA).
 
 ## The shared-expert design (DeepSeek-V2 style)
 
@@ -108,15 +117,15 @@ The distillation extracts the FFN weights from the source model and uses them as
 Live at: `multimodal-expansion/scripts/sparse_upcycle.py`
 
 ```bash
-# The headline command — 8B dense → 32A8B MoE
+# The headline command — 8B dense → Senter Ohm 32A8B
 python3 sparse_upcycle.py \
-    --base-model training-output/omnisenter-8b-sft-20260606_213858/ \
+    --base-model training-output/senter-ohm-8b-sft-20260606_213858/ \
     --expert-sources \
         models/qwen3-omni-30b-a3b/ \
         models/heartmula/ \
         models/long-context-anchor/ \
         models/synesthesia-expert/ \
-    --output training-output/omnisenter-moe-32a8b/ \
+    --output training-output/senter-ohm-moe-32a8b/ \
     --num-experts 6 \
     --top-k 1 \
     --shared-expert  # optional, for the 10.5B-active variant
@@ -164,7 +173,7 @@ The router is **trained from scratch** (initialized uniform + small noise). The 
 
 ## What this enables
 
-A 32B-A8B MoE that:
+A Senter Ohm 32A8B MoE that:
 - Fits 4-bit on a single 3090 for inference
 - Trains QLoRA on 2× 3090 (tight, but doable)
 - Has 4× the knowledge of the dense 8B
@@ -177,7 +186,7 @@ Plus the headline: the [Ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.
 
 - [omnisenter-architecture](file:///home/sovthpaw/wiki/concepts/omnisenter-architecture.md) — the system overview
 - [the-5-stage-pipeline](./the-5-stage-pipeline.md) — sparse upcycle is Stage 3
-- [the-32a8b-math](./the-32a8b-math.md) — the full sizing breakdown
+- [senter-ohm-32a8b-math](./senter-ohm-32a8b-math.md) — the full sizing breakdown
 - [synthesia](file:///home/sovthpaw/wiki/concepts/synthesia.md) — the synesthesia expert that's one of the routed experts
 - [omnisenter-ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md) — the self-evolving runtime that runs on top
 - Script: `multimodal-expansion/scripts/sparse_upcycle.py`

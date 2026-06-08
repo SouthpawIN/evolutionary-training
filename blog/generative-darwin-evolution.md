@@ -4,20 +4,20 @@
 
 ![A music synthesizer being transformed by a DNA double helix wrapping around it, with sound waveforms emerging — generative models being evolved](assets/generative-darwin.png)
 
-The Darwin Family paper applies evolutionary weight-space recombination to **text LLMs**. But the same MRI-Trust Fusion + Architecture Mapper + CMA-ES framework can extend to **generative models** — DiT audio decoders, VAE, talkers, image generators. This is the research direction that powers the [generative heads of the OmniSenter MoE](file:///home/sovthpaw/wiki/concepts/omnisenter-architecture.md).
+The Darwin Family paper applies evolutionary weight-space recombination to **text LLMs**. But the same MRI-Trust Fusion + Architecture Mapper + CMA-ES framework can extend to **generative models** — DiT audio decoders, VAE, talkers, image generators. This is the research direction that powers the [generative heads of the Senter Ohm MoE](./senter-ohm-flagship.md).
 
 ## The opportunity
 
 The Darwin paper proves you can take two pretrained LLMs and, with **zero gradient updates**, find a linear combination of their weights that outperforms either parent. The mechanism is a 14-dim genome + CMA-ES + MRI-Trust Fusion.
 
-The paper's experiments are all text LLMs (LLaMA, Mistral, Qwen, etc.). But the OmniSenter vision needs Darwin evolution applied to **generative models**:
+The paper's experiments are all text LLMs (LLaMA, Mistral, Qwen, etc.). But the Senter Ohm vision needs Darwin evolution applied to **generative models**:
 - **Music**: ACE-Step v1.5 XL 4B DiT (audio decoder)
 - **Video**: LTX-2 / Wan video DiT
 - **Image**: FLUX / SDXL DiT
 - **Speech-out**: Qwen2.5-Omni talker + token2wav (codec decoder)
 - **Audio**: Sana DCAE (audio codec encoder)
 
-If we can Darwin-merge these the same way we Darwin-merge text LLMs, the same evolution loop powers the generative heads of the OmniSenter MoE.
+If we can Darwin-merge these the same way we Darwin-merge text LLMs, the same evolution loop powers the generative heads of the Senter Ohm MoE.
 
 ## Why it might work (the theory)
 
@@ -47,13 +47,13 @@ The easiest first win: Darwin-merge ACE-Step v1.5 XL 4B DiT with another music m
 - **Mustango** (academic) — MusicGen-based
 - **Jukebox** (OpenAI) — old but architecturally interesting
 
-The merge: text encoder (Qwen3 class) + DiT (transformer blocks) + audio codec decoder. The text encoder is the most likely to merge cleanly (Qwen3 backbone is shared with the OmniSenter base).
+The merge: text encoder (Qwen3 class) + DiT (transformer blocks) + audio codec decoder. The text encoder is the most likely to merge cleanly (Qwen3 backbone is shared with the Senter Ohm base).
 
 If we can Darwin-merge the DiT of two music models and get a child that produces better music than either parent, we've validated the approach for all generative modalities.
 
-## The integration with OmniSenter
+## The integration with Senter Ohm
 
-In the OmniSenter MoE, the generative experts are sourced from these Darwin-merged generative models:
+In the Senter Ohm MoE, the generative experts are sourced from these Darwin-merged generative models:
 
 | Expert | Source | Why |
 |---|---|---|
@@ -62,7 +62,7 @@ In the OmniSenter MoE, the generative experts are sourced from these Darwin-merg
 | Image expert | Darwin-merged FLUX × SDXL DiT | Better images |
 | Speech-out expert | Darwin-merged Qwen-Omni talker × CosyVoice | Better speech |
 
-The sparse upcycle extracts the DiT (or talker) weights from these Darwin-merged generative models and uses them as the FFN-equivalent expert in the OmniSenter MoE.
+The sparse upcycle extracts the DiT (or talker) weights from these Darwin-merged generative models and uses them as the FFN-equivalent expert in the Senter Ohm MoE.
 
 The continued training of the router specializes each expert to the right input type. The Darwin evolution continues in the background via [Ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md) — the model keeps evolving as long as it runs.
 
@@ -142,7 +142,7 @@ Estimated 1000-1500 lines of new code. Tractable. Builds on solid foundations.
 
 ## See also
 
-- [omnisenter-self-evolving.md](./omnisenter-self-evolving.md) — the flagship overview
+- [senter-ohm-flagship.md](./senter-ohm-flagship.md) — the flagship overview
 - [sparse-upcycling-deep-dive.md](./sparse-upcycling-deep-dive.md) — the MoE from-denses approach (complementary to this)
 - [generative-darwin-evolution](file:///home/sovthpaw/wiki/concepts/generative-darwin-evolution.md) — the wiki page
 - [darwin-family-paper](file:///home/sovthpaw/wiki/concepts/darwin-family-paper.md) — the original methodology

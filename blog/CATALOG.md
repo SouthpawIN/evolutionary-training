@@ -1,151 +1,134 @@
 # OmniSenter Blog Catalog
 
-The complete design catalog for the OmniSenter project. Every post covers one
-facet of the vision, with the architecture wiki as the source of truth and
-the code in the [evolutionary-training](https://github.com/SouthpawIN/evolutionary-training)
-repo as the executable reference.
+> **The one page that indexes everything.** Every post in the OmniSenter
+> blog catalog, with summaries, reading order, and cross-links to HF
+> models + GitHub repos.
 
-> **The headline:** OmniSenter is a **32B-A8B multimodal MoE** that serves
-> as a notebook-keeping **auxiliary to Hermes Agent**. It has **Synthesia**
-> (cross-modal memory), **Ohm** (self-evolution), and the **5-stage build
-> pipeline** (agentic SFT → merge → sparse upcycle → 256K YaRN → wiring).
->
-> — Chris, 2026-06-07
+## Start here
 
----
+If you only read one post, read **[`the-omni-family.md`](./the-omni-family.md)**.
+It explains the naming convention that every other post uses. Without
+it, "Senter", "Ohm", and "OmniSenter" sound like noise.
 
-## The flagship post
+## Current state (transitional)
 
-**[OmniSenter: The Self-Evolving Multimodal Auxiliary for Hermes](./omnisenter-self-evolving.md)** (2026-06-07)
-The overview. The vision, the architecture, the 5-stage pipeline, Synthesia,
-Ohm, the math, the wild cards. Read this first.
+The models currently published on HuggingFace under `sovthpaw/` are the
+**v1 transitional** lineage:
 
-## The deep dives
+- **[`sovthpaw/omnistep-12a3b`](https://huggingface.co/sovthpaw/omnistep-12a3b)**
+  — 12B total / 3B active, multimodal, 4 GGUFs + 4 safetensors
+- **[`sovthpaw/Omni-Senter-3B`](https://huggingface.co/sovthpaw/Omni-Senter-3B)**
+  — 3B early Senter, LoRA + GGUF
+- **[`sovthpaw/OmniSenter-Base-16B`](https://huggingface.co/sovthpaw/OmniSenter-Base-16B)**
+  — 16B base, multimodal (Qwen3-8B + Cosmos3-Nano Darwin merge)
 
-### [The 5-Stage Pipeline: Building OmniSenter from Scratch](./the-5-stage-pipeline.md)
-Detailed walkthrough of each stage with inputs, outputs, scripts, expected
-wall-time, and the gotchas. The "how do we actually build this" post.
+The new architecture (Senter Ohm 32A8B, OmniSenter 12B, OmniSenterStep)
+will **replace** these as it ships. They're foundation, not destination.
 
-### [The Notebook Schema: How OmniSenter Remembers What Hermes Doesn't](./the-notebook-schema.md)
-The structured state object that flows between turns, between agents, and
-across process boundaries. YAML spec, the write/read API, the compaction
-policy, the privacy model.
+## The posts
 
-### [Sparse Upcycling: Building a 32B MoE from an 8B Base](./sparse-upcycling-deep-dive.md)
-The Stage 3 deep dive. The math (24A8B / 32A8B / 50A8B), the shared-expert
-design, the script, the evaluation, the wild cards. The headline technical
-post.
+### 🏛️ Foundations (read first)
 
-### [The 32A8B Math: How Big is OmniSenter Anyway?](./the-32a8b-math.md)
-The full sizing breakdown. Per-layer params, active vs total, 4-bit vs bf16
-disk, VRAM at inference, VRAM at training. With tables.
-
-### [OmniSenter as the Hermes Auxiliary: The Integration Pattern](./omnisenter-as-hermes-auxiliary.md)
-The use case. How OmniSenter fits in front of Hermes Agent via the existing
-`auxiliary_client.py`. The notebook-as-API pattern. The escalation contract.
-
-### [Generative Darwin Evolution: Darwin-merging DiT Weights](./generative-darwin-evolution.md)
-The research direction. How Darwin methodology (MRI-Trust + Architecture
-Mapper + CMA-ES) extends from text LLMs to DiT audio decoders, VAE, talkers.
-Music/video/image/speech.
-
-## The concepts (linked wiki pages)
-
-- **[omnisenter-architecture](file:///home/sovthpaw/wiki/concepts/omnisenter-architecture.md)** — the master architecture doc (5 stages, plugin pattern, Synthesia, Ohm)
-- **[synthesia](file:///home/sovthpaw/wiki/concepts/synthesia.md)** — cross-modal memory indexer (text + audio + image joint embedding)
-- **[omnisenter-ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md)** — self-evolving model file (`.ohm` format + background CMA-ES loop)
-- **[omnimodal-fusion-architecture](file:///home/sovthpaw/wiki/concepts/omnimodal-fusion-architecture.md)** — the 2026-06-06 master plan (Cosmos × ACE-Step × Nemotron ASR)
-- **[omnistep-multimodal](file:///home/sovthpaw/wiki/concepts/omnistep-multimodal.md)** — the destination unified model
-- **[darwin-family-paper](file:///home/sovthpaw/wiki/concepts/darwin-family-paper.md)** — the 14-dim genome, MRI-Trust Fusion, Architecture Mapper, CMA-ES
-- **[evolutionary-radio](file:///home/sovthpaw/wiki/concepts/evolutionary-radio.md)** — the OmniStep-brained infinite generative music radio
-- **[multi-agent-pipeline](file:///home/sovthpaw/wiki/concepts/multi-agent-pipeline.md)** — Nous Girl / Senter / Chizul music studio
-
-## The code (linked scripts in the evolutionary-training repo)
-
-### Build pipeline
-- `scripts/train_omnisenter_sft_fixed.py` — Stage 1 agentic SFT (running now)
-- `scripts/train_long_context.py` — Stage 4 long-context SFT
-- `scripts/yarn_256k_config.py` — Stage 4 YaRN RoPE scaling
-- `scripts/merge_lora.py` — LoRA merge for deploy
-- `scripts/omnisenter_ohm.py` — 🔥 Ohm runtime (self-evolving model)
-- `scripts/data_ingestion.py` — data prep
-- `scripts/mega_training_data.py` — ShareGPT formatter
-- `scripts/download_all_data.sh` — raw data downloader
-- `scripts/agentic_training_loop.py` — agentic SFT loop with monitoring
-- `scripts/continuous_evolution.py` — external Ohm-like loop (the inspiration for Ohm)
-
-### Evaluation
-- `scripts/benchmark_omnisenter.py` — main eval
-- `scripts/darwin_benchmark.py` — Darwin eval
-- `scripts/gpqa_benchmark.py` — GPQA reasoning
-- `scripts/bfcl_benchmark.py` — BFCL function calling
-- `scripts/hf_auto_upload.py` — HF upload
-
-### Tooling
-- `scripts/extract_clean_qwen3.py` — model surgery (strip multimodal tensors)
-- `scripts/cosmos_qwen3_darwin_merge.py` — Darwin merge
-- `scripts/discord_evolution_report.py` — Discord reporting
-- `scripts/evolution_radio.py` — the radio loop
-
-### External (in other repos)
-- `multimodal-expansion/scripts/sparse_upcycle.py` — Stage 3 sparse upcycle
-- `evolutionary-model-merging/cma_es_evolution.py` — CMA-ES engine
-- `evolutionary-model-merging/paper_exact_2parent_merge.py` — Darwin paper-exact merge
-- `evolutionary-model-merging/real_benchmark.py` — Darwin benchmark
-- `evolutionary-model-merging/filter_for_gguf.py` — GGUF filter
-- `hermes-agent/agent/auxiliary_client.py` — the integration point for OmniSenter
-
-## The HuggingFace artifacts
-
-- [sovthpaw/omnistep-12a3b](https://huggingface.co/sovthpaw/omnistep-12a3b) — the multimodal baseline (35GB, 4 GGUFs + 4 safetensors + cover)
-- Legacy: [sovthpaw/omnistep-multimodal](https://huggingface.co/sovthpaw/omnistep-multimodal) (v0.1, 21GB safetensors, superseded)
-- Upcoming: `sovthpaw/omnisenter-moe-32a8b` — the Stage 3 destination
-
-## The repos
-
-| Repo | What | Status |
+| Post | What's in it | Read time |
 |---|---|---|
-| [SouthpawIN/evolutionary-training](https://github.com/SouthpawIN/evolutionary-training) | The main project (Stage 1 running, blog, scripts) | 🔄 active |
-| [SouthpawIN/omnistep-fusion](https://github.com/SouthpawIN/omnistep-fusion) | Cosmos × ACE-Step fusion logic | ✅ initial |
-| [SouthpawIN/evolutionary-radio](https://github.com/SouthpawIN/evolutionary-radio) | The infinite generative music radio | ✅ running |
-| [SouthpawIN/evolutionary-model-merging](https://github.com/SouthpawIN/evolutionary-model-merging) | Darwin Family paper-exact implementation | ✅ published |
-| [SouthpawIN/multimodal-expansion](https://github.com/SouthpawIN/multimodal-expansion) | REAP + EvoMoE + sparse upcycle | ✅ skill |
-| [SouthpawIN/hermes-agent](https://github.com/SouthpawIN/hermes-agent) | The smart agent OmniSenter is auxiliary to | ✅ active |
-| [SouthpawIN/senter](https://github.com/SouthpawIN/senter) | Hermes Agent profile (senter) | ✅ distribution |
-| [SouthpawIN/nous-girl](https://github.com/SouthpawIN/nous-girl) | Hermes Agent profile (nous-girl) | ✅ distribution |
-| [SouthpawIN/chizul](https://github.com/SouthpawIN/chizul) | Hermes Agent profile (chizul) | ✅ distribution |
+| **[`the-omni-family.md`](./the-omni-family.md)** | The naming convention: Omni (multimodal), Senter (agentic), Ohm (self-evolving), Senter Ohm (the flagship). With a family tree. | 5 min |
+| **[`the-omnimodal-fusion.md`](./the-omnimodal-fusion.md)** | The three-component fusion that powers every Omni model: Cosmos × ACE-Step × Nemotron ASR. | 8 min |
+| **[`the-omnistep-multimodal.md`](./the-omnistep-multimodal.md)** | The destination unified model — a single Darwin-merged text backbone with all modality heads. The current transitional `sovthpaw/omnistep-12a3b` is the proof-of-concept. | 7 min |
 
-## Brand & style
+### 🚀 The Flagship (the build)
 
-All images in this catalog are generated with FAL (managed by Nous subscription)
-using the **Nous Research brand guide**:
-- Strictly monochrome B&W with halftone grain (default)
-- "Cosmic variant" exception: teal + gold nebula for hero/promotional art
-- Retro manga / 70s shoujo line art
-- Industrial typewriter / Swiss grid composition
-- Tagline: "TOWARDS SELF-IMPROVEMENT"
+| Post | What's in it | Read time |
+|---|---|---|
+| **[`senter-ohm-flagship.md`](./senter-ohm-flagship.md)** | The flagship post. Senter Ohm = ~32B-total / 8B-active MoE with the Ohm self-evolution engine bundled. The design doc. | 15 min |
+| **[`senter-ohm-32a8b-math.md`](./senter-ohm-32a8b-math.md)** | The math: per-layer params, active vs total, 4-bit vs bf16 disk, VRAM at inference, VRAM at training. | 8 min |
+| **[`the-5-stage-pipeline.md`](./the-5-stage-pipeline.md)** | The 5-stage build sequence: SFT → evolutionary merge → sparse upcycle → 256K YaRN → plugin+notebook+Ohm wiring. With wall times. | 10 min |
+| **[`sparse-upcycling-deep-dive.md`](./sparse-upcycling-deep-dive.md)** | Stage 3 deep dive: turning an 8B dense into a 32B MoE with 8B active. Math, script, design choices, wild cards. | 12 min |
 
-See `references/brand-booklet-pages.md` in the nous-brand-guide skill for the
-full spec.
+### 🧠 The Concepts (what makes it special)
 
----
+| Post | What's in it | Read time |
+|---|---|---|
+| **[`the-synthesia-layer.md`](./the-synthesia-layer.md)** | The cross-modal memory indexer. Joint `(text, audio, image)` embeddings, 10 concrete benefits, the data it needs. | 10 min |
+| **[`the-ohm-runtime.md`](./the-ohm-runtime.md)** | The self-evolving model file. The `.ohm` bundle format, the background CMA-ES loop, the safety properties. | 12 min |
+| **[`the-omnisenter-architecture.md`](./the-omnisenter-architecture.md)** | The full system architecture: Layer 0 stream I/O, Layer 1 MoE, Layer 1.5 Synthesia, Layer 2 plugins, Layer 3 Hermes, Layer 5.5 Ohm. | 15 min |
 
-## How to read this catalog
+### 🔌 The Integration (how it ships)
 
-- **If you're new**: read the flagship post (omnisenter-self-evolving.md) first
-- **If you're implementing**: read the 5-stage pipeline + the notebook schema
-- **If you're researching**: read the 32A8B math + generative Darwin evolution
-- **If you're integrating with Hermes**: read the auxiliary post
-- **If you want to understand the why**: read the architecture wiki + the concept pages
+| Post | What's in it | Read time |
+|---|---|---|
+| **[`senter-as-hermes-auxiliary.md`](./senter-as-hermes-auxiliary.md)** | How Senter talks to Hermes Agent. The notebook-as-API pattern, the escalation rules, the cost model. | 12 min |
+| **[`the-notebook-schema.md`](./the-notebook-schema.md)** | The notebook spec. YAML session files, cross-modal moments, the compaction policy, the privacy model. | 10 min |
 
-## How to contribute
+### 🧬 The Research (extending the approach)
 
-- Wiki pages live in `~/wiki/concepts/` — frontmatter format is YAML, lowercase
-  hyphens, wikilinks for cross-references. See `SCHEMA.md`.
-- Blog posts live in this `blog/` directory. Each post is one `.md` file plus
-  images in `blog/assets/`. Cross-link to wiki pages with `[name](file:///home/sovthpaw/wiki/concepts/name.md)`.
-- Scripts live in `scripts/` in evolutionary-training (or other repos for
-  specific tools). Follow the pattern of existing scripts: argparse, docstring
-  with usage, dataclass config, log to `logs/`.
-- The training is running on `gen-0-clean` — **don't touch it** while it's
-  grinding. The new scripts and the new architecture are for Stage 2 onwards.
+| Post | What's in it | Read time |
+|---|---|---|
+| **[`generative-darwin-evolution.md`](./generative-darwin-evolution.md)** | Extending Darwin Family weight-space merging to DiT/audio/video. The research direction. | 10 min |
+
+## The reading order
+
+For a cold reader:
+
+1. **[`the-omni-family.md`](./the-omni-family.md)** — start here
+2. **[`the-omnimodal-fusion.md`](./the-omnimodal-fusion.md)** — what's
+   the foundation
+3. **[`senter-ohm-flagship.md`](./senter-ohm-flagship.md)** — the
+   flagship overview
+4. **[`senter-ohm-32a8b-math.md`](./senter-ohm-32a8b-math.md)** — the
+   sizing math
+5. **[`the-5-stage-pipeline.md`](./the-5-stage-pipeline.md)** — how to
+   build it
+6. **[`the-synthesia-layer.md`](./the-synthesia-layer.md)** — the
+   cross-modal memory layer
+7. **[`the-ohm-runtime.md`](./the-ohm-runtime.md)** — the self-evolution
+   engine
+8. **[`the-omnisenter-architecture.md`](./the-omnisenter-architecture.md)**
+   — the system overview
+9. **[`senter-as-hermes-auxiliary.md`](./senter-as-hermes-auxiliary.md)**
+   — the integration
+10. **[`the-notebook-schema.md`](./the-notebook-schema.md)** — the
+    notebook spec
+11. **[`sparse-upcycling-deep-dive.md`](./sparse-upcycling-deep-dive.md)**
+    — the Stage 3 deep dive
+12. **[`the-omnistep-multimodal.md`](./the-omnistep-multimodal.md)** —
+    the destination unified model
+13. **[`generative-darwin-evolution.md`](./generative-darwin-evolution.md)**
+    — the research direction
+
+## HuggingFace models
+
+| Model | Size | Status | What it is |
+|---|---|---|---|
+| [`sovthpaw/omnistep-12a3b`](https://huggingface.co/sovthpaw/omnistep-12a3b) | 12B total / 3B active | ✅ published (transitional) | OmniStep baseline. Multimodal any-to-any. 4 GGUFs + 4 safetensors. |
+| [`sovthpaw/Omni-Senter-3B`](https://huggingface.co/sovthpaw/Omni-Senter-3B) | 3B | ✅ published (transitional) | Early Senter. LoRA + GGUF. Predecessor of OmniSenter 12B. |
+| [`sovthpaw/OmniSenter-Base-16B`](https://huggingface.co/sovthpaw/OmniSenter-Base-16B) | 16B | ✅ published (transitional) | Omni base. Qwen3-8B + Cosmos3-Nano Darwin merge. Predecessor of OmniSenter 12B + Senter Ohm. |
+| `sovthpaw/omnisenter-12b` | ~12B | ⏳ planned | The new OmniSenter 12B (small function calling + omnimodal fusion). |
+| `sovthpaw/senter-ohm-32a8b` | ~32B total / 8B active | ⏳ planned | The new Senter Ohm flagship MoE. |
+
+## GitHub repos (`SouthpawIN/`)
+
+| Repo | Role |
+|---|---|
+| [`evolutionary-training`](https://github.com/SouthpawIN/evolutionary-training) | Main repo. Training scripts, Ohm runtime, this blog. |
+| [`evolutionary-model-merging`](https://github.com/SouthpawIN/evolutionary-model-merging) | Darwin Family. CMA-ES + paper-exact merge. The merge formula that powers everything. |
+| [`multimodal-expansion`](https://github.com/SouthpawIN/multimodal-expansion) | REAP + EvoMoE + `sparse_upcycle.py` for Stage 3. |
+| [`omnistep-fusion`](https://github.com/SouthpawIN/omnistep-fusion) | Cosmos × ACE-Step multimodal merge. |
+| [`evolutionary-radio`](https://github.com/SouthpawIN/evolutionary-radio) | The OmniStep-brained music radio. A Stage 5 consumer. |
+| [`hermes-agent`](https://github.com/SouthpawIN/hermes-agent) | The smart agent Senter is auxiliary to. |
+| `senter`, `nous-girl`, `chizul` | Hermes Agent profiles. |
+
+## Cross-reference cheat sheet
+
+Every blog post links to:
+- The Omni Family post (naming source of truth)
+- The relevant sibling posts in the catalog
+- The relevant HF models
+- The relevant GitHub repos
+- The relevant wiki concepts (`~/wiki/concepts/`)
+
+If you find a blog post that doesn't link to the Omni Family post or
+its siblings, that's a bug — please report.
+
+## TOWARDS SELF-IMPROVEMENT
+
+— Chris (via Nous Girl), 2026-06-07

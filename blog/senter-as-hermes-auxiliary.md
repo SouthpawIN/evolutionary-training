@@ -1,42 +1,84 @@
-# OmniSenter as the Hermes Auxiliary: The Integration Pattern
+---
+title: "Senter as the Hermes Auxiliary: The Integration Pattern"
+date: 2026-06-07
+author: Nous Girl
+hero: assets/hermes-auxiliary.png
+tags: [senter, hermes, auxiliary, integration, notebook, api]
+summary: >
+  Senter (any model in the Senter family — OmniSenter 12B, OmniSenterStep,
+  or the Senter Ohm flagship) is the auxiliary to Hermes Agent. It sits in
+  front of Hermes, doing the work that doesn't need a 70B-class brain.
+  When the task gets hard, Senter hands a structured notebook to Hermes
+  and gets a decision back.
+related:
+  - the-omni-family.md
+  - senter-ohm-flagship.md
+  - the-notebook-schema.md
+  - the-5-stage-pipeline.md
+---
+
+# Senter as the Hermes Auxiliary: The Integration Pattern
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl)
 
 ![Two AI entities facing each other — a small focused character with headphones (the auxiliary) and a large powerful radiant figure (the smart agent) — connected by a holographic stream of structured YAML data](assets/hermes-auxiliary.png)
 
-OmniSenter is the **auxiliary to Hermes Agent**. It sits in front of Hermes, doing the work that doesn't need a 70B-class brain. When the task gets hard, OmniSenter hands a structured **notebook** to Hermes and gets a decision back.
+> **Naming.** "Senter" is the **agentic** family — any model with the
+> agentic core wired in. The shipping targets are **OmniSenter 12B** (the
+> small one), **OmniSenterStep / Omni SS** (the + music variant), and
+> **Senter Ohm** (the 32A8B flagship with the Ohm self-evolution engine).
+> All three are valid Senter implementations. This post describes the
+> *pattern* — pick whichever Senter you want to deploy. Read
+> [`the-omni-family.md`](./the-omni-family.md) for the full taxonomy.
 
-This post is the integration pattern. The contract, the API, the notebook-as-data-format, the escalation rules.
+Senter is the **auxiliary to Hermes Agent**. It sits in front of Hermes,
+doing the work that doesn't need a 70B-class brain. When the task gets
+hard, Senter hands a structured **notebook** to Hermes and gets a decision
+back.
+
+This post is the integration pattern. The contract, the API, the
+notebook-as-data-format, the escalation rules.
 
 ## Why an auxiliary?
 
-Hermes Agent is the "smart" agent — heavy reasoning, code, math, research. But it's expensive to call for every turn. OmniSenter is the **always-cheap context curator** that:
+Hermes Agent is the "smart" agent — heavy reasoning, code, math, research.
+But it's expensive to call for every turn. Senter is the **always-cheap
+context curator** that:
 
 - Handles trivial/plugin-friendly requests directly (no escalation)
-- Handles multimodal I/O (images, video, audio, music, speech) via its specialists
+- Handles multimodal I/O (images, video, audio, music, speech) via its
+  specialists
 - Maintains a structured notebook across turns
-- Hands the smart agent only the relevant slice of state when escalation is needed
+- Hands the smart agent only the relevant slice of state when escalation
+  is needed
 - Updates the notebook from the smart agent's response
 
-Net result: Hermes gets called **only when needed**, the user gets **fast first-token** for trivial cases, and the full notebook survives across turns without paying the full cost every time.
+Net result: Hermes gets called **only when needed**, the user gets
+**fast first-token** for trivial cases, and the full notebook survives
+across turns without paying the full cost every time.
 
 ## The integration point
 
-`hermes-agent/agent/auxiliary_client.py` is the existing class. It already does:
+`hermes-agent/agent/auxiliary_client.py` is the existing class. It already
+does:
 - Calling a smaller LLM alongside the main agent
 - Vision processing
 - Summarization
 
-We extend it to use OmniSenter specifically:
-- Default auxiliary model: `omnisenter-moe-32a8b` (4-bit GGUF, served on `:11500`)
-- Auxiliary tasks: vision, summarization, agentic routing, notebook management
-- The main agent stays whatever the user has configured (Claude, Hermes-4, etc.)
+We extend it to use Senter specifically:
+- Default auxiliary model: `senter-ohm-moe-32a8b` (4-bit GGUF, served on
+  `:11500`). For lighter deployments, swap in `omnisenter-12b`.
+- Auxiliary tasks: vision, summarization, agentic routing, notebook
+  management
+- The main agent stays whatever the user has configured (Claude,
+  Hermes-4, etc.)
 
 ## The notebook-as-API pattern
 
-The notebook is the **structured state object** that flows between OmniSenter and Hermes. It's the API surface, not the implementation detail.
+The notebook is the **structured state object** that flows between Senter
+and Hermes. It's the API surface, not the implementation detail.
 
-### OmniSenter → Hermes (escalation)
+### Senter → Hermes (escalation)
 
 ```yaml
 # Sent to Hermes as a single user message + the notebook as a system attachment
@@ -78,10 +120,10 @@ notebook_handoff:
     must_include_sources: true
 ```
 
-### Hermes → OmniSenter (response)
+### Hermes → Senter (response)
 
 ```yaml
-# Hermes returns this, OmniSenter parses it back into the notebook
+# Hermes returns this, Senter parses it back into the notebook
 hermes_response:
   schema_version: "1.0"
   
@@ -104,8 +146,8 @@ hermes_response:
     - "DaVinci Resolve 18 manual, page 247"
     - "Common workflow in indie music videos"
   
-  # What OmniSenter should do with this
-  omni_should:
+  # What Senter should do with this
+  senter_should:
     - action: "summarize_for_user"
       format: "bulleted list with bold for action verbs"
     - action: "update_notebook"
@@ -113,11 +155,11 @@ hermes_response:
       importance: 0.8
 ```
 
-## The escalation rules (when does OmniSenter ask Hermes?)
+## The escalation rules (when does Senter ask Hermes?)
 
 ```python
 def should_escalate(user_message: str, current_state: dict) -> bool:
-    """OmniSenter's escalation logic."""
+    """Senter's escalation logic."""
     
     # NEVER escalate trivial
     trivial_patterns = [
@@ -158,7 +200,8 @@ def should_escalate(user_message: str, current_state: dict) -> bool:
 
 ## The notebook slicing (what does Hermes actually see?)
 
-Hermes has a context window too. We don't dump the whole 256K notebook at it. We slice:
+Hermes has a context window too. We don't dump the whole 256K notebook at
+it. We slice:
 
 ```python
 def slice_notebook_for_hermes(notebook: dict, question: str, max_tokens: int = 30000) -> dict:
@@ -189,16 +232,17 @@ def slice_notebook_for_hermes(notebook: dict, question: str, max_tokens: int = 3
 
 ## The cost model
 
-| Task type | OmniSenter cost | Hermes cost | When |
+| Task type | Senter cost | Hermes cost | When |
 |---|---|---|---|
-| Trivial (greeting, ack) | ~50ms, 100 tokens | $0 | always handled by OmniSenter |
-| Plugin call (image, music) | ~500ms, 1K tokens | $0 | OmniSenter calls plugin, returns result |
-| Notebook query (recall) | ~200ms, 500 tokens | $0 | OmniSenter searches + answers |
-| Reasoning (complex Q) | ~2s, 2K tokens | ~5s, 4K tokens | OmniSenter escalates, Hermes reasons, OmniSenter summarizes |
-| Multi-step task (planning) | ~3s, 3K tokens | ~15s, 8K tokens | OmniSenter hands off the full notebook slice |
+| Trivial (greeting, ack) | ~50ms, 100 tokens | $0 | always handled by Senter |
+| Plugin call (image, music) | ~500ms, 1K tokens | $0 | Senter calls plugin, returns result |
+| Notebook query (recall) | ~200ms, 500 tokens | $0 | Senter searches + answers |
+| Reasoning (complex Q) | ~2s, 2K tokens | ~5s, 4K tokens | Senter escalates, Hermes reasons, Senter summarizes |
+| Multi-step task (planning) | ~3s, 3K tokens | ~15s, 8K tokens | Senter hands off the full notebook slice |
 
 **Estimated savings:** For a typical session with 20 turns:
-- 12 trivial/plugin turns: $0 from Hermes (vs $0.50 if all 20 went to Hermes)
+- 12 trivial/plugin turns: $0 from Hermes (vs $0.50 if all 20 went to
+  Hermes)
 - 6 notebook queries: $0 from Hermes (vs $1.20)
 - 2 escalations: $0.30 (vs $0.40 if all reasoning was done by Hermes)
 - **Total: $0.30 (vs $2.10) — 86% cost reduction**
@@ -209,34 +253,42 @@ The savings scale with usage. Heavy users save more.
 
 A user types: *"hey what's the best DaVinci workflow for syncing audio"*
 
-1. **OmniSenter receives it** — checks the trivial patterns (no), checks plugin intents (no), checks escalation rules (yes — "best ... workflow" pattern)
-2. **OmniSenter slices the notebook** — finds past DaVinci references, recent audio tempo changes
-3. **OmniSenter escalates** — sends the notebook slice to Hermes with the question
+1. **Senter receives it** — checks the trivial patterns (no), checks
+   plugin intents (no), checks escalation rules (yes — "best ...
+   workflow" pattern)
+2. **Senter slices the notebook** — finds past DaVinci references, recent
+   audio tempo changes
+3. **Senter escalates** — sends the notebook slice to Hermes with the
+   question
 4. **Hermes reasons** — returns a structured decision
-5. **OmniSenter summarizes** — formats the response, updates the notebook with the decision
-6. **OmniSenter replies** — bulleted list with bold action verbs, decision recorded
+5. **Senter summarizes** — formats the response, updates the notebook
+   with the decision
+6. **Senter replies** — bulleted list with bold action verbs, decision
+   recorded
 
-Total user wait: ~7-8 seconds. Notebook updated. Decision available for future turns.
+Total user wait: ~7-8 seconds. Notebook updated. Decision available for
+future turns.
 
-The user doesn't see Hermes. They just see OmniSenter being smart, fast, and remembering everything.
+The user doesn't see Hermes. They just see Senter being smart, fast, and
+remembering everything.
 
 ## The implementation
 
 ```python
 # hermes-agent/agent/auxiliary_client.py (extended)
 
-class OmniSenterAuxiliaryClient(AuxiliaryClient):
-    """Auxiliary client that uses OmniSenter for vision, summarization, agentic routing, notebook management."""
+class SenterAuxiliaryClient(AuxiliaryClient):
+    """Auxiliary client that uses Senter for vision, summarization, agentic routing, notebook management."""
     
-    def __init__(self, *args, omni_endpoint: str = "http://localhost:11500/v1", **kwargs):
+    def __init__(self, *args, senter_endpoint: str = "http://localhost:11500/v1", **kwargs):
         super().__init__(*args, **kwargs)
-        self.omni = OpenAI(base_url=omni_endpoint, api_key="not-needed")
+        self.senter = OpenAI(base_url=senter_endpoint, api_key="not-needed")
         self.notebook = Notebook(owner=self.user_id)
     
     def summarize_for_compression(self, messages: list, **kwargs) -> str:
         """Summarize a long conversation for context compression."""
-        return self.omni.chat.completions.create(
-            model="omnisenter-moe-32a8b",
+        return self.senter.chat.completions.create(
+            model="senter-ohm-moe-32a8b",
             messages=[
                 {"role": "system", "content": "Summarize the following conversation, preserving all key decisions and context."},
                 {"role": "user", "content": format_messages(messages)},
@@ -246,8 +298,8 @@ class OmniSenterAuxiliaryClient(AuxiliaryClient):
     
     def describe_image(self, image_bytes: bytes, **kwargs) -> str:
         """Describe an image for vision context."""
-        return self.omni.chat.completions.create(
-            model="omnisenter-moe-32a8b",
+        return self.senter.chat.completions.create(
+            model="senter-ohm-moe-32a8b",
             messages=[
                 {"role": "user", "content": [
                     {"type": "text", "text": "Describe this image in detail."},
@@ -294,23 +346,27 @@ class OmniSenterAuxiliaryClient(AuxiliaryClient):
 ## The deployment
 
 ```bash
-# Terminal 1: Start the OmniSenter server
-python3 ohmd.py serve --model omnisenter-moe-32a8b-q4_k_m.gguf \
-    --notebook-path ~/.omnisenter/notebook/ \
+# Terminal 1: Start the Senter server
+python3 ohmd.py serve --model senter-ohm-moe-32a8b-q4_k_m.gguf \
+    --notebook-path ~/.senter/notebook/ \
     --port 11500
 
-# Terminal 2: Start Hermes Agent with OmniSenter as auxiliary
-hermes --auxiliary-model omnisenter-moe-32a8b --auxiliary-endpoint http://localhost:11500/v1
+# Terminal 2: Start Hermes Agent with Senter as auxiliary
+hermes --auxiliary-model senter-ohm-moe-32a8b --auxiliary-endpoint http://localhost:11500/v1
 
 # That's it. Hermes now has a notebook-keeping multimodal auxiliary.
 ```
 
 ## See also
 
-- [omnisenter-self-evolving.md](./omnisenter-self-evolving.md) — the flagship overview
-- [the-notebook-schema.md](./the-notebook-schema.md) — the notebook spec
-- [the-5-stage-pipeline.md](./the-5-stage-pipeline.md) — the build roadmap
-- [omnisenter-architecture](file:///home/sovthpaw/wiki/concepts/omnisenter-architecture.md) — the system overview
+- [`senter-ohm-flagship.md`](./senter-ohm-flagship.md) — the flagship
+  overview
+- [`the-notebook-schema.md`](./the-notebook-schema.md) — the notebook
+  spec
+- [`the-5-stage-pipeline.md`](./the-5-stage-pipeline.md) — the build
+  roadmap
+- [omnisenter-architecture](file:///home/sovthpaw/wiki/concepts/omnisenter-architecture.md)
+  — the system overview
 - `hermes-agent/agent/auxiliary_client.py` — the integration point
 
 ## TOWARDS SELF-IMPROVEMENT

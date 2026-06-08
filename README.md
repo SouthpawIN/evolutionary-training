@@ -11,6 +11,35 @@
 
 ---
 
+---
+
+## 📚 The Blog
+
+This repo is the home of the **OmniSenter blog** — a 13-post catalog that documents the architecture, the math, the pipeline, and the concepts. Start with [the-omni-family.md](blog/the-omni-family.md) for the naming convention, then read the [CATALOG.md](blog/CATALOG.md) for the full index.
+
+| Post | What it is |
+|---|---|
+| **[the-omni-family.md](blog/the-omni-family.md)** | The naming source-of-truth. Defines **Omni** (multimodal), **Senter** (agentic), **Ohm** (self-evolving), **Senter Ohm** (flagship). |
+| **[senter-ohm-flagship.md](blog/senter-ohm-flagship.md)** | The flagship design doc: Senter Ohm ~32B-total / 8B-active MoE with the Ohm engine. |
+| **[the-5-stage-pipeline.md](blog/the-5-stage-pipeline.md)** | The 5-stage build sequence (SFT → merge → upcycle → YaRN → wiring). |
+| **[senter-ohm-32a8b-math.md](blog/senter-ohm-32a8b-math.md)** | The sizing math: per-layer params, active vs total, VRAM, disk. |
+| **[sparse-upcycling-deep-dive.md](blog/sparse-upcycling-deep-dive.md)** | Stage 3 deep dive: 8B dense → 32B MoE with 8B active. |
+| **[the-synthesia-layer.md](blog/the-synthesia-layer.md)** | The cross-modal memory indexer. 10 concrete benefits. |
+| **[the-ohm-runtime.md](blog/the-ohm-runtime.md)** | The self-evolving model file (`.ohm` format, background CMA-ES loop). |
+| **[the-omnisenter-architecture.md](blog/the-omnisenter-architecture.md)** | The full system architecture. |
+| **[senter-as-hermes-auxiliary.md](blog/senter-as-hermes-auxiliary.md)** | The Hermes integration pattern. |
+| **[the-notebook-schema.md](blog/the-notebook-schema.md)** | The notebook spec. |
+| **[the-omnimodal-fusion.md](blog/the-omnimodal-fusion.md)** | Cosmos × ACE-Step × Nemotron ASR — the three-component fusion. |
+| **[the-omnistep-multimodal.md](blog/the-omnistep-multimodal.md)** | The destination unified model. |
+| **[generative-darwin-evolution.md](blog/generative-darwin-evolution.md)** | Extending Darwin merging to DiT/audio. |
+
+**HuggingFace (transitional v1):** [`sovthpaw/omnistep-12a3b`](https://huggingface.co/sovthpaw/omnistep-12a3b) (12B total / 3B active), [`sovthpaw/Omni-Senter-3B`](https://huggingface.co/sovthpaw/Omni-Senter-3B) (3B), [`sovthpaw/OmniSenter-Base-16B`](https://huggingface.co/sovthpaw/OmniSenter-Base-16B) (16B base). The new architecture (Senter Ohm 32A8B, OmniSenter 12B, OmniSenterStep) will **replace** these as it ships.
+
+**Sibling repos:** [`evolutionary-model-merging`](https://github.com/SouthpawIN/evolutionary-model-merging) · [`multimodal-expansion`](https://github.com/SouthpawIN/multimodal-expansion) · [`omnistep-fusion`](https://github.com/SouthpawIN/omnistep-fusion) · [`evolutionary-radio`](https://github.com/SouthpawIN/evolutionary-radio) · [`hermes-agent`](https://github.com/SouthpawIN/hermes-agent)
+
+---
+
+
 ## Overview
 
 This repository contains the complete infrastructure for **autonomously evolving and training AI models** using the [Darwin Family technique](https://arxiv.org/abs/2605.14386) (Kim et al., 2026) combined with continuous SFT/GRPO training on Hermes agent and NVIDIA Nemotron data.

@@ -1,10 +1,20 @@
-# The Notebook Schema: How OmniSenter Remembers What Hermes Doesn't
+# The Notebook Schema: How Senter Remembers What Hermes Doesn't
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl)
 
 ![The notebook as cosmic holographic artifact: open pages emanating beams of text, audio waveforms, and image fragments, observed by the Nous Girl character](assets/notebook-schema.png)
 
-The notebook is what makes OmniSenter valuable as an **auxiliary to Hermes Agent**. It's a structured state object that flows between turns, between agents, and across process boundaries. It's what the 256K context window is *for*. It's how the agent gets "proactive awareness" — detecting that the user is doing something related to a past event and offering context.
+> **Naming.** The notebook is the defining feature of every model in the
+> **Senter** family (any Omni model with the agentic core wired in —
+> OmniSenter 12B, OmniSenterStep, Senter Ohm). If a model is a Senter, it
+> has a notebook. The 256K context window exists *for the notebook*. Read
+> [`the-omni-family.md`](./the-omni-family.md) for the full taxonomy.
+
+The notebook is what makes Senter valuable as an **auxiliary to Hermes
+Agent**. It's a structured state object that flows between turns, between
+agents, and across process boundaries. It's what the 256K context window
+is *for*. It's how the agent gets "proactive awareness" — detecting that
+the user is doing something related to a past event and offering context.
 
 This post is the spec.
 
@@ -19,7 +29,7 @@ The notebook solves this by encoding every moment as a **structured multi-sensor
 A notebook is a directory of YAML files. One file per session, one entry per significant moment. Plus a global index for cross-session retrieval.
 
 ```yaml
-# ~/.omnisenter/notebook/sessions/<session_id>.yaml
+# ~/.senter/notebook/sessions/<session_id>.yaml
 notebook:
   schema_version: "1.0"
   session_id: "s_2026-06-07_001"
@@ -108,7 +118,7 @@ notebook:
 Each moment is a separate file:
 
 ```yaml
-# ~/.omnisenter/notebook/sessions/s_2026-06-07_001/moments/m_1829.yaml
+# ~/.senter/notebook/sessions/s_2026-06-07_001/moments/m_1829.yaml
 moment:
   id: "m_1829"
   session_id: "s_2026-06-07_001"
@@ -122,8 +132,8 @@ moment:
     multimodal_embedding: "j7k2m1n9p4q6r8s0..."  # 4096-d joint embedding hash
   
   # === THE FULL AUDIO/IMAGE (on-demand) ===
-  audio_clip_path: "~/.omnisenter/notebook/audio/m_1829.wav"  # 5s clip
-  image_clip_path: "~/.omnisenter/notebook/images/m_1829.png"  # screen capture
+  audio_clip_path: "~/.senter/notebook/audio/m_1829.wav"  # 5s clip
+  image_clip_path: "~/.senter/notebook/images/m_1829.png"  # screen capture
   
   # === STRUCTURED METADATA ===
   concepts: ["music", "chorus", "approval"]
@@ -145,7 +155,7 @@ moment:
 ## The index (cross-session)
 
 ```yaml
-# ~/.omnisenter/notebook/index.yaml
+# ~/.senter/notebook/index.yaml
 notebook_index:
   schema_version: "1.0"
   last_compacted: "2026-06-07T04:00:00Z"
@@ -177,7 +187,7 @@ notebook_index:
   # FAISS-style vector index, persisted to disk
   embedding_index:
     type: "faiss"
-    path: "~/.omnisenter/notebook/embeddings.faiss"
+    path: "~/.senter/notebook/embeddings.faiss"
     size: 14523  # number of moments indexed
     last_updated: "2026-06-07T19:14:23Z"
   
@@ -191,7 +201,7 @@ notebook_index:
 
 ## The write/read API
 
-The notebook manager is a Python module that the OmniSenter runtime imports. It exposes a clean API:
+The notebook manager is a Python module that the Senter runtime imports. It exposes a clean API:
 
 ```python
 from notebook_manager import Notebook
@@ -205,8 +215,8 @@ moment_id = nb.add_moment(
     image_signature=image_emb,  # 512-d torch.Tensor
     multimodal_embedding=joint_emb,  # 4096-d torch.Tensor
     concepts=["music", "chorus", "approval"],
-    audio_clip_path="~/.omnisenter/notebook/audio/m_1829.wav",
-    image_clip_path="~/.omnisenter/notebook/images/m_1829.png",
+    audio_clip_path="~/.senter/notebook/audio/m_1829.wav",
+    image_clip_path="~/.senter/notebook/images/m_1829.png",
 )
 
 nb.add_decision(turn=5, what="user changed tempo", moment_id=moment_id)
@@ -246,16 +256,16 @@ The notebook can't grow forever. The compaction policy decides what stays detail
 | 7-30 days | Decay `importance`; moments with `importance < 0.3` get summarized into a "week summary" entry |
 | 30-90 days | Daily entries collapse into weekly summaries |
 | 90+ days | Weekly summaries collapse into monthly summaries; the original moment file is archived to cold storage |
-| Never (concepts) | Concept indices (e.g., "music", "work-omnisenter") persist forever, but the detail degrades |
+| Never (concepts) | Concept indices (e.g., "music", "work-senter") persist forever, but the detail degrades |
 
-The LLM does the summarization — OmniSenter itself summarizes its own old moments. The summary is itself a new moment, with a `parent_moment` link to the originals.
+The LLM does the summarization — Senter itself summarizes its own old moments. The summary is itself a new moment, with a `parent_moment` link to the originals.
 
 ## The privacy model
 
 The notebook captures everything — audio signatures, image signatures, full text. Three privacy controls:
 
-1. **Owner-only by default** — files are chmod 600, in `~/.omnisenter/`
-2. **Per-modality opt-out** — `~/.omnisenter/config.yaml` can disable audio/indexing, image/indexing, etc.
+1. **Owner-only by default** — files are chmod 600, in `~/.senter/`
+2. **Per-modality opt-out** — `~/.senter/config.yaml` can disable audio/indexing, image/indexing, etc.
 3. **Manual redaction** — `nb.redact(moment_id)` removes the audio/image but keeps the text; `nb.forget(concept)` removes all moments tagged with that concept
 4. **Encrypted-at-rest** — the audio/image signatures can be encrypted with the owner's key (optional, off by default for performance)
 
