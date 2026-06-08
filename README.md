@@ -13,25 +13,33 @@
 
 ---
 
-## 📚 The Blog
+## 📚 The Master Wiki + Blog
 
-This repo is the home of the **OmniSenter blog** — a 13-post catalog that documents the architecture, the math, the pipeline, and the concepts. Start with [the-omni-family.md](blog/the-omni-family.md) for the naming convention, then read the [CATALOG.md](blog/CATALOG.md) for the full index.
+This repo is the home of the **OmniSenter knowledge base** — both the
+blog (long-form, published) and the wiki (consolidated, in catalog order).
+
+**📖 Start here:** [`wiki/README.md`](wiki/README.md) — the master wiki, with every blog post, concept, and entity in catalog order.
+
+**📝 The blog:** [`blog/`](blog/) — 13 long-form posts, with the
+[`CATALOG.md`](blog/CATALOG.md) as the index.
+
+**The 13 blog posts:**
 
 | Post | What it is |
 |---|---|
-| **[the-omni-family.md](blog/the-omni-family.md)** | The naming source-of-truth. Defines **Omni** (multimodal), **Senter** (agentic), **Ohm** (self-evolving), **Senter Ohm** (flagship). |
-| **[senter-ohm-flagship.md](blog/senter-ohm-flagship.md)** | The flagship design doc: Senter Ohm ~32B-total / 8B-active MoE with the Ohm engine. |
-| **[the-5-stage-pipeline.md](blog/the-5-stage-pipeline.md)** | The 5-stage build sequence (SFT → merge → upcycle → YaRN → wiring). |
-| **[senter-ohm-32a8b-math.md](blog/senter-ohm-32a8b-math.md)** | The sizing math: per-layer params, active vs total, VRAM, disk. |
-| **[sparse-upcycling-deep-dive.md](blog/sparse-upcycling-deep-dive.md)** | Stage 3 deep dive: 8B dense → 32B MoE with 8B active. |
-| **[the-synthesia-layer.md](blog/the-synthesia-layer.md)** | The cross-modal memory indexer. 10 concrete benefits. |
-| **[the-ohm-runtime.md](blog/the-ohm-runtime.md)** | The self-evolving model file (`.ohm` format, background CMA-ES loop). |
-| **[the-omnisenter-architecture.md](blog/the-omnisenter-architecture.md)** | The full system architecture. |
-| **[senter-as-hermes-auxiliary.md](blog/senter-as-hermes-auxiliary.md)** | The Hermes integration pattern. |
-| **[the-notebook-schema.md](blog/the-notebook-schema.md)** | The notebook spec. |
-| **[the-omnimodal-fusion.md](blog/the-omnimodal-fusion.md)** | Cosmos × ACE-Step × Nemotron ASR — the three-component fusion. |
-| **[the-omnistep-multimodal.md](blog/the-omnistep-multimodal.md)** | The destination unified model. |
-| **[generative-darwin-evolution.md](blog/generative-darwin-evolution.md)** | Extending Darwin merging to DiT/audio. |
+| **[blog/the-omni-family.md](blog/the-omni-family.md)** | The naming source-of-truth. Defines **Omni** (multimodal), **Senter** (agentic), **Ohm** (self-evolving), **Senter Ohm** (flagship). |
+| **[blog/senter-ohm-flagship.md](blog/senter-ohm-flagship.md)** | The flagship design doc: Senter Ohm ~32B-total / 8B-active MoE with the Ohm engine. |
+| **[blog/the-5-stage-pipeline.md](blog/the-5-stage-pipeline.md)** | The 5-stage build sequence (SFT → merge → upcycle → YaRN → wiring). |
+| **[blog/senter-ohm-32a8b-math.md](blog/senter-ohm-32a8b-math.md)** | The sizing math: per-layer params, active vs total, VRAM, disk. |
+| **[blog/sparse-upcycling-deep-dive.md](blog/sparse-upcycling-deep-dive.md)** | Stage 3 deep dive: 8B dense → 32B MoE with 8B active. |
+| **[blog/the-synthesia-layer.md](blog/the-synthesia-layer.md)** | The cross-modal memory indexer. 10 concrete benefits. |
+| **[blog/the-ohm-runtime.md](blog/the-ohm-runtime.md)** | The self-evolving model file (`.ohm` format, background CMA-ES loop). |
+| **[blog/the-omnisenter-architecture.md](blog/the-omnisenter-architecture.md)** | The full system architecture. |
+| **[blog/senter-as-hermes-auxiliary.md](blog/senter-as-hermes-auxiliary.md)** | The Hermes integration pattern. |
+| **[blog/the-notebook-schema.md](blog/the-notebook-schema.md)** | The notebook spec. |
+| **[blog/the-omnimodal-fusion.md](blog/the-omnimodal-fusion.md)** | Cosmos × ACE-Step × Nemotron ASR — the three-component fusion. |
+| **[blog/the-omnistep-multimodal.md](blog/the-omnistep-multimodal.md)** | The destination unified model. |
+| **[blog/generative-darwin-evolution.md](blog/generative-darwin-evolution.md)** | Extending Darwin merging to DiT/audio. |
 
 **HuggingFace (transitional v1):** [`sovthpaw/omnistep-12a3b`](https://huggingface.co/sovthpaw/omnistep-12a3b) (12B total / 3B active), [`sovthpaw/Omni-Senter-3B`](https://huggingface.co/sovthpaw/Omni-Senter-3B) (3B), [`sovthpaw/OmniSenter-Base-16B`](https://huggingface.co/sovthpaw/OmniSenter-Base-16B) (16B base). The new architecture (Senter Ohm 32A8B, OmniSenter 12B, OmniSenterStep) will **replace** these as it ships.
 
