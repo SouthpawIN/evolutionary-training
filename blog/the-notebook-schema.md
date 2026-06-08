@@ -22,7 +22,7 @@ This post is the spec.
 
 A user starts asking a question via voice, then switches to typing, then opens a screenshot. Standard text-only memory: three siloed traces that may or may not be linked. The agent loses the thread when the user switches modalities.
 
-The notebook solves this by encoding every moment as a **structured multi-sensory artifact** — text + audio signature + image signature + concepts + links — that the agent can retrieve by *any* modality, not just text. This is the [Synthesia](file:///home/sovthpaw/wiki/concepts/synthesia.md) idea applied to the agent's working memory.
+The notebook solves this by encoding every moment as a **structured multi-sensory artifact** — text + audio signature + image signature + concepts + links — that the agent can retrieve by *any* modality, not just text. This is the [Synthesia](the-synthesia-layer.md) idea applied to the agent's working memory.
 
 ## The schema
 
@@ -273,7 +273,7 @@ The Synthesia indexer is *passive and local* — it never uploads anything. The 
 
 ## The "how this helps" summary (the 10 benefits)
 
-For the full "how does this help us" list, see [synthesia.md](file:///home/sovthpaw/wiki/concepts/synthesia.md). The headline wins:
+For the full "how does this help us" list, see [synthesia.md](the-synthesia-layer.md). The headline wins:
 
 1. **Better memory retrieval** — recall by sound, image, or text
 2. **True continuity** — voice → text → screenshot, one thread
@@ -302,9 +302,9 @@ Estimated code: 400-600 lines of Python for the manager + 200 lines for the Syne
 
 ## See also
 
-- [omnisenter-architecture](file:///home/sovthpaw/wiki/concepts/omnisenter-architecture.md) — the system overview
-- [synthesia](file:///home/sovthpaw/wiki/concepts/synthesia.md) — the cross-modal memory indexer
-- [omnisenter-ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md) — the self-evolving model file
+- [omnisenter-architecture](the-omnisenter-architecture.md) — the system overview
+- [synthesia](the-synthesia-layer.md) — the cross-modal memory indexer
+- [omnisenter-ohm](the-ohm-runtime.md) — the self-evolving model file
 - [the-5-stage-pipeline](./the-5-stage-pipeline.md) — the build roadmap
 - [sparse-upcycling-deep-dive](./sparse-upcycling-deep-dive.md) — Stage 3 of the pipeline
 

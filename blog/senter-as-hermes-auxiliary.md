@@ -365,7 +365,7 @@ hermes --auxiliary-model senter-ohm-moe-32a8b --auxiliary-endpoint http://localh
   spec
 - [`the-5-stage-pipeline.md`](./the-5-stage-pipeline.md) — the build
   roadmap
-- [omnisenter-architecture](file:///home/sovthpaw/wiki/concepts/omnisenter-architecture.md)
+- [omnisenter-architecture](the-omnisenter-architecture.md)
   — the system overview
 - `hermes-agent/agent/auxiliary_client.py` — the integration point
 

@@ -199,7 +199,7 @@ download, then the model is local forever.
   the Stage 3 deep dive with the math
 - [`the-5-stage-pipeline.md`](./the-5-stage-pipeline.md) — the build
   roadmap
-- [omnisenter-architecture](file:///home/sovthpaw/wiki/concepts/omnisenter-architecture.md)
+- [omnisenter-architecture](the-omnisenter-architecture.md)
   — the system overview
 
 ## TOWARDS SELF-IMPROVEMENT

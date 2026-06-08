@@ -167,7 +167,7 @@ window.
 ## Stage 5: Plugin + Notebook + Ohm Wiring
 
 **Goal:** Wire up the specialist plugins, build the notebook manager,
-deploy the [Ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md)
+deploy the [Ohm](the-ohm-runtime.md)
 runtime, and produce the deployable `.ohm` bundle.
 
 ### 5a. Notebook Manager
@@ -231,9 +231,9 @@ A 35GB-50GB model repo on HuggingFace:
 - [`sparse-upcycling-deep-dive.md`](./sparse-upcycling-deep-dive.md) —
   Stage 3 deep dive
 - [`the-notebook-schema.md`](./the-notebook-schema.md) — Stage 5a spec
-- [omnisenter-ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md)
+- [omnisenter-ohm](the-ohm-runtime.md)
   — Stage 5c spec
-- [omnisenter-architecture](file:///home/sovthpaw/wiki/concepts/omnisenter-architecture.md)
+- [omnisenter-architecture](the-omnisenter-architecture.md)
   — the system overview
 
 ## TOWARDS SELF-IMPROVEMENT

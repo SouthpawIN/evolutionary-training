@@ -108,7 +108,7 @@ The genius of sparse upcycling is that you don't have to train the experts from 
 | Music expert | Distilled from HeartMuLa or ACE-Step | Music understanding + description |
 | Long-context expert | The YaRN-extended Stage 4 anchor | Retrieval at 100K+ tokens |
 | Generalist fallback | Copy of base (diversifies via continued training) | Catch-all for unmatched inputs |
-| **Synesthesia expert** | Distilled from ImageBind or trained on cross-modal data | The [Synthesia](file:///home/sovthpaw/wiki/concepts/synthesia.md) cross-modal memory |
+| **Synesthesia expert** | Distilled from ImageBind or trained on cross-modal data | The [Synthesia](the-synthesia-layer.md) cross-modal memory |
 
 The distillation extracts the FFN weights from the source model and uses them as one of the experts. The continued training then specializes each expert (1-5% of Stage 1's training budget = ~1 hour).
 
@@ -178,17 +178,17 @@ A Senter Ohm 32A8B MoE that:
 - Trains QLoRA on 2× 3090 (tight, but doable)
 - Has 4× the knowledge of the dense 8B
 - Is fast at inference (8B active = same speed as the dense 8B)
-- Hosts [Synthesia](file:///home/sovthpaw/wiki/concepts/synthesia.md) and [Ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md) as routed experts
+- Hosts [Synthesia](the-synthesia-layer.md) and [Ohm](the-ohm-runtime.md) as routed experts
 
-Plus the headline: the [Ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md) runtime can evolve each expert separately, with the 14-dim Darwin genome applied to the entire MoE.
+Plus the headline: the [Ohm](the-ohm-runtime.md) runtime can evolve each expert separately, with the 14-dim Darwin genome applied to the entire MoE.
 
 ## See also
 
-- [omnisenter-architecture](file:///home/sovthpaw/wiki/concepts/omnisenter-architecture.md) — the system overview
+- [omnisenter-architecture](the-omnisenter-architecture.md) — the system overview
 - [the-5-stage-pipeline](./the-5-stage-pipeline.md) — sparse upcycle is Stage 3
 - [senter-ohm-32a8b-math](./senter-ohm-32a8b-math.md) — the full sizing breakdown
-- [synthesia](file:///home/sovthpaw/wiki/concepts/synthesia.md) — the synesthesia expert that's one of the routed experts
-- [omnisenter-ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md) — the self-evolving runtime that runs on top
+- [synthesia](the-synthesia-layer.md) — the synesthesia expert that's one of the routed experts
+- [omnisenter-ohm](the-ohm-runtime.md) — the self-evolving runtime that runs on top
 - Script: `multimodal-expansion/scripts/sparse_upcycle.py`
 - Reference: [Komatsuzaki et al. 2022 "Sparse Upcycling"](https://arxiv.org/abs/2212.05055)
 

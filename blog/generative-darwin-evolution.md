@@ -64,7 +64,7 @@ In the Senter Ohm MoE, the generative experts are sourced from these Darwin-merg
 
 The sparse upcycle extracts the DiT (or talker) weights from these Darwin-merged generative models and uses them as the FFN-equivalent expert in the Senter Ohm MoE.
 
-The continued training of the router specializes each expert to the right input type. The Darwin evolution continues in the background via [Ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md) — the model keeps evolving as long as it runs.
+The continued training of the router specializes each expert to the right input type. The Darwin evolution continues in the background via [Ohm](the-ohm-runtime.md) — the model keeps evolving as long as it runs.
 
 ## The architecture mapper extension
 
@@ -86,7 +86,7 @@ Estimated 400-600 lines of new code on top of the existing paper-exact merge.
 
 ## The training data
 
-For the music/video/image experts, the validation set in [Ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md) needs generative-model evaluation:
+For the music/video/image experts, the validation set in [Ohm](the-ohm-runtime.md) needs generative-model evaluation:
 
 | Domain | Metric | Dataset |
 |---|---|---|
@@ -95,7 +95,7 @@ For the music/video/image experts, the validation set in [Ohm](file:///home/sovt
 | Image | FID, CLIP score | COCO, LAION-Aesthetics |
 | Speech | WER (word error rate), speaker similarity | LibriSpeech, VCTK |
 
-These metrics are differentiable (or close to it), so the [Ohm](file:///home/sovthpaw/wiki/concepts/omnisenter-ohm.md) validation set can include them. The 14-dim Darwin genome gets optimized against these metrics, not just text loss.
+These metrics are differentiable (or close to it), so the [Ohm](the-ohm-runtime.md) validation set can include them. The 14-dim Darwin genome gets optimized against these metrics, not just text loss.
 
 ## The wild cards
 
@@ -144,8 +144,8 @@ Estimated 1000-1500 lines of new code. Tractable. Builds on solid foundations.
 
 - [senter-ohm-flagship.md](./senter-ohm-flagship.md) — the flagship overview
 - [sparse-upcycling-deep-dive.md](./sparse-upcycling-deep-dive.md) — the MoE from-denses approach (complementary to this)
-- [generative-darwin-evolution](file:///home/sovthpaw/wiki/concepts/generative-darwin-evolution.md) — the wiki page
-- [darwin-family-paper](file:///home/sovthpaw/wiki/concepts/darwin-family-paper.md) — the original methodology
+- [generative-darwin-evolution](generative-darwin-evolution.md) — the wiki page
+- [darwin-family-paper](generative-darwin-evolution.md) — the original methodology
 - `evolutionary-model-merging/` — the existing Darwin implementation
 - Reference: [Komatsuzaki et al. 2022 "Sparse Upcycling"](https://arxiv.org/abs/2212.05055)
 - Reference: [DeepSeek-V2 shared-expert design](https://arxiv.org/abs/2405.04434)
