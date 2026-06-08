@@ -17,3 +17,6 @@ training-data/prepared/unified_sft.jsonl
 training-data/prepared/unified_sft_filtered.jsonl
 training-data/raw/**/*.parquet
 training-data/raw/**/*.bin
+
+# Runtime state files (regenerable - PID files, env snapshots, bashrc backups)
+.run/
