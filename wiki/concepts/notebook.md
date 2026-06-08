@@ -2,6 +2,16 @@
 
 > **The structured state object.** See the full blog post:
 > [`../../blog/the-notebook-schema.md`](../../blog/the-notebook-schema.md)
+>
+> **Status (2026-06-08):** 🟡 **scaffolded, not fully implemented.**
+> The reference implementation lives at
+> [`../../scripts/senter_notebook/notebook.py`](../../scripts/senter_notebook/notebook.py)
+> (also at `~/.senter/notebook.py`). It implements the directory
+> layout, session/moment YAML schema, read/write API, decisions,
+> escalations, and keyword search. All 10 smoke tests pass. What's
+> deferred to after Stage 1 SFT completes: FAISS embedding index,
+> LLM-driven summarization (compaction policy), audio/image
+> multi-modal storage, and cross-session relevance ranking.
 
 ## Definition
 

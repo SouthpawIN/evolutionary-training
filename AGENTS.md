@@ -1,20 +1,47 @@
 # AGENTS.md — evolutionary-training
 
 This file tells AI agents (Claude Code, OpenCode, Codex, future-me) how
-to behave when working in the evolutionary-training repo.
+to behave when working in the OmniSenter training repo.
+
+## 🏗️ Architecture rule (2026-06-08, mandatory)
+
+Every Omni model is built from these **four blocks** (always all four,
+always):
+
+1. **Cosmos** (multimodal base: text + image + video)
+2. **Nemotron 0.6B streaming ASR** (low-latency speech input)
+3. **the 8B SFT we're training** (agentic reasoning, tool use, notebook)
+4. **upgraded ACE-Step** (music generation, audio rhythm)
+
+**ACE-Step is not optional.** Every Omni model — Standard and Ohm
+alike — includes the ACE-Step merge. Music is in the DNA.
+
+**Model lineup (4 models total):**
+- **OmniStep Standard** — ~12B/3B, no self-evolution
+- **OmniStep Ohm** — same + Ohm engine
+- **OmniSenter Standard** — ~32B/8B MoE, agentic, no self-evolution (flagship)
+- **OmniSenter Ohm** — flagship + Ohm engine
+
+The old name "Senter Ohm 32A8B" is now "OmniSenter Ohm". The old
+"OmniSenterStep" is now just "OmniSenter" (music is already in it via
+ACE-Step). See `blog/the-omni-family.md` for the canonical naming.
+
+**For Stage 2+ data prep:** ALWAYS include ACE-Step training data
+(music corpus, beat-aligned captions, lyric-genre pairs). NEVER build
+an Omni model without the ACE-Step merge.
 
 ## Project overview
 
-The OmniSenter training pipeline. A 5-stage process that turns a base
-LLM into a self-evolving 32A8B MoE flagship:
+The OmniSenter training pipeline. A 5-stage process that turns the 8B
+SFT base into the OmniSenter 32A8B MoE flagship:
 
 1. **Stage 1 — Agentic SFT** (running): QLoRA on Qwen3-8B base with
-   Hermes-3 + Nemotron data
-2. **Stage 2 — Evolutionary merge** (queued): 3 variants A/B/C,
-   continue-train from Stage 1
-3. **Stage 3 — Sparse upcycle** (scripted): 8B dense → 50B-A8B MoE
+   Hermes-3 + Nemotron data → 8B SFT block
+2. **Stage 2 — Evolutionary merge** (queued): Darwin merge of the 8B
+   SFT + ACE-Step into OmniStep, plus 2 other variants
+3. **Stage 3 — Sparse upcycle** (scripted): OmniStep → OmniSenter 32A8B
 4. **Stage 4 — YaRN** (recipe documented): 6.25x context extension to 256K
-5. **Stage 5 — Wiring** (scaffolding built): plug-ins, notebook, pet
+5. **Stage 5 — Wiring** (scaffolding built): plug-ins, notebook, pet, Senter core
 
 ## Current state
 

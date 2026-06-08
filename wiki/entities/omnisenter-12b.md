@@ -1,6 +1,12 @@
 # OmniSenter 12B — the small Senter
 
 > **Status:** ⏳ planned · **HF target:** `sovthpaw/omnisenter-12b`
+>
+> **Superseded by the architecture simplification (2026-06-08).** The
+> small model in the new lineup is **OmniStep** (~12A3B, no agentic
+> core, no Ohm) — not "OmniSenter 12B". The flagship is **OmniSenter
+> 32A8B** (Standard + Ohm). This entity is kept for historical
+> reference; treat it as transitional until the catalog cleanup lands.
 
 ## Identity
 

@@ -1,6 +1,11 @@
 # OmniStep 12A3B — the transitional baseline
 
 > **Status:** ✅ published · **HF:** [`sovthpaw/omnistep-12a3b`](https://huggingface.co/sovthpaw/omnistep-12a3b)
+>
+> **Transitional v1.** The new architecture (2026-06-08) will ship a
+> next-generation OmniStep (~12A3B) with the four mandatory blocks
+> (Cosmos + Nemotron 0.6B ASR + 8B SFT + ACE-Step). This entity
+> documents the v1 that proved the approach.
 
 ## Identity
 
