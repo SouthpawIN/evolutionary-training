@@ -88,7 +88,7 @@ Top-1 routing keeps the per-token compute at 8B. The full model fits 4-bit on a 
 
 ![The OmniSenter system as a cosmic node: a central AI surrounded by orbital rings labeled with subsystems, with streams of text, audio, and image flowing in and out. The whole architecture, visualized.](assets/hero-omnisenter-architecture.png)
 
-> *"is there a way to have it be both a multimodal specialist as well as a genetic specialist with the experts... maybe there's something clever we can do with the automatic always going and maybe categorizing different memories with sound and vision as well if those are hooked up... maybe memory embeddings would be easier to hold on to or be able to hold across different dimensions if we get to have different modalities to them..."* — Chris, 2026-06-07
+> *"is there a way to have it be both a multimodal specialist as well as agenetic specialist with the experts... maybe there's something clever we can do with the automatic always going and maybe categorizing different memories with sound and vision as well if those are hooked up... maybe memory embeddings would be easier to hold on to or be able to hold across different dimensions if we get to have different modalities to them..."* — Chris, 2026-06-07
 
 **Synthesia** is the cross-modal memory indexer. It's named after the neurological condition where one sense triggers another — synthetic synesthesia is the AI equivalent: every memory in the notebook is encoded as a **joint `(text, audio, image)` embedding**, and retrieval can be triggered by any of the three.
 
