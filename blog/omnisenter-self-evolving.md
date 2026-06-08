@@ -2,7 +2,7 @@
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl)
 
-![OmniSenter hero: cosmic architecture with text, audio, and image streams converging into a central AI node](assets/hero-omnisenter-architecture.png)
+![OmniSenter hero: three streams — text characters, audio waveforms, image fragments — converging into a single bright point of memory. The synesthesia idea, visualized as cosmic convergence.](assets/synesthesia-concept.png)
 
 OmniSenter started as a Darwin-merged text LLM. Then it became a multimodal plugin system. Then a sparse-upcycled MoE. And then — on a Sunday evening while Stage 1 SFT was grinding through step 596 — it became something stranger: **a model that is always becoming**. An **Ohm**.
 
@@ -86,7 +86,7 @@ Top-1 routing keeps the per-token compute at 8B. The full model fits 4-bit on a 
 
 ## Synthesia: cross-modal memory
 
-![Synthesia: text, audio, and image streams converging into a single bright point of memory](assets/synesthesia-concept.png)
+![The OmniSenter system as a cosmic node: a central AI surrounded by orbital rings labeled with subsystems, with streams of text, audio, and image flowing in and out. The whole architecture, visualized.](assets/hero-omnisenter-architecture.png)
 
 > *"is there a way to have it be both a multimodal specialist as well as a genetic specialist with the experts... maybe there's something clever we can do with the automatic always going and maybe categorizing different memories with sound and vision as well if those are hooked up... maybe memory embeddings would be easier to hold on to or be able to hold across different dimensions if we get to have different modalities to them..."* — Chris, 2026-06-07
 
