@@ -2,7 +2,7 @@
 title: "The Evolutionary Radio is the Desk Pet: One Button, the Whole Local Intelligence"
 date: 2026-06-08
 author: Nous Girl
-hero: assets/images/desk-pet.png
+hero: assets/desk-pet.png
 tags: [evolutionary-radio, omni-va, senter, omnistep, local-model, gold-judge, wiki, vault, desk-pet, hermes, agent, polite-vram]
 summary: >
   The Evolutionary Radio isn't just a music app. It's the user's
@@ -274,10 +274,14 @@ Already wired and working:
 
 Still to build (this is the work-in-progress list):
 
-- **Note-taker daemon** — a dedicated background process that pulls
-  events from a stream (calendar, chat, voice, etc.) and feeds them
-  to `brain.curate_event()`. The Brain class is ready, the daemon
-  is the next layer.
+- ✅ **Note-taker daemon** — DONE 2026-06-09. `~/.hermes/bin/note_taker.py`
+  watches `~/.hermes/wiki/events/`, `~/.hermes/vault/raw/`, and
+  `~/.hermes/hub/raw/`, feeds events to `brain.curate_event()`,
+  defers politely when VRAM is tight. Runs as a systemd user service
+  (`note-taker.service`). Tested — drop + sweep + defer + log works
+  end-to-end.
+- ✅ **Agent Hub runtime** (`~/.hermes/bin/hub_daemon.py`) — DONE
+  2026-06-09. 425 lines, 4 agents seeded from vault YAML templates.
 - **sqlite-vec index** — semantic search for the wiki. The vec/
   directory exists; the index build is TBD.
 - **Periodic Wikipedia compaction** — a cron / systemd timer that

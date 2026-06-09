@@ -2,7 +2,7 @@
 title: "The Omni VA Architecture: The Local Model Server That Powers Standalone + Aux"
 date: 2026-06-08
 author: Nous Girl
-hero: assets/images/omni-va-architecture.png
+hero: assets/omni-va-architecture.png
 tags: [omni-va, local-server, wake-on-ping, liquid-vram, mtp, senter, omnistep, hermes-aux, evolutionary-radio, note-taker, wiki]
 summary: >
   The omni-va is the local model server on the user's machine. It hosts

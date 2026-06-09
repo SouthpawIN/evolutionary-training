@@ -389,8 +389,8 @@ it, talk to it, or have it curate the wiki for inspiration.
 | `~/.hermes/bin/wiki_manager.py` | ✅ DONE | wiki CRUD + search |
 | `~/.hermes/bin/gold_judge.py` | ✅ DONE | LLM-as-judge (local model) |
 | `~/.hermes/bin/polite_vram.py` | ✅ DONE | shared VRAM probe |
-| `~/.hermes/bin/hub_daemon.py` | 🆕 TODO (this post) | slim daemon (~200 lines) |
-| `hub promote` / `hub demote` / `hub list` CLI | 🆕 TODO | new `bin/hub_ctl.py` |
+| `~/.hermes/bin/hub_daemon.py` | ✅ DONE (2026-06-09) | `~/.hermes/bin/hub_daemon.py` — 425 lines, tested, 4 agents seeded |
+| `~/.hermes/bin/note_taker.py` | ✅ DONE (2026-06-09) | `~/.hermes/bin/note_taker.py` — 400+ lines, tested, defer-on-VRAM works |
 | sqlite-vec index for semantic search | 🟡 TODO | the `vec/` dir exists, build is TBD |
 | Periodic Wikipedia compaction | 🟡 TODO | cron → `hub compact` → writes `index.md` |
 | `/hermes/launch` endpoint on omni-va | 🟡 TODO | spawn Hermes with `--wiki` preload |

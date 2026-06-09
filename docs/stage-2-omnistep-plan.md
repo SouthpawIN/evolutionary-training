@@ -131,8 +131,6 @@ head based on the user input's modality.
 | `cosmos_qwen3_darwin_merge.py` | ✅ DONE (pattern to copy) | `scripts/cosmos_qwen3_darwin_merge.py` |
 | `sft_ace_step_text_merge.py` (Sub-op A) | 🆕 NEED TO WRITE | `scripts/sft_ace_step_text_merge.py` |
 | `stage2_omnistep_compose.py` (Sub-op B) | 🆕 NEED TO WRITE | `scripts/stage2_omnistep_compose.py` |
-| `yarn_256k_config.py` (Stage 4) | ✅ DONE (need to adapt for OmniStep arch) | `scripts/yarn_256k_config.py` |
-| OmniStep chat template (router) | 🆕 NEED TO WRITE | `chat_templates/omnistep_router.jinja` |
 | Pre-flight: verify all parent models on disk | 🆕 NEED TO RUN | (see check commands above) |
 | Pre-flight: download missing ACE-Step + Nemotron models | 🆕 NEED TO DO | `huggingface-cli download ACE-Step/acestep-v15-xl-sft` etc. |
 
