@@ -282,8 +282,17 @@ Still to build (this is the work-in-progress list):
   end-to-end.
 - ✅ **Agent Hub runtime** (`~/.hermes/bin/hub_daemon.py`) — DONE
   2026-06-09. 425 lines, 4 agents seeded from vault YAML templates.
-- **sqlite-vec index** — semantic search for the wiki. The vec/
-  directory exists; the index build is TBD.
+- **sqlite-vec index** — ✅ DONE 2026-06-09. `~/.hermes/bin/wiki_embed.py`
+  uses all-MiniLM-L6-v2 (CPU) + sqlite-vec 0.1.9. CLI:
+  `index / update / search / stats / serve`. Wired into:
+  - `wiki_manager.vec_search()` (replaces the stub) and
+    `wiki_manager.hybrid_search()` (vector + keyword hybrid)
+  - omni-va proxy `/wiki/search?mode=vector` and `?mode=hybrid`
+  - omni-va proxy `/wiki/embed/stats`
+  - note-taker daemon (passes `related` to `brain.curate_event()`
+    so the brain can dedup or update existing entries)
+  - systemd timer `wiki-embed.timer` runs `wiki_embed.py update`
+    every 15 minutes (only changed entries)
 - **Periodic Wikipedia compaction** — a cron / systemd timer that
   calls `brain.compact_wikipedia()` every hour or on-event.
 | `/wiki/*` write endpoints** on omni-va proxy (currently
