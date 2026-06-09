@@ -303,6 +303,40 @@ Still to build (this is the work-in-progress list):
   directly).
   All wired up (see the swap procedure in the omni-va arch post).
 
+## The chat interface is Hermes (per Chris 2026-06-09)
+
+Per Chris: *"we should just try to use Hermes agent as much as possible"*. The Evolutionary Radio is just a music engine. The chat interface with the OmniStep agent is **Hermes itself** — no custom TUI.
+
+To chat with the OmniStep agent:
+
+```bash
+# Spawn Hermes with the OmniStep agent as the system prompt
+hermes launch --from-md ~/.hermes/hub/agents/omni-step.md
+```
+
+Or via the omni-va proxy:
+```bash
+curl -X POST http://127.0.0.1:8082/hermes/launch \
+  -H "Content-Type: application/json" \
+  -d '{"agent": "omni-step", "query": "what should I play next?"}'
+```
+
+The radio's `brain.py` uses the **same** OmniStep agent under the hood. Both surfaces (the radio and Hermes) share the model (omni-va slot), the wiki (`~/.hermes/wiki/`), and the gold judge (`~/.hermes/bin/gold_judge.py`). One agent, two surfaces.
+
+## The radio, stripped down (2026-06-09)
+
+Per Chris: *"for the evolutionary radio just strip it down"*. The radio's Darwin merge + GEPA prompt evolution are moved to `code/advanced/` and disabled by default. The default radio is now: play, generate, polite-chat. Simple.
+
+**Code reduction:** from ~2115 lines to ~1280 lines (40% smaller).
+
+**The advanced systems are still available**, opt-in via env vars:
+```bash
+# Re-enable Darwin + GEPA evolution
+RADIO_ENABLE_DARWIN=1 RADIO_ENABLE_GEPA=1 ./start_radio.sh start
+```
+
+See `code/README.md` in the evolutionary-radio repo for the full breakdown of what's core vs advanced.
+
 ## The key design choices (and why)
 
 1. **One model, four roles.** Brain, judge, aux, compactor — all
