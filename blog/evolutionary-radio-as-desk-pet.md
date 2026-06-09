@@ -293,8 +293,11 @@ Still to build (this is the work-in-progress list):
     so the brain can dedup or update existing entries)
   - systemd timer `wiki-embed.timer` runs `wiki_embed.py update`
     every 15 minutes (only changed entries)
-- **Periodic Wikipedia compaction** — a cron / systemd timer that
-  calls `brain.compact_wikipedia()` every hour or on-event.
+- **Periodic Wikipedia compaction** — ✅ DONE 2026-06-09.
+  `~/.hermes/bin/wiki_compact.py` wraps `brain.compact_wikipedia()`,
+  runs hourly via `wiki-compact.timer` systemd timer, defers
+  politely when free VRAM < 4 GB. Writes to `~/.hermes/wiki/index.md`
+  (the human-readable Wikipedia view that Hermes can preload).
 | `/wiki/*` write endpoints** on omni-va proxy (currently
   read-only via the proxy — writes go through `wiki_manager.py`
   directly).

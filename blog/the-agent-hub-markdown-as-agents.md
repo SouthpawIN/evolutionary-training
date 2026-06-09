@@ -394,7 +394,7 @@ it, talk to it, or have it curate the wiki for inspiration.
 | `/hub/agents/list`, `/hub/agents/show/<name>`, `/hub/status` | ✅ DONE (2026-06-09) | list/show agents from the markdown hub |
 | `/wiki/write` (drop manual event or write entry) | ✅ DONE (2026-06-09) | POST endpoint, JSON body |
 | sqlite-vec index for semantic search | ✅ DONE (2026-06-09) | `~/.hermes/bin/wiki_embed.py` + `~/.hermes/wiki/vec/wiki.vec` (4 entries, all-MiniLM-L6-v2, CPU embedding, systemd timer every 15min) |
-| Periodic Wikipedia compaction | 🟡 TODO | cron → `hub compact` → writes `index.md` |
+| Periodic Wikipedia compaction | ✅ DONE (2026-06-09) | `~/.hermes/bin/wiki_compact.py` + `wiki-compact.timer` (hourly, defers politely when VRAM tight) |
 | `/hermes/launch` endpoint on omni-va | 🟡 TODO | spawn Hermes with `--wiki` preload |
 | Agent Hub systemd service | 🆕 TODO | `~/.config/systemd/user/agent-hub.service` |
 | Full 4-block architecture wired | ✅ DONE | see the omni-va post |

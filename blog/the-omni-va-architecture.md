@@ -304,7 +304,9 @@ slot from working today.
 | **Liquid ngl test sweep** (verified 4 tiers) | DONE 2026-06-08 | ngl 0/5/10 tested, auto-spill tested |
 | **Auto-heal verified** | DONE 2026-06-08 | `systemctl stop` clean, crash auto-restart |
 | **Config wired** (`~/.hermes/config.yaml`) | DONE 2026-06-08 | 9 of 10 aux tasks point to omni-va |
-| **Blog 100% truthful** | DONE 2026-06-08 | All posts updated with 4-model naming |
+| **sqlite-vec index** | ✅ DONE 2026-06-09 | `wiki_embed.py` (all-MiniLM-L6-v2, CPU) + timer every 15 min |
+| **Periodic Wikipedia compaction** | ✅ DONE 2026-06-09 | `wiki_compact.py` + timer every 1 hour, polite VRAM |
+| **Note-taker process** (`~/.hermes/bin/note_taker.py`) | ✅ DONE 2026-06-09 | slim daemon, polite VRAM, sweeps every 10s |
 
 ## The command cheatsheet
 
