@@ -195,10 +195,12 @@ gold judge follows automatically.
 ## See also
 
 - Blog post (canonical): [`../../blog/the-agent-hub-markdown-as-agents.md`](../../blog/the-agent-hub-markdown-as-agents.md)
-- Blog: [`../../blog/the-omni-va-architecture.md`](../../blog/the-omni-va-architecture.md) — the local model server
-- Blog: [`../../blog/evolutionary-radio-as-desk-pet.md`](../../blog/evolutionary-radio-as-desk-pet.md) — the unified vision
-- Blog: [`../../blog/omnisenter-integration.md`](../../blog/omnisenter-integration.md) — older integration post (still valid)
-- Concept: [Omni VA](./omni-va.md) — the local model server slot
-- Concept: [Notebook](./notebook.md) — the transient state (separate from the wiki)
-- Concept: [Hermes auxiliary](./hermes-auxiliary.md) — how the local model serves Hermes
+- Wiki entity: [OmniStep (the agent)](../entities/omni-step.md)
+- Master spec: `~/.hermes/hub/agents/omni-step.md`
+- Blog (the desk-pet vision): [`../../blog/evolutionary-radio-as-desk-pet.md`](../../blog/evolutionary-radio-as-desk-pet.md)
+- Blog (older integration post): [`../../blog/omnisenter-integration.md`](../../blog/omnisenter-integration.md)
+- Concept: [Omni VA](./omni-va.md) — the local model server slot (the body)
+- Concept: [Omni](./omni.md) — the umbrella multimodal family
+- Concept: [Senter](./senter.md) — the agentic family
+- Concept: [Hermes auxiliary](./hermes-auxiliary.md) — how the slot serves Hermes
 - Repo: [`SouthpawIN/evolutionary-training`](https://github.com/SouthpawIN/evolutionary-training) — main blog repo

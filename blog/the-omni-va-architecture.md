@@ -30,10 +30,15 @@ related:
 > server, wake-on-ping). The **model** it currently hosts is
 > **Carnice 35A3B I-Nano** (a Qwen 3.5 MoE 35B-A3B at IQ2_K) — a
 > **placeholder** until Stage 1 SFT finishes, then the slot will
-> hold **OmniStep** (8B) or **Senter Ohm** (32A8B). See
-> [`the-omni-family.md`](./the-omni-family.md) for the canonical
-> 4-model lineup. **"OmniSenter"** is the project name, not a model —
-> and **"omni-va"** is the slot, not a model either.
+> hold **OmniStep** (8B) or **Senter Ohm** (32A8B). The
+> **OmniStep agent** — the persona, system prompt, and toolset
+> — lives in `~/.hermes/hub/agents/omni-step.md`. It is the soul.
+> The omni-va is the body. See [`the-omni-family.md`](./the-omni-family.md)
+> for the canonical 4-model lineup, and
+> [the-agent-hub-markdown-as-agents.md](./the-agent-hub-markdown-as-agents.md)
+> for the OmniStep agent itself. **"OmniSenter"** is the project
+> name, not a model — and **"omni-va"** is the slot, not a model
+> either.
 
 The omni-va is the **always-on, never-sleeping local model server**
 on the user's machine. It is the bedrock of the local-side

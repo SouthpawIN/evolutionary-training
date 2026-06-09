@@ -24,6 +24,11 @@ related:
 # The Agent Hub: Markdown as Agents, the LLM Wiki of Your Ideas
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-09 architecture post by Chris (via Nous Girl)
+>
+> *Updated 2026-06-09: clarified that the **OmniStep agent** is the
+> persona/soul (not the model), and the **Omni VA** is just the model
+> server slot. They are not the same thing. The agent adapts to
+> whatever model is in the slot.*
 
 > **The epiphany, in one paragraph.** **The wiki IS the agent spec.**
 > A markdown file with the right frontmatter is a ready-to-spawn

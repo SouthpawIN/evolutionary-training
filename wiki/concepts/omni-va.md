@@ -12,6 +12,16 @@
 > canonical 4-model lineup. **"OmniSenter"** is the project name, not
 > a model — and **"omni-va"** is the slot, not a model either.
 
+## Naming (read first)
+
+Per Chris (2026-06-09): the **Omni VA** is the **local model server slot**.
+The **OmniStep** is the **agent** (the persona, system prompt, toolset).
+They are not the same thing — the agent is the SOUL, the omni-va is
+the BODY (the running process that hosts the model weights).
+
+See [`./omni-step.md`](./omni-step.md) for the OmniStep agent entity,
+or read the master spec at `~/.hermes/hub/agents/omni-step.md`.
+
 ## Definition
 
 **Omni VA** is a single systemd service that fronts a llama-server

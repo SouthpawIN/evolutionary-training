@@ -110,6 +110,7 @@ evolutionary radio, the note-taker, and the LLM wiki together.
 | **OmniStep Ohm** (8B + Ohm) | Same 8B + .ohm self-evolution engine | ⏳ Stage 5 |
 | **Senter** (32A8B MoE) | Sparse-upcycled from OmniStep, agentic flagship | ⏳ Stage 3 |
 | **Senter Ohm** (32A8B + Ohm) | Flagship with self-evolution | ⏳ Stage 5 |
+| **OmniStep (the agent)** | The local AI persona — the soul on top of the omni-va slot. Lives at `~/.hermes/hub/agents/omni-step.md`. | [entities/omni-step.md](entities/omni-step.md) |
 | **OmniSenter-Base 16B** (transitional) | 16B base (Qwen3-8B + Cosmos3-Nano Darwin merge) | ✅ [`sovthpaw/OmniSenter-Base-16B`](https://huggingface.co/sovthpaw/OmniSenter-Base-16B) |
 | **OmniStep 12A3B** (transitional) | 12B-total / 3B-active MoE, multimodal | ✅ [`sovthpaw/omnistep-12a3b`](https://huggingface.co/sovthpaw/omnistep-12a3b) |
 | **Omni-Senter 3B** (transitional) | Early Senter (3B), LoRA + GGUF | ✅ [`sovthpaw/Omni-Senter-3B`](https://huggingface.co/sovthpaw/Omni-Senter-3B) |
@@ -173,9 +174,10 @@ wiki/
 │   ├── omni-va.md                  # the local model server slot
 │   ├── evolutionary-radio.md       # the perpetual music engine
 │   └── agent-hub.md                # markdown as agents + LLM wiki
-└── entities/                       # 8 model entity pages
+└── entities/                       # 9 model entity pages (incl. omni-step the agent)
     ├── senter-ohm-32a8b.md
     ├── omnisenter-12b.md
+    ├── omni-step.md               # the AGENT (not the model)
     ├── omnisenterstep.md
     ├── omnistep-12a3b.md
     ├── omni-senter-3b.md
