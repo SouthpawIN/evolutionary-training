@@ -1,5 +1,15 @@
 # OmniSenter Stages 2 → 4: The Orchestration Recipe
 
+> **🚧 REVISION BANNER (2026-06-09)** — This doc was written under the
+> pre-2026-06-08 architecture where Stage 2 was "merge 3 specialized 8B
+> variants." The new architecture rule (per `AGENTS.md`) makes Stage 2
+> a **composite** of the 8B SFT + ACE-Step + Cosmos heads + Nemotron
+> ASR. The corrected, current Stage 2 plan is at
+> [`../docs/stage-2-omnistep-plan.md`](../docs/stage-2-omnistep-plan.md).
+> The 3-variant merge below is still valid as a *future Stage 2.5* for
+> specialist deltas feeding the MoE upcycle in Stage 3 — keep the
+> commands for reference but don't run them as Stage 2.
+
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-08 ops doc by Nous Girl
 > *The exact commands to take a finished Stage 1 SFT checkpoint and turn
 > it into a deployable 32A8B OmniSenter Ohm MoE with 256K context.*

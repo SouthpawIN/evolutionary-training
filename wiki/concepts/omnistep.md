@@ -1,41 +1,104 @@
 # OmniStep
 
-> **The multimodal + music model.** See the full blog post:
-> [`../../blog/the-omnistep-multimodal.md`](../../blog/the-omnistep-multimodal.md)
+> **The multimodal + music + agentic model.** Canonical architecture
+> reference (2026-06-08+): `OmniStep = Cosmos + Nemotron 0.6B ASR + 8B
+> agentic SFT + ACE-Step`. ALL Omni models always include ACE-Step —
+> music is in the DNA.
 
 ## Definition
 
-**OmniStep** is the destination unified model: a single Darwin-merged
-text backbone (Qwen2.5-Omni + largest ACE-Step) with all the modality
-heads attached. One model that speaks, types, plays music, understands
-images and video.
+**OmniStep** is the destination unified model: a single composite model
+that handles text reasoning, agentic tool use, vision, video, audio
+understanding, and music generation. The text LLM body is the 8B
+agentic SFT (Qwen3-8B base, LoRA-merged into the Darwin-merged
+gen-0-clean base). The other modalities attach as **heads** rather
+than being merged into the text backbone (they have incompatible
+architectures — DiT for music, streaming encoder for ASR, custom
+cross-attn for Cosmos multimodal).
 
-The "Step" suffix is from the music lineage (ACE-Step).
+## The 4 mandatory build blocks
 
-## What it is
+Per `evolutionary-training/AGENTS.md`, every Omni model includes all
+four. Removing any of them is a violation of the architecture rule.
 
-A paper-exact 2-parent Darwin merge of:
-- **Qwen2.5-Omni-3B** (multimodal parent: text + Whisper audio encoder
-  + NaViT vision encoder + talker + token2wav speech out)
-- **ACE-Step v1.5 XL 4B DiT** (music parent: DiT decoder + music text
-  encoder + lyrics-conditioned generation)
+| Block | What | Source | Size | Role |
+|---|---|---|---|---|
+| 1. **Cosmos** | Multimodal encoder/decoder | NVIDIA Cosmos3-Nano | ~8B heads | Vision in/out, video, image, audio |
+| 2. **Nemotron 0.6B** | Streaming ASR | NVIDIA Nemotron-Streaming-ASR-0.6B | 0.6B | Low-latency speech input |
+| 3. **8B SFT** | Agentic text LLM | Stage 1 SFT (running) | 8B | Reasoning, tool use, chat, notebook |
+| 4. **ACE-Step** | Music generation | ACE-Step v1.5 XL 3.5B SFT | 3.5B DiT + 4B LM | Music out (lyrics + audio) |
 
-The Darwin merge is on the **text backbone**. The modality-specific
-encoders/decoders are kept as **heads** of the merged model.
+**Total:** ~24B parameters, **8B active** on the text-only path.
+
+## Architecture
 
 ```
-OmniStep (single model, Darwin-merged text backbone + heads)
-├── text_backbone  Darwin merge of Qwen2.5-Omni + ACE-Step text encoders
+OmniStep (composite, runtime-routed)
+├── text_backbone/        8B Qwen3 (agentic SFT)
+│   ├── 36 transformer layers (Qwen3 arch)
+│   ├── embed_tokens (151,936 vocab)
+│   ├── lm_head
+│   └── (LoRA-merged into gen-0-clean = Darwin text backbone)
+│
 ├── heads/
-│   ├── whisper_audio_in      (Qwen2.5-Omni's Whisper encoder)
-│   ├── navit_vision_in       (Qwen2.5-Omni's NaViT)
-│   ├── talker_speech_out     (Qwen2.5-Omni's talker)
-│   ├── token2wav             (Qwen2.5-Omni's codec decoder)
-│   └── ace_step_dit_music    (largest ACE-Step DiT)
-├── router     intent-based dispatch
-├── evolver    background Darwin CMA-ES
-└── ui         TUI / Discord / voice / API
+│   ├── cosmos/           From Cosmos3-Nano (preserved from gen-0-clean)
+│   │   ├── vision_encoder    (NaViT-style)
+│   │   ├── cross_modal_attn  (add_q/k/v_proj + to_add_out, per layer)
+│   │   ├── moe_gen_twins     (layers.*.mlp_moe_gen.*)
+│   │   ├── modality_embed
+│   │   ├── dit               (Diffusion Transformer for video/image gen)
+│   │   ├── sound_tokenizer
+│   │   └── vae
+│   │
+│   ├── ace_step_dit      Symlink → ACE-Step v1.5 XL 3.5B SFT
+│   │                       (DiT music decoder, 50 diffusion steps)
+│   │
+│   ├── ace_step_lm       (FUTURE — Darwin-merged into text_backbone in Stage 2 Sub-op A)
+│   │                       (5Hz-LM-4B Qwen3-based, lyrics/caption planner)
+│   │
+│   └── nemotron_asr      Symlink → Nemotron-Streaming-ASR-0.6B
+│                           (CTC-based streaming speech recognizer)
+│
+├── router/               Intent classifier (v1: keyword match; v2: learned)
+│   ├── text_only      → text_backbone
+│   ├── vision_in      → heads/cosmos (vision_encoder)
+│   ├── audio_in       → heads/nemotron_asr
+│   ├── music_out      → heads/ace_step_dit
+│   ├── video_out      → heads/cosmos (dit)
+│   └── image_out      → heads/cosmos (dit)
+│
+└── evolver/              (Senter Ohm only — Darwin CMA-ES, background)
 ```
+
+## Build process
+
+Stage 2 (after Stage 1 SFT completes):
+
+1. **Sub-op A** — `merge_lora.py` bakes the Stage 1 LoRA into
+   `gen-0-clean` → `omnisenter-8b-sft-merged/` (the 8B agentic text body
+   with full multimodal heads from gen-0-clean)
+2. **Sub-op A** — `sft_ace_step_text_merge.py` Darwin-merges the text
+   LLMs (SFT body × ACE-Step 5Hz-LM-4B) → `omnistep-text-backbone/`
+3. **Sub-op B** — `stage2_omnistep_compose.py` stitches Cosmos heads,
+   ACE-Step DiT, Nemotron ASR onto the text backbone →
+   `omnistep-v1/` (the final composite)
+
+Total Stage 2 wall time: ~30 min on 2×3090.
+
+Detailed plan: `docs/stage-2-omnistep-plan.md`
+
+## Variants
+
+| Variant | Has Ohm? | Use case |
+|---|---|---|
+| **OmniStep** (8B active) | no | Default local model, single-user |
+| **OmniStep Ohm** (8B + Ohm) | yes | Self-evolution engine bundled |
+| **Senter** (32A8B MoE) | no | Agentic flagship, sparse-upcycled from OmniStep |
+| **Senter Ohm** (32A8B + Ohm) | yes | Flagship with self-evolution |
+
+The "Step" suffix is from the music lineage (ACE-Step). All four
+variants are **always multimodal + music + agentic**. The 8B ↔ 32A8B
+distinction is about scale/specialization, not feature set.
 
 ## Current published baseline (transitional)
 
@@ -46,12 +109,18 @@ OmniStep (single model, Darwin-merged text backbone + heads)
 - Q4_K_M (2.0GB) — recommended
 - Q4_0 (1.9GB)
 
-**This is transitional** — the new architecture's OmniStep will
-eventually replace it.
+**This is transitional** — the new architecture's OmniStep (above) will
+eventually replace it. The transitional model is **not** multimodal +
+music + agentic; it's a smaller MoE that does the multimodal basics
+but lacks ACE-Step integration. The Stage 2 output will be the real
+OmniStep.
 
 ## See also
 
-- Blog post: [`../../blog/the-omnistep-multimodal.md`](../../blog/the-omnistep-multimodal.md)
-- Related: [Omni](./omni.md) · [Omnimodal fusion](./omnimodal-fusion.md) · [Generative Darwin](../../blog/generative-darwin-evolution.md)
-- HF: [`sovthpaw/omnistep-12a3b`](https://huggingface.co/sovthpaw/omnistep-12a3b)
-- Repo: [`SouthpawIN/evolutionary-radio`](https://github.com/SouthpawIN/evolutionary-radio) (the music radio that uses OmniStep)
+- Plan: [`../../docs/stage-2-omnistep-plan.md`](../../docs/stage-2-omnistep-plan.md)
+- Blog (transitional, still relevant): [`../../blog/the-omnistep-multimodal.md`](../../blog/the-omnistep-multimodal.md)
+- Architecture rule: [`../../AGENTS.md`](../../AGENTS.md) (top of file)
+- Family naming: [`../../blog/the-omni-family.md`](../../blog/the-omni-family.md)
+- Related: [Omni](./omni.md) · [Omnimodal fusion](./omnimodal-fusion.md) · [OmniSenter (project)](./omnisenter.md) · [Senter (32A8B MoE)](./senter.md)
+- HF (transitional): [`sovthpaw/omnistep-12a3b`](https://huggingface.co/sovthpaw/omnistep-12a3b)
+- Repo (music radio that uses OmniStep): [`SouthpawIN/evolutionary-radio`](https://github.com/SouthpawIN/evolutionary-radio)
