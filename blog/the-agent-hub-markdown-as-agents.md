@@ -263,23 +263,34 @@ makes the Agent Hub live. It:
 CLI for direct use:
 
 ```bash
-# List all registered agents
+# List all registered agents (5 currently: personal-assistant, code-reviewer,
+# creative-writer, omni-step-merge-copilot, omni-step)
 hub list
 
-# Show one agent's spec
+# Show one agent's spec (frontmatter + body)
 hub show code-reviewer
 
 # Launch an agent with a query
 hub launch code-reviewer --query "review the diff in PR #42"
+
+# Search across the hub + wiki (keyword, vector, or hybrid)
+hub search "omnistep merge" --mode vector
+hub search "what was the user's idea about music" --mode hybrid
 
 # Validate all agents in the hub
 hub validate
 
 # Promote a wiki note to an agent
 hub promote ~/.hermes/wiki/ideas/sprint-reviewer.md
+hub promote ~/.hermes/wiki/ideas/foo.md --llm  # ask the gold judge to fill frontmatter
 
 # Demote an agent back to a wiki note
 hub demote sprint-reviewer
+
+# Compose content via the "agent writer" pattern
+# (ask an agent to write something and save to a file)
+hub compose omni-step "Write a 3-bullet summary of the current architecture" \
+  -o ~/.hermes/wiki/projects/architecture-summary-2026-06-09.md
 ```
 
 The daemon itself is a slim Python process (~200 lines, similar to
