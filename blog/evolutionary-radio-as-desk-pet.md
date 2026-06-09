@@ -286,11 +286,9 @@ Still to build (this is the work-in-progress list):
   directory exists; the index build is TBD.
 - **Periodic Wikipedia compaction** — a cron / systemd timer that
   calls `brain.compact_wikipedia()` every hour or on-event.
-- **`/wiki/*` write endpoints** on the omni-va proxy (currently
+| `/wiki/*` write endpoints** on omni-va proxy (currently
   read-only via the proxy — writes go through `wiki_manager.py`
   directly).
-- **OmniStep on Carnice swap** — when Stage 1 SFT finishes, swap
-  the GGUF in the omni-va service file from Carnice to OmniStep.
   All wired up (see the swap procedure in the omni-va arch post).
 
 ## The key design choices (and why)

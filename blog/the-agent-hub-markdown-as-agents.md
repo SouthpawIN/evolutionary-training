@@ -390,7 +390,9 @@ it, talk to it, or have it curate the wiki for inspiration.
 | `~/.hermes/bin/gold_judge.py` | ✅ DONE | LLM-as-judge (local model) |
 | `~/.hermes/bin/polite_vram.py` | ✅ DONE | shared VRAM probe |
 | `~/.hermes/bin/hub_daemon.py` | ✅ DONE (2026-06-09) | `~/.hermes/bin/hub_daemon.py` — 425 lines, tested, 4 agents seeded |
-| `~/.hermes/bin/note_taker.py` | ✅ DONE (2026-06-09) | `~/.hermes/bin/note_taker.py` — 400+ lines, tested, defer-on-VRAM works |
+| `/hermes/launch` endpoint on omni-va | ✅ DONE (2026-06-09) | spawn Hermes with `--wiki` preloaded + Agent Hub agent spec |
+| `/hub/agents/list`, `/hub/agents/show/<name>`, `/hub/status` | ✅ DONE (2026-06-09) | list/show agents from the markdown hub |
+| `/wiki/write` (drop manual event or write entry) | ✅ DONE (2026-06-09) | POST endpoint, JSON body |
 | sqlite-vec index for semantic search | 🟡 TODO | the `vec/` dir exists, build is TBD |
 | Periodic Wikipedia compaction | 🟡 TODO | cron → `hub compact` → writes `index.md` |
 | `/hermes/launch` endpoint on omni-va | 🟡 TODO | spawn Hermes with `--wiki` preload |

@@ -296,10 +296,11 @@ slot from working today.
 
 | What | Status | Why |
 |---|---|---|
-| **Wiki storage** (`~/.hermes/wiki/`) | TODO | Needs the markdown schema + sqlite-vec index |
-| **Note-taker process** (slim Hermes loop) | TODO | The actual code that maintains the wiki |
-| **`/wiki/*` endpoints on omni-va proxy** | TODO | Read/write/search the wiki via the slot |
-| **`/hermes/launch` endpoint** | TODO | Spawn a Hermes agent with `--wiki` preloaded |
+| **Wiki storage** (`~/.hermes/wiki/`) | ✅ DONE 2026-06-08 | markdown schema + sqlite-vec index TBD |
+| **Note-taker process** (`~/.hermes/bin/note_taker.py`) | ✅ DONE 2026-06-09 | slim daemon, polite VRAM, sweeps every 10s |
+| **`/wiki/*` endpoints on omni-va proxy** | ✅ DONE 2026-06-09 | stats / list / read / search / write (drop) |
+| **`/hub/*` endpoints on omni-va proxy** | ✅ DONE 2026-06-09 | agents/list / agents/show/<name> / status |
+| **`/hermes/launch` endpoint** | ✅ DONE 2026-06-09 | spawns hermes with wiki + Agent Hub agent preloaded |
 | **Liquid ngl test sweep** (verified 4 tiers) | DONE 2026-06-08 | ngl 0/5/10 tested, auto-spill tested |
 | **Auto-heal verified** | DONE 2026-06-08 | `systemctl stop` clean, crash auto-restart |
 | **Config wired** (`~/.hermes/config.yaml`) | DONE 2026-06-08 | 9 of 10 aux tasks point to omni-va |
