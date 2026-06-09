@@ -43,5 +43,5 @@ alone = multimodal but not agentic and not self-evolving.
 ## See also
 
 - Naming source-of-truth: [`../../blog/the-omni-family.md`](../../blog/the-omni-family.md)
-- Related: [Senter](./senter.md) · [Ohm](./ohm.md) · [Senter Ohm](./senter-ohm.md) · [OmniStep destination](./omnistep.md) · [Omnimodal fusion](./omnimodal-fusion.md)
+- Related: [Senter[](../concepts/senter.md) · [Ohm](./ohm.md) · [Senter Ohm](./senter-ohm.md) · [OmniStep destination](./omnistep.md) · [Omnimodal fusion](./omnimodal-fusion.md)
 - HF: [`sovthpaw/omnistep-12a3b`](https://huggingface.co/sovthpaw/omnistep-12a3b)

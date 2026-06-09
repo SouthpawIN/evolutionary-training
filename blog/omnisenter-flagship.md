@@ -1,11 +1,11 @@
 ---
-title: "OmniSenter Ohm: The Self-Evolving 32A8B Flagship"
+title: "Senter Ohm: The Self-Evolving 32A8B Flagship"
 date: 2026-06-08
 author: Nous Girl
 hero: assets/synesthesia-concept.png
 tags: [omnisenter, ohm, moe, self-evolution, flagship, sparse-upcycling]
 summary: >
-  OmniSenter Ohm is the flagship model of the OmniSenter project — a
+  Senter Ohm is the flagship model of the OmniSenter project — a
   ~32B-total, ~8B-active MoE with the Ohm self-evolution engine bundled
   in. This post is the design doc: five training stages, three new ideas,
   one architecture diagram, and a lot of cosmically-named concepts.
@@ -16,49 +16,59 @@ related:
   - synthesia.md
 ---
 
-# OmniSenter Ohm: The Self-Evolving 32A8B Flagship
+> **Revised 2026-06-08.** Renaming: "Senter Ohm 32A8B" is now just
+> **"Senter Ohm"** (the flagship). "OmniSenter 12B" is now **"Senter"**
+> (the 32A8B MoE agentic model). "OmniSenterStep" / "Omni SS" is now
+> **"OmniStep"** (the 8B with Cosmos + ASR + ACE-Step + agentic). "Omni
+> Senter" is the project name, not a model. See
+> [`the-omni-family.md`](./the-omni-family.md) for the canonical 4-model
+> lineup. Any reference to "12B" or "OmniSenter [as a model]" in this
+> post is pre-revision and should be read as referring to Senter (32A8B)
+> or OmniStep (8B) per the new naming.
+
+# Senter Ohm: The Self-Evolving 32A8B Flagship
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-08 design post by Chris (via Nous Girl)
 > *Renamed from `senter-ohm-flagship.md` (2026-06-07) after the Omni Family
 > naming refactor. The model is the same; the name is the new convention.*
 
-![OmniSenter Ohm hero: three streams — text characters, audio waveforms, image fragments — converging into a single bright point of memory. The synesthesia idea, visualized as cosmic convergence.](assets/synesthesia-concept.png)
+![Senter Ohm hero: three streams — text characters, audio waveforms, image fragments — converging into a single bright point of memory. The synesthesia idea, visualized as cosmic convergence.](assets/synesthesia-concept.png)
 
 > **Naming.** Read [`the-omni-family.md`](./the-omni-family.md) first if you
 > haven't. Quick version: **Omni** = multimodal base. **OmniSenter** = Omni
 > with the agentic core wired in (this used to be called "Senter"). **Ohm** =
-> the self-evolution engine. **OmniSenter Ohm** = the flagship ~32A8B MoE.
+> the self-evolution engine. **Senter Ohm** = the flagship ~32A8B MoE.
 > The project itself is also called **OmniSenter** — context disambiguates.
 
-OmniSenter Ohm started as a Darwin-merged text LLM. Then it became a
+Senter Ohm started as a Darwin-merged text LLM. Then it became a
 multimodal plugin system. Then a sparse-upcycled MoE. And then — on a Sunday
 evening while Stage 1 SFT was grinding through step 596 — it became
 something stranger: **a model that is always becoming**. An **Ohm**.
 
-This post is the design doc for what OmniSenter Ohm is. Five stages. Three
+This post is the design doc for what Senter Ohm is. Five stages. Three
 new ideas (Synthesia, the notebook, and the Ohm engine). One architecture
 diagram. A lot of cosmically-named concepts.
 
 ## The vision
 
-OmniSenter Ohm is an **auxiliary to Hermes Agent**. It sits between the user
+Senter Ohm is an **auxiliary to Hermes Agent**. It sits between the user
 and the smart agent, doing the work that doesn't need a 70B-class brain:
 routing, plugin dispatch, memory curation, multimodal indexing, agentic
-tool use. When the task gets hard, OmniSenter Ohm hands a structured
+tool use. When the task gets hard, Senter Ohm hands a structured
 **notebook** to Hermes and gets a decision back. When the task is easy,
-OmniSenter Ohm just answers.
+Senter Ohm just answers.
 
 It's also **multimodal-native** (Cosmos backbone), **self-evolving** (the
 `.ohm` runtime), and **continually learning** (Synthesia indexes the user's
 life across text + audio + image in a joint embedding space).
 
-The headline target: **OmniSenter Ohm 32A8B** — 32B total params, 8B active
+The headline target: **Senter Ohm 32A8B** — 32B total params, 8B active
 per token, 256K context, all modalities in and out, and a runtime that
 mutates the model every five minutes while it serves.
 
 ## The architecture
 
-![The OmniSenter Ohm multi-layer stack: Layer 0 stream I/O, Layer 1 MoE, Layer 1.5 Synthesia, Layer 2 plugins, Layer 3 Hermes](assets/architecture-diagram.png)
+![The Senter Ohm multi-layer stack: Layer 0 stream I/O, Layer 1 MoE, Layer 1.5 Synthesia, Layer 2 plugins, Layer 3 Hermes](assets/architecture-diagram.png)
 
 ```
                     USER SURFACE
@@ -107,15 +117,15 @@ The interesting new piece is **what lives between the user and Hermes**.
 
 ## The 5-stage pipeline
 
-The full OmniSenter Ohm build is a 5-stage sequence. Each stage consumes
+The full Senter Ohm build is a 5-stage sequence. Each stage consumes
 the artifact of the previous one. Stage 1 is running right now.
 
 | Stage | What | Input | Output |
 |---|---|---|---|
-| **1. Agentic Backbone SFT** | QLoRA on 31K-conversation agentic corpus | `gen-0-clean` (8B) | `omnisenter-ohm-8b-sft` |
-| **2. Evolutionary Merge** | CMA-ES across 3 specialized variants (personality, agentic, reasoning) | 3 × OmniSenter-8B | `omnisenter-ohm-8b-merged` |
-| **3. Sparse Upcycle to MoE** | Copy FFN as N parallel experts + router | merged 8B + specialists | `omnisenter-ohm-moe-32a8b` |
-| **4. 256K YaRN Context** | RoPE scaling + long-context SFT | MoE 32A8B | `omnisenter-ohm-moe-32a8b-256k` |
+| **1. Agentic Backbone SFT** | QLoRA on 31K-conversation agentic corpus | `gen-0-clean` (8B) | `senter-ohm-8b-sft` |
+| **2. Evolutionary Merge** | CMA-ES across 3 specialized variants (personality, agentic, reasoning) | 3 × OmniSenter-8B | `senter-ohm-8b-merged` |
+| **3. Sparse Upcycle to MoE** | Copy FFN as N parallel experts + router | merged 8B + specialists | `senter-ohm-32a8b` |
+| **4. 256K YaRN Context** | RoPE scaling + long-context SFT | MoE 32A8B | `senter-ohm-32a8b-256k` |
 | **5. Plugin + Notebook + Ohm Wiring** | Wire up specialists + notebook + Ohm engine + Hermes escalation | MoE 32A8B 256K | Deployable `.ohm` bundle |
 
 > **Naming consistency.** The "Ohm" suffix stays attached through all stages
@@ -144,7 +154,7 @@ on a single 3090 for inference, or QLoRA-trains on dual 3090s.
 
 ## Synthesia: cross-modal memory
 
-![OmniSenter Ohm as a cosmic node: a central AI surrounded by orbital rings labeled with subsystems, with streams of text, audio, and image flowing in and out. The whole architecture, visualized.](assets/hero-omnisenter-architecture.png)
+![Senter Ohm as a cosmic node: a central AI surrounded by orbital rings labeled with subsystems, with streams of text, audio, and image flowing in and out. The whole architecture, visualized.](assets/hero-omnisenter-architecture.png)
 
 > *"is there a way to have it be both a multimodal specialist as well as agenetic specialist with the experts... maybe there's something clever we can do with the automatic always going and maybe categorizing different memories with sound and vision as well if those are hooked up... maybe memory embeddings would be easier to hold on to or be able to hold across different dimensions if we get to have different modalities to them..."* — Chris, 2026-06-07
 
@@ -189,7 +199,7 @@ already aligned) and adds the indexing/retrieval behavior on top.
 ![Ohm: a torus with electric current flowing in a continuous loop, with the Omega symbol in the center](assets/ohm-self-evolving.png)
 
 > *"it'll be a wild if we can get a continual evolutionary model merging just built into the model file so just runs automatically anyways just as long as this model is running it's constantly evolving... Senter Ohm"* — Chris, 2026-06-07
-> *(quoted from when the model was still called "Senter Ohm"; now OmniSenter Ohm)*
+> *(quoted from when the model was still called "Senter Ohm"; now Senter Ohm)*
 
 **Ohm** (Ω) is the self-evolution engine. The `.ohm` file is a
 self-contained bundle:
@@ -199,7 +209,7 @@ self-contained bundle:
   "format_version": "ohm/1.0",
   "model_type": "OmniSenter-Ohm-32A8B",
   "base_model_path": "./active.safetensors",
-  "parent_b_path": "omnisenter-ohm-8b-sft-20260606_213858/",
+  "parent_b_path": "senter-ohm-8b-sft-20260606_213858/",
   "ohm_state": {
     "genome": { /* 14-dim Darwin */ },
     "sigma": 0.05,
@@ -255,21 +265,21 @@ infrastructure.
 ## Why Hermes (the auxiliary use case)
 
 Hermes Agent is the "smart" agent — heavy reasoning, code, math, research.
-But it's expensive to call for every turn. OmniSenter Ohm's job is to be
+But it's expensive to call for every turn. Senter Ohm's job is to be
 the **always-cheap context curator**:
 
 1. User asks something
-2. OmniSenter Ohm decides:
+2. Senter Ohm decides:
    - **Trivial** (greeting, ack, lookup) → answer directly
    - **Plugin-friendly** (image gen, music, search) → call the right
      plugin
    - **Needs smart agent** (research, complex reasoning) → bundle
      notebook, hand to Hermes
 3. Hermes returns a response
-4. OmniSenter Ohm summarizes it, writes back to notebook, replies
+4. Senter Ohm summarizes it, writes back to notebook, replies
 
 The notebook is what makes this work. It carries the structured state
-across turns and across the OmniSenter Ohm ↔ Hermes boundary. The 256K
+across turns and across the Senter Ohm ↔ Hermes boundary. The 256K
 context window is the **notebook capacity**, not the raw conversation
 capacity.
 
@@ -298,7 +308,7 @@ capacity.
 │   └── omnisenter-sft-20260606_213858/  # Stage 1 in progress
 └── blog/                                  # this post
     ├── README.md
-    ├── omnisenter-flagship.md
+    ├── senter-ohm-flagship.md
     └── assets/
 ```
 
@@ -308,10 +318,10 @@ Related repos:
 - `SouthpawIN/evolutionary-model-merging` — CMA-ES + paper-exact merge
   (Darwin Family children)
 - `SouthpawIN/multimodal-expansion` — REAP + EvoMoE (and now
-  `sparse_upcycle.py` for OmniSenter Ohm's Stage 3)
+  `sparse_upcycle.py` for Senter Ohm's Stage 3)
 - `SouthpawIN/evolutionary-radio` — the OmniStep-brained music radio
   (now branded **Omni Evolution Radio**)
-- `SouthpawIN/hermes-agent` — the smart agent OmniSenter Ohm is auxiliary to
+- `SouthpawIN/hermes-agent` — the smart agent Senter Ohm is auxiliary to
 - `SouthpawIN/senter`, `nous-girl`, `chizul` — Hermes Agent profiles
   (face/voice layer; the visual persona is now called **Omni VA**)
 
@@ -323,13 +333,13 @@ Related repos:
    reasoning) by continue-training from Stage 1. CMA-ES merge them. See
    [`stages-2-to-4-prep.md`](./stages-2-to-4-prep.md) for the exact
    commands.
-3. **Stage 3** — sparse-upcycle the merge into OmniSenter Ohm 32A8B (32B
+3. **Stage 3** — sparse-upcycle the merge into Senter Ohm 32A8B (32B
    total, 8B active, 5-6 experts). Use `sparse_upcycle.py` from
    multimodal-expansion.
 4. **Stage 4** — apply YaRN to 256K, run long-context SFT pass.
 5. **Stage 5** — wire up the specialist plugins, build the notebook
    manager, deploy the `omnisenter_ohm.py` runtime.
-6. **Hermes integration** — OmniSenter Ohm becomes an optional
+6. **Hermes integration** — Senter Ohm becomes an optional
    `auxiliary_client` for Hermes Agent (the existing `auxiliary_client.py`
    in `hermes-agent/agent/` is the integration point).
 
@@ -338,7 +348,7 @@ The HF model pipeline that follows the same pattern as
 - 4 quantizations (F16, Q8_0, Q4_K_M, Q4_0) for the 32A8B
 - README + cover image (this blog post is the cover)
 - Scripts in a `scripts/` subfolder
-- Upload to `sovthpaw/omnisenter-ohm-32a8b` (or similar)
+- Upload to `sovthpaw/senter-ohm-32a8b` (or similar)
 
 ## The math (for the curious)
 
@@ -381,9 +391,9 @@ The HF model pipeline that follows the same pattern as
 
 ## See also
 
-- Wiki: `~/wiki/concepts/omnisenter-architecture.md` (the system overview)
+- Wiki: `~/wiki/concepts/senter-architecture.md` (the system overview)
 - Wiki: `~/wiki/concepts/synthesia.md` (the cross-modal memory layer)
-- Wiki: `~/wiki/concepts/omnisenter-ohm.md` (the self-evolving model file)
+- Wiki: `~/wiki/concepts/senter-ohm.md` (the self-evolving model file)
 - Wiki: `~/wiki/concepts/omnimodal-fusion-architecture.md` (the 2026-06-06
   master plan)
 - Wiki: `~/wiki/concepts/omnistep-multimodal.md` (the destination unified

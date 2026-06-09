@@ -1,14 +1,13 @@
 ---
-title: "The 5-Stage Pipeline: Building the OmniSenter Flagship"
+title: "The 5-Stage Pipeline: Building Senter Ohm"
 date: 2026-06-07
 author: Nous Girl
-hero: assets/5-stage-pipeline.png
-tags: [pipeline, training, omnisenter, omnistep, ohm, sparse-upcycling, yarn, acestep, cosmos, nemotron]
+hero: assets/images/5-stage-pipeline.png
+tags: [pipeline, training, senter, ohm, sparse-upcycling, yarn]
 summary: >
-  The full build sequence for OmniSenter — the 32A8B flagship MoE with the
+  The full build sequence for Senter Ohm — the 32A8B flagship MoE with the
   Ohm self-evolution engine. Each stage consumes the artifact of the
   previous one. Stage 1 is running right now; the rest are queued.
-  The same 5 stages also produce the smaller OmniStep (~12A3B).
 related:
   - the-omni-family.md
   - senter-ohm-flagship.md
@@ -16,45 +15,43 @@ related:
   - the-notebook-schema.md
 ---
 
-# The 5-Stage Pipeline: Building OmniSenter
+> **Revised 2026-06-08.** Renaming: "Senter Ohm 32A8B" is now just
+> **"Senter Ohm"** (the flagship). "OmniSenter 12B" is now **"Senter"**
+> (the 32A8B MoE agentic model). "OmniSenterStep" / "Omni SS" is now
+> **"OmniStep"** (the 8B with Cosmos + ASR + ACE-Step + agentic). "Omni
+> Senter" is the project name, not a model. See
+> [`the-omni-family.md`](./the-omni-family.md) for the canonical 4-model
+> lineup. Any reference to "12B" or "OmniSenter [as a model]" in this
+> post is pre-revision and should be read as referring to Senter (32A8B)
+> or OmniStep (8B) per the new naming.
+
+# The 5-Stage Pipeline: Building Senter Ohm
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl)
-> **Updated 2026-06-08** to reflect the architecture simplification.
 
-![The 5-stage pipeline: five interconnected factory platforms, each with industrial machines, arrows flowing from left to right through SFT, Merge, Upcycle, YaRN, and Wiring. The production line for OmniSenter.](assets/5-stage-pipeline.png)
+![The 5-stage pipeline: five interconnected factory platforms, each with industrial machines, arrows flowing from left to right through SFT, Merge, Upcycle, YaRN, and Wiring. The production line for Senter Ohm.](../assets/images/5-stage-pipeline.png)
 
-> **Naming.** This pipeline produces **OmniSenter**, the ~32A8B flagship
-> MoE (with the **Ohm** variant bundling the self-evolution engine).
-> The smaller sibling — **OmniStep** (~12A3B) — is produced by a
-> shorter pipeline that shares Stages 1 and 2. Read
-> [`the-omni-family.md`](./the-omni-family.md) for the full taxonomy.
->
-> **Architecture rule (mandatory):** every Omni model is built from four
-> blocks: **Cosmos** (multimodal base) + **Nemotron 0.6B streaming ASR**
-> (speech input) + **the 8B SFT we're training** (agentic core) +
-> **upgraded ACE-Step** (music — always mandatory). Music is in the DNA,
-> not a bolt-on.
+> **Naming.** This pipeline produces **Senter Ohm**, the ~32A8B flagship
+> MoE with the Ohm self-evolution engine bundled in. The smaller siblings
+> in the family — **Senter** (small function-calling), **OmniStep**
+> (multimodal + music), and the Darwin Family children — are produced by
+> shorter pipelines. Read [`the-omni-family.md`](./the-omni-family.md) for
+> the full taxonomy.
 
-The full build sequence for OmniSenter. Each stage consumes the artifact
+The full build sequence for Senter Ohm. Each stage consumes the artifact
 of the previous one. Stage 1 is running right now; the rest are queued.
 
 ## The overview
 
 | Stage | What | Input | Output | Wall time (estimated) | Status |
 |---|---|---|---|---|---|
-| **1** | Agentic Backbone SFT | `gen-0-clean` (8B) | `omnisenter-8b-sft` | ~6-20h | 🔄 running |
-| **2** | Evolutionary Merge (Darwin) | 8B SFT + ACE-Step + 2 other parents | `omnistep-12a3b-merged` | ~3-4h | ⏳ queued |
-| **3** | Sparse Upcycle to MoE | merged 12A3B + 4-5 specialists | `omnisenter-moe-32a8b` | ~1h | ⏳ queued |
-| **4** | 256K YaRN Context | MoE 32A8B | `omnisenter-moe-32a8b-256k` | ~2-4h | ⏳ queued |
-| **5** | Plugin + Notebook + Senter Core + Ohm Wiring | MoE 32A8B 256K | Deployable bundle | ~1 day | ⏳ queued |
+| **1** | Agentic Backbone SFT | `gen-0-clean` (8B) | `senter-ohm-8b-sft` | ~6-20h | 🔄 running |
+| **2** | Evolutionary Merge | 3 × Senter-8B variants | `senter-ohm-8b-merged` | ~3-4h | ⏳ queued |
+| **3** | Sparse Upcycle to MoE | merged 8B + 4-5 specialists | `senter-ohm-moe-32a8b` | ~1h | ⏳ queued |
+| **4** | 256K YaRN Context | MoE 32A8B | `senter-ohm-moe-32a8b-256k` | ~2-4h | ⏳ queued |
+| **5** | Plugin + Notebook + Ohm Wiring | MoE 32A8B 256K | Deployable `.ohm` bundle | ~1 day | ⏳ queued |
 
 **Total wall time: ~3-5 days from Stage 1 finish to deployable.**
-
-**Final products:** 4 deployable artifacts from this single pipeline:
-- `omnistep-standard` — the smaller, no-self-evolution model
-- `omnistep-ohm` — the smaller, with self-evolution
-- `omnisenter-standard` — the flagship, no self-evolution
-- `omnisenter-ohm` — the flagship, with self-evolution (THE flagship)
 
 ## Stage 1: Agentic Backbone SFT (NOW)
 
@@ -180,7 +177,7 @@ window.
 ## Stage 5: Plugin + Notebook + Ohm Wiring
 
 **Goal:** Wire up the specialist plugins, build the notebook manager,
-deploy the [Ohm](the-ohm-runtime.md)
+deploy the [Ohm](./the-ohm-runtime.md)
 runtime, and produce the deployable `.ohm` bundle.
 
 ### 5a. Notebook Manager
@@ -244,9 +241,9 @@ A 35GB-50GB model repo on HuggingFace:
 - [`sparse-upcycling-deep-dive.md`](./sparse-upcycling-deep-dive.md) —
   Stage 3 deep dive
 - [`the-notebook-schema.md`](./the-notebook-schema.md) — Stage 5a spec
-- [omnisenter-ohm](the-ohm-runtime.md)
+- [senter-ohm](./the-ohm-runtime.md)
   — Stage 5c spec
-- [omnisenter-architecture](the-omnisenter-architecture.md)
+- [senter-architecture](./the-omnisenter-architecture.md)
   — the system overview
 
 ## TOWARDS SELF-IMPROVEMENT

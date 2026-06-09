@@ -5,7 +5,7 @@
 
 ## Definition
 
-[Senter](./senter.md) (any model in the Senter family) sits **in front
+[Senter[](../concepts/senter.md) (any model in the Senter family) sits **in front
 of** Hermes Agent, doing the work that doesn't need a 70B-class brain.
 When the task gets hard, Senter hands a structured
 [notebook](./notebook.md) to Hermes and gets a decision back.
@@ -105,5 +105,5 @@ hermes --auxiliary-model senter-ohm-moe-32a8b \
 ## See also
 
 - Blog post: [`../../blog/senter-as-hermes-auxiliary.md`](../../blog/senter-as-hermes-auxiliary.md)
-- Related: [Senter](./senter.md) · [Notebook](./notebook.md) · [Synthesia](./synthesia.md) · [OmniSenter](./omnisenter.md)
+- Related: [Senter[](../concepts/senter.md) · [Notebook](./notebook.md) · [Synthesia](./synthesia.md) · [OmniSenter](./omnisenter.md)
 - Integration point: `hermes-agent/agent/auxiliary_client.py`

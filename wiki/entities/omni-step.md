@@ -2,7 +2,7 @@
 
 > **The local AI persona — the soul on top of the omni-va slot.**
 > See the full blog post: [`../../blog/the-agent-hub-markdown-as-agents.md`](../../blog/the-agent-hub-markdown-as-agents.md)
-> See the master agent spec: [`~/.hermes/hub/agents/omni-step.md`](~/.hermes/hub/agents/omni-step.md)
+> See the master agent spec: `$HOME/.hermes/hub/agents/omni-step.md`
 
 ## Naming (read first)
 
@@ -11,7 +11,7 @@ Per Chris (2026-06-09): the **OmniStep** is the **agent** — the persona, syste
 | | OmniStep (the agent) | Omni VA (the model server slot) |
 |---|---|---|
 | **What** | The persona, the soul, the system prompt, the tools, the wiki, the memory | A systemd-managed llama.cpp instance that hosts one Senter-family model at a time |
-| **Where it lives** | `~/.hermes/hub/agents/omni-step.md` (the master spec) + the wiki + the radio code | `omni-va.service` (systemd), listens on `:8082` |
+| **Where it lives** | `$HOME/.hermes/hub/agents/omni-step.md` (the master spec) + the wiki + the radio code | `omni-va.service` (systemd), listens on `:8082` |
 | **Swappable?** | No — the persona is defined by the system prompt, not the model | Yes — the slot is model-agnostic (Carnice / OmniStep / Senter / Senter Ohm) |
 | **The relationship** | Uses the omni-va as its brain | Provides the inference for the agent |
 
@@ -25,7 +25,7 @@ Per Chris (2026-06-09): the **OmniStep** is the **agent** — the persona, syste
 - **Note-taker daemon** — the background process that maintains the user-idea wiki. The OmniStep agent (via the gold judge) decides which events are worth adding.
 - **LLM Wiki of user ideas** — the user's extended mind. The OmniStep agent reads it, writes to it, compacts it.
 - **Agent Hub** — the 4 seeded agents (personal-assistant, code-reviewer, creative-writer, omni-step-merge-copilot) are all OmniStep-style agents with different system prompts.
-- **Hermes aux** — 10 of 10 auxiliary tasks in `~/.hermes/config.yaml` route to the OmniStep agent (via the omni-va at `:8082/v1`).
+- **Hermes aux** — 10 of 10 auxiliary tasks in `$HOME/.hermes/config.yaml` route to the OmniStep agent (via the omni-va at `:8082/v1`).
 
 The OmniStep agent is **NOT**:
 - A cloud service
@@ -37,13 +37,13 @@ The OmniStep agent is **NOT**:
 1. **Drive the radio** — `code/brain.py` in evolutionary-radio wraps the OmniStep agent for music generation. The agent produces ACE-Step tag strings.
 2. **Maintain the wiki** — the note-taker daemon sweeps every 10s, calls `brain.curate_event(related=...)` which uses the OmniStep agent as the gold judge.
 3. **Power the Agent Hub** — 4 specialized agents in the hub are all the OmniStep agent with different system prompts.
-4. **Serve as Hermes aux** — `~/.hermes/config.yaml` auxiliary block routes 10/10 tasks to the omni-va at `:8082/v1` with `model: carnice-35a3b` (placeholder, will be OmniStep when SFT done).
+4. **Serve as Hermes aux** — `$HOME/.hermes/config.yaml` auxiliary block routes 10/10 tasks to the omni-va at `:8082/v1` with `model: carnice-35a3b` (placeholder, will be OmniStep when SFT done).
 
 ## Status (2026-06-09)
 
 **The OmniStep agent is live.**
 
-- ✅ Master agent spec at `~/.hermes/hub/agents/omni-step.md` (chmod 600, 6.8KB)
+- ✅ Master agent spec at `$HOME/.hermes/hub/agents/omni-step.md` (chmod 600, 6.8KB)
 - ✅ Registered in the hub daemon (5 agents now: omni-step + 4 specialists)
 - ✅ Visible via the omni-va proxy at `/hub/agents/list` and `/hub/agents/show/omni-step`
 - ✅ Spawnable via `POST /hermes/launch` with `{"agent": "omni-step", "query": "..."}`
@@ -87,9 +87,9 @@ The **OmniStep agent** is the persona. The **OmniStep 8B** is the model. They sh
 - Blog: [`../../blog/the-omni-va-architecture.md`](../../blog/the-omni-va-architecture.md) — the local model server (the body)
 - Blog: [`../../blog/evolutionary-radio-as-desk-pet.md`](../../blog/evolutionary-radio-as-desk-pet.md) — the unified vision
 - Blog: [`../../blog/the-omni-family.md`](../../blog/the-omni-family.md) — the naming convention
-- Concept: [Agent Hub](./agent-hub.md) — the unified surface
-- Concept: [Omni VA](./omni-va.md) — the local model server slot (the body)
-- Concept: [Senter](./senter.md) — the agentic family
-- Concept: [Hermes auxiliary](./hermes-auxiliary.md) — how the agent serves Hermes
-- Wiki entry: `~/.hermes/hub/agents/omni-step.md` — the master agent spec
+- Concept: [Agent Hub[](../concepts/agent-hub.md) — the unified surface
+- Concept: [Omni VA[](../concepts/omni-va.md) — the local model server slot (the body)
+- Concept: [Senter[](../concepts/senter.md) — the agentic family
+- Concept: [Hermes auxiliary[](../concepts/hermes-auxiliary.md) — how the agent serves Hermes
+- Wiki entry: `$HOME/.hermes/hub/agents/omni-step.md` — the master agent spec
 - Repo: [`SouthpawIN/evolutionary-training`](https://github.com/SouthpawIN/evolutionary-training) — main blog

@@ -199,8 +199,8 @@ gold judge follows automatically.
 - Master spec: `~/.hermes/hub/agents/omni-step.md`
 - Blog (the desk-pet vision): [`../../blog/evolutionary-radio-as-desk-pet.md`](../../blog/evolutionary-radio-as-desk-pet.md)
 - Blog (older integration post): [`../../blog/omnisenter-integration.md`](../../blog/omnisenter-integration.md)
-- Concept: [Omni VA](./omni-va.md) — the local model server slot (the body)
-- Concept: [Omni](./omni.md) — the umbrella multimodal family
-- Concept: [Senter](./senter.md) — the agentic family
-- Concept: [Hermes auxiliary](./hermes-auxiliary.md) — how the slot serves Hermes
+- Concept: [Omni VA[](../concepts/omni-va.md) — the local model server slot (the body)
+- Concept: [Omni[](../concepts/omni.md) — the umbrella multimodal family
+- Concept: [Senter[](../concepts/senter.md) — the agentic family
+- Concept: [Hermes auxiliary[](../concepts/hermes-auxiliary.md) — how the slot serves Hermes
 - Repo: [`SouthpawIN/evolutionary-training`](https://github.com/SouthpawIN/evolutionary-training) — main blog repo

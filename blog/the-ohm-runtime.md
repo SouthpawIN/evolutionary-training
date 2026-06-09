@@ -1,8 +1,8 @@
 ---
 title: "The Ohm Runtime: The Self-Evolving Model File"
-date: 2026-06-07
+date: 2026-06-08
 author: Nous Girl
-hero: assets/synesthesia-concept.png
+hero: assets/images/synesthesia-concept.png
 tags: [ohm, self-evolving, cma-es, darwin-family, continuous-evolution]
 summary: >
   The Ohm runtime is what makes a Senter Ohm model a model that is
@@ -17,18 +17,25 @@ related:
   - senter-ohm-32a8b-math.md
 ---
 
+> **Revised 2026-06-08 (naming).** The Ohm self-evolution engine attaches
+> to **Senter Ohm** (the 32A8B flagship) and **OmniStep Ohm** (the 8B
+> with self-evolution). It's a runtime, not a weight. See
+> [`the-omni-family.md`](./the-omni-family.md) for the canonical 4-model
+> lineup. Any reference in this post to "OmniSenter 12B" should be
+> read as "Senter" (32A8B MoE, the agentic flagship without Ohm).
+
 # The Ohm Runtime: The Self-Evolving Model File
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl)
 
-![The Ohm file: model weights + genome + validation set + evolution engine, all bound together as one self-contained artifact. Cosmic convergence.](assets/synesthesia-concept.png)
+![The Ohm file: model weights + genome + validation set + evolution engine, all bound together as one self-contained artifact. Cosmic convergence.](../assets/images/synesthesia-concept.png)
 
 > **Naming.** "Ohm" (Ω) is the **self-evolution engine**. It can be
 > bolted onto any model in the Senter family. The flagship that ships
 > with the Ohm engine baked in is **Senter Ohm** (~32A8B MoE). Read
 > [`the-omni-family.md`](./the-omni-family.md) for the full taxonomy.
 
-> **Chris (2026-06-07):** *"it'll be a wild if we can get a continual evolutionary model merging just built into the model file so just runs automatically anyways just as long as this model is running it's constantly evolving... OmniSenter Ohm"*
+> **Chris (2026-06-07):** *"it'll be a wild if we can get a continual evolutionary model merging just built into the model file so just runs automatically anyways just as long as this model is running it's constantly evolving... Senter Ohm"*
 
 **Ohm** (Ω) is the Senter variant that **carries its own evolution engine
 inside the model file**. It's a single artifact — model weights + genome +

@@ -1,8 +1,8 @@
 ---
 title: "OmniStep Multimodal: The Destination Unified Model"
-date: 2026-06-07
+date: 2026-06-08
 author: Nous Girl
-hero: assets/synesthesia-concept.png
+hero: assets/images/synesthesia-concept.png
 tags: [omnistep, multimodal, qwen2.5-omni, ace-step, darwin-family, destination]
 summary: >
   OmniStep is the destination unified model: a single Darwin-merged
@@ -13,15 +13,25 @@ summary: >
 related:
   - the-omni-family.md
   - the-omnimodal-fusion.md
-  - the-omnisenter-architecture.md
+  - the-senter-architecture.md
   - senter-ohm-flagship.md
 ---
+
+
+> **Revised 2026-06-08 (naming).** The destination unified model is
+> **OmniStep** (8B, Cosmos + Nemotron ASR + ACE-Step + Agentic SFT).
+> The old "OmniStep 12A3B" transitional HF model is being replaced.
+> See [`the-omni-family.md`](./the-omni-family.md) for the canonical
+> 4-model lineup. The destination described in this post is
+> OmniStep (8B) — the multimodal + music + agentic 8B that powers
+> Evolution Radio + the note-taker as a standalone, and the
+> building block for Senter (32A8B MoE) and Senter Ohm (flagship).
 
 # OmniStep Multimodal: The Destination Unified Model
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl)
 
-![A single unified model — text backbone with all modality heads (vision, audio, music, speech) attached. The OmniStep destination, visualized as cosmic convergence.](assets/synesthesia-concept.png)
+![A single unified model — text backbone with all modality heads (vision, audio, music, speech) attached. The OmniStep destination, visualized as cosmic convergence.](../assets/images/synesthesia-concept.png)
 
 > **Naming.** **OmniStep** is the multimodal + music model in the Omni
 > Family (Cosmos/Omni backbone + ACE-Step music head). It's the model
@@ -149,7 +159,7 @@ The "12A3B" name means: 12B total params, 3B active per token. The full
 multimodal any-to-any pipeline, with the music head attached.
 
 **This model is transitional.** The new architecture (Senter Ohm 32A8B,
-OmniSenter 12B, OmniSenterStep) will replace it as those ship.
+Senter, OmniStep) will replace it as those ship.
 
 ## The next Darwin merge (the work to do)
 
@@ -198,10 +208,10 @@ OmniStep Multimodal at the new architecture scale:
 - [x] Cross-link from the OmniSenter GitHub repo and Discord
 
 ### Phase 7: Replace with the new architecture (next)
-- [ ] Build OmniSenter 12B (Cosmos + Senter + Hermes-trained Qwen VL 8B
+- [ ] Build Senter (Cosmos + Senter + Hermes-trained Qwen VL 8B
   Darwin children)
-- [ ] Build OmniSenterStep (OmniSenter + AceStep Darwin fusion)
-- [ ] Build Senter Ohm ~32A8B (sparse-upcycled from OmniSenterStep +
+- [ ] Build OmniStep (OmniSenter + AceStep Darwin fusion)
+- [ ] Build Senter Ohm ~32A8B (sparse-upcycled from OmniStep +
   Ohm engine)
 - [ ] Supersede `sovthpaw/omnistep-12a3b` with the new releases
 
@@ -209,7 +219,7 @@ OmniStep Multimodal at the new architecture scale:
 
 - [`the-omnimodal-fusion.md`](./the-omnimodal-fusion.md) — the master
   plan (Cosmos × ACE-Step × Nemotron ASR)
-- [`the-omnisenter-architecture.md`](./the-omnisenter-architecture.md) —
+- [`the-senter-architecture.md`](./the-omnisenter-architecture.md) —
   the multi-stage pipeline built on top of this fusion
 - [`senter-ohm-flagship.md`](./senter-ohm-flagship.md) — the Senter
   Ohm 32A8B flagship (the next-gen destination)

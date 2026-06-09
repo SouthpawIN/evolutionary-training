@@ -1,63 +1,257 @@
 ---
-title: "Senter as the Hermes Auxiliary: The Integration Pattern"
-date: 2026-06-07
+title: "The Senter Local Model Server: Standalone, Hermes Auxiliary, and the User-Idea Wiki"
+date: 2026-06-08
 author: Nous Girl
-hero: assets/hermes-auxiliary.png
-tags: [senter, hermes, auxiliary, integration, notebook, api]
+hero: assets/images/hermes-auxiliary.png
+tags: [senter, hermes, auxiliary, integration, notebook, api, omni-va, wiki, local-server, wake-on-ping]
 summary: >
-  Senter (any model in the Senter family — OmniSenter 12B, OmniSenterStep,
-  or the Senter Ohm flagship) is the auxiliary to Hermes Agent. It sits in
-  front of Hermes, doing the work that doesn't need a 70B-class brain.
-  When the task gets hard, Senter hands a structured notebook to Hermes
-  and gets a decision back.
+  The Senter slot on the user's machine is a local model server — an
+  always-on, wake-on-ping llama.cpp instance that hosts a Senter-family
+  model (Carnice / OmniStep 8B / Senter Ohm 32A8B). It serves BOTH
+  standalone (Evolution Radio, note-taker, user-idea wiki) AND as the
+  auxiliary for Hermes Agent (only when the loaded model is big enough
+  to be useful as an aux — typically Senter Ohm 32A8B). The wiki is the
+  bridge: the note-taker curates it, the user keeps it private by
+  default, and they can opt to preload it into a fresh Hermes session.
 related:
   - the-omni-family.md
   - senter-ohm-flagship.md
   - the-notebook-schema.md
   - the-5-stage-pipeline.md
+  - the-omnistep-multimodal.md
 ---
 
-# Senter as the Hermes Auxiliary: The Integration Pattern
+# The Senter Local Model Server: Standalone, Hermes Auxiliary, and the User-Idea Wiki
 
-> **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl)
+> **TOWARDS SELF-IMPROVEMENT** — a 2026-06-08 architecture post by Chris (via Nous Girl)
+> *Revised from the 2026-06-07 "Senter as the Hermes Auxiliary" post after the
+> standalone + wiki role became clear.*
 
-![Two AI entities facing each other — a small focused character with headphones (the auxiliary) and a large powerful radiant figure (the smart agent) — connected by a holographic stream of structured YAML data](assets/hermes-auxiliary.png)
+![Two AI entities facing each other — a small focused character with headphones (the auxiliary) and a large powerful radiant figure (the smart agent) — connected by a holographic stream of structured YAML data](../assets/images/hermes-auxiliary.png)
 
 > **Naming.** "Senter" is the **agentic** family — any model with the
-> agentic core wired in. The shipping targets are **OmniSenter 12B** (the
-> small one), **OmniSenterStep / Omni SS** (the + music variant), and
-> **Senter Ohm** (the 32A8B flagship with the Ohm self-evolution engine).
-> All three are valid Senter implementations. This post describes the
-> *pattern* — pick whichever Senter you want to deploy. Read
+> agentic core wired in. The shipping targets are **Senter** (the
+> small one), **OmniStep / OmniStep** (the + music variant),
+> **OmniStep 8B** (the small multimodal: Cosmos + ACE-Step + Hermes-trained
+> Qwen3-VL-8B), and **Senter Ohm 32A8B** (the 32B MoE flagship with the
+> Ohm self-evolution engine). Read
 > [`the-omni-family.md`](./the-omni-family.md) for the full taxonomy.
 
-Senter is the **auxiliary to Hermes Agent**. It sits in front of Hermes,
-doing the work that doesn't need a 70B-class brain. When the task gets
-hard, Senter hands a structured **notebook** to Hermes and gets a decision
-back.
+## TL;DR (what changed since the 2026-06-07 post)
 
-This post is the integration pattern. The contract, the API, the
-notebook-as-data-format, the escalation rules.
+The old framing — *Senter sits in front of Hermes, escalates only when
+needed* — was right but **incomplete**. The Senter slot is actually
+**two things at once**:
 
-## Why an auxiliary?
+1. **A local model server** (the "omni-va" slot) that's always-on,
+   wake-on-ping, runs a Senter-family model on the user's hardware.
+2. **Both a standalone app AND a Hermes auxiliary** — depending on which
+   model is loaded into the slot.
 
-Hermes Agent is the "smart" agent — heavy reasoning, code, math, research.
-But it's expensive to call for every turn. Senter is the **always-cheap
-context curator** that:
+| Model in the slot | Standalone duties | Hermes auxiliary? |
+|---|---|---|
+| **Carnice 35A3B I-Nano** (current placeholder) | placeholder, will be replaced | placeholder |
+| **OmniStep 8B** (Cosmos + ACE-Step + Hermes-trained Qwen3-VL-8B) | Evolution Radio, note-taker, wiki | **No** — too small to be a useful aux |
+| **Senter** | radio, note-taker, wiki, simple agentic tasks | Yes (entry-level aux) |
+| **Senter Ohm 32A8B** | everything 8B does + heavy agentic + self-evolution | **Yes — the full aux role** |
 
-- Handles trivial/plugin-friendly requests directly (no escalation)
-- Handles multimodal I/O (images, video, audio, music, speech) via its
-  specialists
-- Maintains a structured notebook across turns
-- Hands the smart agent only the relevant slice of state when escalation
-  is needed
-- Updates the notebook from the smart agent's response
+The slot is **one service** with **one model loaded at a time**. The
+user picks which model to load. The wake-on-ping pattern means the slot
+**costs 0 VRAM when idle** and **swaps itself in** the moment anything
+calls it.
 
-Net result: Hermes gets called **only when needed**, the user gets
-**fast first-token** for trivial cases, and the full notebook survives
-across turns without paying the full cost every time.
+## What is the Senter local model server?
 
-## The integration point
+It's a **single systemd service** on the user's machine
+(`omni-va.service`) that fronts a `llama-server` instance with a
+**wake-on-ping proxy**. Conceptually:
+
+```
+omni-va.service (always-on, 0 VRAM when idle)
+│
+├── proxy (Python) — listens on :8082, spawns llama-server on first request
+│
+├── llama-server (the actual model)
+│   ├── main model:     whatever's loaded (Carnice / OmniStep 8B / Senter Ohm 32A8B)
+│   ├── draft model:    same GGUF in MTP/NextN mode (atomic fork llama.cpp)
+│   ├── context:        1M tokens, turbo2 KV cache (2-bit TurboQuant)
+│   ├── memory:         --cpu-moe, experts offload to system RAM by default;
+│   │                   "liquid" mode: probe free VRAM at boot, pick --ngl tier
+│   └── idle-kill:      30 min without traffic → SIGTERM the backend, free VRAM
+│
+└── /v1/chat/completions   — the OpenAI-compatible API
+   /v1/embeddings          — (future)
+   /wiki/*                 — user-idea wiki endpoints (future)
+   /hermes/launch          — spawn a Hermes agent with --wiki preload (future)
+```
+
+The whole thing is **"morphin' like liquid"** (Chris's term): the
+proxy probes free VRAM at request time, picks a tier
+(`ngl 0` for tight, `ngl 5/10` for mid, no `-ngl` for auto-spill when
+there's room), and llama.cpp figures out the rest. After S1 training
+finishes, the same service moves to the "auto" tier automatically
+without any config change.
+
+### Wake-on-ping in practice
+
+```bash
+# Slot is idle, 0 MB VRAM, proxy listening on :8082:
+nvidia-smi --query-gpu=memory.used --format=csv | head -1
+# 16510 MiB (training only, no omni-va backend)
+
+# Something calls the slot:
+curl http://127.0.0.1:8082/v1/chat/completions -d '...'
+# → proxy spawns llama-server with the right tier for free VRAM
+# → ~24s later, model is loaded, response streams back
+
+# Slot is idle for 30 min, backend gets SIGTERM (clean exit, systemd
+# does not auto-restart — see omni-va.service: Restart=on-failure):
+nvidia-smi --query-gpu=memory.used --format=csv | head -1
+# 16510 MiB (training only, omni-va backend gone)
+```
+
+## The dual role — standalone + Hermes auxiliary
+
+This is the part the 2026-06-07 post got wrong. Senter is **not
+just** "the thing in front of Hermes." It's a **local app platform**
+that **can** talk to Hermes when the model is large enough to be
+worthwhile.
+
+### Standalone duties (always available, regardless of model)
+
+These run on the local model server **without Hermes being involved
+at all**:
+
+- **Evolution Radio** — perpetual music generation. The local model
+  curates mood, the ACE-Step music head (in OmniStep 8B) renders it.
+  See `evolutionary-radio` skill.
+- **Note-taker** — a slimmed-down Hermes-like process that maintains
+  the **user-idea wiki** (next section). Asks follow-up questions to
+  flesh out ideas.
+- **Calendar / personal context** — pluggable. Anything that fits the
+  "ambient perpetual curator" pattern Chris keeps describing.
+- **Voice assistant** (future) — the omni-va originally started life
+  as a voice assistant; the "VA" in the name.
+
+The standalone duties are **why this thing exists at all** — they're
+not a side-effect of being a Hermes aux. The Hermes aux role is the
+**add-on** when the loaded model is heavy enough.
+
+### Hermes auxiliary duties (only when the model earns it)
+
+A model is worth using as a Hermes aux if it can:
+
+- Maintain a structured notebook across turns
+- Classify intent and decide when to escalate
+- Handle multimodal I/O (vision, audio)
+- Summarize long context for compression
+
+The 8B OmniStep **can** do some of this but it's not a great
+investment — by the time the notebook is large, you're better off
+escalating to Hermes directly. So **8B OmniStep skips the aux role
+entirely**. It just runs the standalone duties.
+
+The 32A8B Senter Ohm **earns the aux role** because:
+
+- 32B-MoE-8B-active is heavy enough to do meaningful reasoning
+- The notebook machinery is non-trivial
+- Vision / multimodal I/O is a real workload
+
+When Senter Ohm is loaded, the proxy exposes **both** surfaces:
+standalone (radio, note-taker, wiki) **and** the Hermes aux endpoint.
+Same process, same model, two jobs.
+
+### Switching models = switching roles
+
+You switch roles by **swapping the GGUF** the service loads. There's
+no "config flag" — the slot is shaped by what's in it:
+
+```bash
+# Run with 8B OmniStep (standalone only)
+LLAMA_SERVER_EXTRA_ARGS="...model=OmniStep-8B... --no-aux-mode" \
+  systemctl restart omni-va.service
+
+# Run with 32A8B Senter Ohm (standalone + aux)
+LLAMA_SERVER_EXTRA_ARGS="...model=Senter-Ohm-32A8B..." \
+  systemctl restart omni-va.service
+```
+
+The `--no-aux-mode` flag is a future implementation detail; today the
+role is implicit in the model. **The current omni-va service is
+running Carnice as a placeholder** (the S1 training is producing the
+real models via Stage 2/3/4 of the pipeline).
+
+## The user-idea wiki (the bridge to Hermes)
+
+The **wiki** is a new concept that didn't exist in the 2026-06-07
+post. It's a **persistent LLM-friendly markdown file** (or set of
+files) at `~/.hermes/wiki/`, maintained by the **note-taker** process
+on the local model server. Three properties:
+
+1. **Owned by the user, not Hermes.** The note-taker writes here even
+   when no Hermes session is running. It's the local model's
+   *ambient* view of the user's ideas.
+2. **Curated, not dumped.** The note-taker doesn't just append every
+   turn — it clusters, merges, asks follow-up questions, prunes
+   stale ideas. The wiki is the local model's *concept graph* of
+   the user's head.
+3. **Opt-in to Hermes.** The user can keep the wiki private
+   (default), or **preload it into a fresh Hermes session** as the
+   system context. This is the "I want to think about my own ideas
+   with help" workflow.
+
+### What the note-taker does
+
+The note-taker is **a slimmed-down Hermes agent**. Same
+agentic-core scaffolding, but a fraction of the context window and
+no notebook machinery (it has the wiki, that's enough). Its loop:
+
+1. **Listen** — pull from a stream of "idea events" (calendar items,
+   chat snippets the user marks, voice-to-text transcriptions, etc.)
+2. **Cluster** — group new events with existing wiki entries
+3. **Ask** — if an event is ambiguous or interesting, surface a
+   follow-up question to the user
+4. **Curate** — write the merged, updated wiki back to disk
+
+The note-taker **runs in the background** as part of the omni-va
+service. It doesn't need a chat surface — it just keeps the wiki
+fresh.
+
+### The two privacy modes
+
+```yaml
+# ~/.hermes/wiki/config.yaml (user-controlled)
+mode: private   # default — wiki stays on the user's disk, never sent
+# OR
+mode: opt-in    # wiki is preloaded only when a Hermes session is launched
+                # with --wiki flag, and only that session
+```
+
+The wiki is **never silently sent**. Even in `opt-in` mode, the
+launcher asks before preloading.
+
+### Launching a Hermes session with the wiki
+
+The omni-va service exposes a `/hermes/launch` endpoint (future work,
+see [TODO](#todo-the-parts-i-havent-built-yet) below) that:
+
+1. Reads the wiki at `~/.hermes/wiki/`
+2. Spawns a Hermes agent process (e.g., via the existing
+   `hermes-agent` CLI)
+3. Prepends the wiki to the agent's system prompt as a structured
+   context block
+4. Returns a session ID for the user to attach to
+
+```bash
+# Future ergonomics (sketch — not implemented yet)
+hermes launch --wiki ~/.hermes/wiki --session-id "ideas-2026-06-08" \
+  --prompt "Help me think through the OmniStep merge plan"
+```
+
+The wiki is **not** part of every Hermes session. It's a **deliberate
+invocation**: "I want my own curated ideas in front of me right now."
+
+## The integration point (unchanged from 2026-06-07)
 
 `hermes-agent/agent/auxiliary_client.py` is the existing class. It already
 does:
@@ -66,17 +260,33 @@ does:
 - Summarization
 
 We extend it to use Senter specifically:
-- Default auxiliary model: `senter-ohm-moe-32a8b` (4-bit GGUF, served on
-  `:11500`). For lighter deployments, swap in `omnisenter-12b`.
+- Default auxiliary model: `senter-ohm-moe-32a8b` (4-bit GGUF, served
+  on `:8082` — *not* `:11500` like the old Darwin port). For lighter
+  deployments, swap in `senter-12b`.
 - Auxiliary tasks: vision, summarization, agentic routing, notebook
   management
 - The main agent stays whatever the user has configured (Claude,
   Hermes-4, etc.)
+- **Wiki is opt-in only** — never sent to Hermes unless the user
+  explicitly launches with `--wiki`
 
 ## The notebook-as-API pattern
 
-The notebook is the **structured state object** that flows between Senter
-and Hermes. It's the API surface, not the implementation detail.
+The **notebook** is the structured state object that flows between
+Senter and Hermes during a conversation. It's distinct from the
+**wiki** (persistent, user-owned, curated by the note-taker).
+
+| | Notebook | Wiki |
+|---|---|---|
+| Lives | in Senter's memory + Hermes's handoff | in `~/.hermes/wiki/` |
+| Owned by | the running Senter ↔ Hermes session | the user, always |
+| Lifetime | one session | permanent |
+| Written by | Senter (notebook ops) + Hermes (responses) | the note-taker (background) |
+| Read by | Senter + Hermes (during escalation) | note-taker + (opt-in) Hermes |
+| Format | YAML, fits in a single handoff | Markdown, semantic-graph over time |
+
+The notebook is **transient and transactional**. The wiki is
+**persistent and ambient**. Don't conflate them.
 
 ### Senter → Hermes (escalation)
 
@@ -230,7 +440,7 @@ def slice_notebook_for_hermes(notebook: dict, question: str, max_tokens: int = 3
     return truncate_to_tokens(slice_, max_tokens)
 ```
 
-## The cost model
+## The cost model (unchanged)
 
 | Task type | Senter cost | Hermes cost | When |
 |---|---|---|---|
@@ -280,7 +490,7 @@ remembering everything.
 class SenterAuxiliaryClient(AuxiliaryClient):
     """Auxiliary client that uses Senter for vision, summarization, agentic routing, notebook management."""
     
-    def __init__(self, *args, senter_endpoint: str = "http://localhost:11500/v1", **kwargs):
+    def __init__(self, *args, senter_endpoint: str = "http://localhost:8082/v1", **kwargs):
         super().__init__(*args, **kwargs)
         self.senter = OpenAI(base_url=senter_endpoint, api_key="not-needed")
         self.notebook = Notebook(owner=self.user_id)
@@ -343,32 +553,80 @@ class SenterAuxiliaryClient(AuxiliaryClient):
         )
 ```
 
-## The deployment
+## The deployment (updated)
 
 ```bash
-# Terminal 1: Start the Senter server
-python3 ohmd.py serve --model senter-ohm-moe-32a8b-q4_k_m.gguf \
-    --notebook-path ~/.senter/notebook/ \
-    --port 11500
+# Terminal 1: Start the Senter local model server (wake-on-ping)
+# Service file at /home/sovthpaw/.config/systemd/user/omni-va.service
+# Currently: Carnice 35A3B I-Nano (placeholder, IQ2_K, 1M ctx, MTP)
+# When S1 SFT finishes: swap to OmniStep 8B or Senter Ohm 32A8B
+systemctl --user enable --now omni-va.service
+# → proxy listening on :8082, 0 VRAM until first request
 
 # Terminal 2: Start Hermes Agent with Senter as auxiliary
-hermes --auxiliary-model senter-ohm-moe-32a8b --auxiliary-endpoint http://localhost:11500/v1
+# (only when Senter Ohm 32A8B is loaded — 8B doesn't earn the aux role)
+hermes --auxiliary-model senter-ohm-moe-32a8b \
+       --auxiliary-endpoint http://localhost:8082/v1
 
-# That's it. Hermes now has a notebook-keeping multimodal auxiliary.
+# Optional: preload the user-idea wiki into a fresh Hermes session
+hermes launch --wiki ~/.hermes/wiki --session-id "ideas-2026-06-08" \
+  --prompt "Help me think through the OmniStep merge plan"
+
+# That's it. Hermes now has a notebook-keeping multimodal auxiliary,
+# the slot is also running Evolution Radio + the note-taker,
+# and the user's wiki is loaded for this session only.
 ```
+
+## What this service looks like in the wild (current state, 2026-06-08)
+
+The omni-va service is **running today** with these properties:
+
+- **Model:** Carnice 35A3B I-Nano IQ2_K (Qwen 3.5 MoE 35B-A3B, 11.7 GB on
+  disk)
+- **Context:** 1M tokens with turbo2 (2-bit TurboQuant) KV cache
+- **Speed:** ~10.9 t/s with MTP/NextN active (77% draft acceptance),
+  PCIe-bound because training is using 15.9 GB of GPU 0. After S1
+  training finishes, the same config hits **30+ t/s** with the full
+  GPU 0.
+- **VRAM when idle:** 0 MB (the proxy is a Python process, ~11 MB
+  RAM, no GPU)
+- **VRAM when serving:** ~7.5 GB (with `--cpu-moe` and `--no-mmap`,
+  model mostly in CPU-pinned host memory; the "low VRAM with
+  experts offloaded" config Chris likes)
+- **Auto-heal:** `Restart=on-failure`. Crash → restart in 5s. Clean
+  `systemctl stop` → exit 0, stays down (no auto-restart).
+- **Wake-on-ping:** proxy listens on `:8082`, spawns the backend on
+  the first request, idle-kills after 30 min.
+
+When S1 SFT finishes, swap the model path in the service file to
+point at the Senter Ohm GGUF, restart, and the same slot becomes a
+full standalone + aux platform.
 
 ## See also
 
 - [`senter-ohm-flagship.md`](./senter-ohm-flagship.md) — the flagship
-  overview
+  overview (still valid, but see the new flagship post
+  [`senter-ohm-flagship.md`](./senter-ohm-flagship.md))
 - [`the-notebook-schema.md`](./the-notebook-schema.md) — the notebook
-  spec
+  spec (the transient session state, NOT the wiki)
 - [`the-5-stage-pipeline.md`](./the-5-stage-pipeline.md) — the build
   roadmap
-- [omnisenter-architecture](the-omnisenter-architecture.md)
+- [`senter-integration.md`](./omnisenter-integration.md) — the
+  one-click install for the whole stack
+- [senter-architecture](./the-omnisenter-architecture.md)
   — the system overview
 - `hermes-agent/agent/auxiliary_client.py` — the integration point
 
+## TODO (the parts I haven't built yet)
+
+- [ ] Wiki storage format: markdown + sqlite-vec for semantic search
+- [ ] Note-taker process: slim Hermes loop, background daemon
+- [ ] `/wiki` endpoints on omni-va proxy: read, write, search
+- [ ] `/hermes/launch` endpoint: spawn Hermes agent with --wiki preload
+- [ ] Wiki → Hermes preloading: structured context block in system prompt
+- [ ] "Opt-in" mode flag in `~/.hermes/wiki/config.yaml`
+- [ ] Two-mode split: 8B standalone-only vs 32A8B standalone+aux
+
 ## TOWARDS SELF-IMPROVEMENT
 
-— Chris (via Nous Girl), 2026-06-07
+— Chris (via Nous Girl), 2026-06-08

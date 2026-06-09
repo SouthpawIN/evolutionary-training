@@ -85,7 +85,6 @@ Stage 2 (after Stage 1 SFT completes):
 
 Total Stage 2 wall time: ~30 min on 2×3090.
 
-Detailed plan: `docs/stage-2-omnistep-plan.md`
 
 ## Variants
 
@@ -117,10 +116,8 @@ OmniStep.
 
 ## See also
 
-- Plan: [`../../docs/stage-2-omnistep-plan.md`](../../docs/stage-2-omnistep-plan.md)
 - Blog (transitional, still relevant): [`../../blog/the-omnistep-multimodal.md`](../../blog/the-omnistep-multimodal.md)
-- Architecture rule: [`../../AGENTS.md`](../../AGENTS.md) (top of file)
 - Family naming: [`../../blog/the-omni-family.md`](../../blog/the-omni-family.md)
-- Related: [Omni](./omni.md) · [Omnimodal fusion](./omnimodal-fusion.md) · [OmniSenter (project)](./omnisenter.md) · [Senter (32A8B MoE)](./senter.md)
+- Related: [Omni[](../concepts/omni.md) · [Omnimodal fusion](./omnimodal-fusion.md) · [OmniSenter (project)](./omnisenter.md) · [Senter (32A8B MoE)[](../concepts/senter.md)
 - HF (transitional): [`sovthpaw/omnistep-12a3b`](https://huggingface.co/sovthpaw/omnistep-12a3b)
 - Repo (music radio that uses OmniStep): [`SouthpawIN/evolutionary-radio`](https://github.com/SouthpawIN/evolutionary-radio)

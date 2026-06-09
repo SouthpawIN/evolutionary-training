@@ -1,14 +1,15 @@
 ---
-title: "The Omni Family: A Naming Convention for the OmniSenter Models"
-date: 2026-06-07
+title: "The Omni Family: A Naming Convention for OmniSenter"
+date: 2026-06-08
 author: Nous Girl
-hero: assets/synesthesia-concept.png
-tags: [omnisenter, naming, taxonomy, omni, senter, ohm, omnistep, acestep, cosmos, nemotron]
+hero: assets/images/synesthesia-concept.png
+tags: [omnisenter, naming, taxonomy, omni, senter, ohm, omnistep]
 summary: >
-  The naming convention that ties together Omni (multimodal native), Senter
-  (agentic core), Ohm (self-evolving engine), and the flagship OmniSenter
-  32A8B. Read this first — every other post in the catalog uses these
-  names.
+  The naming convention for the 4 OmniSenter models. Four models, four
+  names: OmniStep, OmniStep Ohm, Senter, Senter Ohm. Read this first —
+  every other post in the catalog uses these names. *(Revised 2026-06-08
+  from the 2026-06-07 version which had "OmniSenter 12B" and "OmniSenterStep"
+  as model names — both gone now.)*
 ---
 
 # The Omni Family
@@ -19,203 +20,170 @@ OmniSenter is the **project**. The Omni Family is the **model lineup** that
 the project ships. Once you know the convention, every blog post, every
 weight name, every checkpoint directory falls into place.
 
-> **Architecture rule (2026-06-08):** every Omni model is built from
-> **Cosmos + Nemotron 0.6B streaming ASR + the 8B SFT we're training
-> + upgraded ACE-Step.** That last one is mandatory. Every Omni model,
-> Standard and Ohm alike, includes the ACE-Step merge. Music is in the
-> DNA, not a bolt-on.
-
-> **Current state (2026-06-07 → 2026-06-08):** the models currently
-> published on HuggingFace under `sovthpaw/` are **transitional**.
-> `omnistep-12a3b`, `Omni-Senter-3B`, and `OmniSenter-Base-16B` are the
-> v1 lineage — pieces that proved the Darwin Family + sparse-upcycle
-> approach works. The new architecture described in this post
-> (OmniStep, OmniSenter 32A8B, in Standard + Ohm variants) **replaces**
-> them as it ships. Think of the current HF models as `gen-0`:
-> foundation, not destination.
+> **2026-06-08 revision.** The 4-model lineup is now canonical:
+>
+> | Model | Size | Capabilities |
+> |---|---|---|
+> | **OmniStep** | 8B (active) | Cosmos + Nemotron ASR + ACE-Step + Agentic |
+> | **OmniStep Ohm** | 8B + Ohm engine | same + self-evolution |
+> | **Senter** | 32A8B MoE | agentic flagship, no Ohm |
+> | **Senter Ohm** | 32A8B MoE + Ohm | the **flagship** with self-evolution |
+>
+> Previous names that are **gone**:
+> - ~~"OmniSenter 12B"~~ → was a placeholder, replaced by **Senter** (32A8B MoE)
+> - ~~"OmniSenterStep" / "Omni SS"~~ → replaced by **OmniStep** (8B)
+> - ~~"OmniSenter Ohm"~~ → replaced by **Senter Ohm** (the flagship)
+> - ~~"OmniSenter Standard" / "OmniSenter Flagship"~~ → all replaced
+>
+> **Every Omni model always includes all four blocks:** Cosmos (multimodal
+> base) + Nemotron 0.6B streaming ASR + the agentic SFT (currently the
+> 8B SFT we're training in Stage 1) + ACE-Step (music). The Ohm engine
+> is optional (it's a runtime, not a weight). See
+> [`AGENTS.md`](https://github.com/SouthpawIN/evolutionary-training) for
+> the canonical training-pipeline naming.
 
 ## The two-letter rule
 
 There are three load-bearing words. Each one describes a **capability**, not
 a size:
 
-| Word        | Means                              | Adds                                                  |
-|-------------|------------------------------------|-------------------------------------------------------|
-| **Omni**    | multimodal native                  | vision, audio, music, video — all in one model        |
-| **Senter**  | the agentic core is wired in       | tool use, function calling, planning, notebook       |
-| **Ohm**     | the self-evolution engine is bundled | CMA-ES, genome, validation set, atomic swap         |
+| Word     | Means                                          | Adds                                            |
+|----------|------------------------------------------------|-------------------------------------------------|
+| **Omni** | multimodal native                              | vision, audio, music, video — all in one model |
+| **Senter** | the agentic core is wired in                 | tool use, function calling, planning, notebook |
+| **Ohm**  | the self-evolution engine is bundled           | CMA-ES, genome, validation set, atomic swap     |
 
-You can mix them. "Senter Ohm" means *agentic + self-evolving*. "Omni"
-alone means *multimodal but not agentic and not self-evolving*. "Ohm"
-alone is legal but rare — usually it's bolted onto something.
+You can mix them. "Senter Ohm" means *agentic + self-evolving*. "OmniStep"
+means *multimodal + music + agentic* (the 8B). "OmniStep Ohm" means
+*8B + self-evolution*. "Ohm" alone is legal but rare — usually it's bolted
+onto something.
 
-## The build blocks
-
-Every Omni model is a **Darwin merge of these four**:
-
-| Block                              | What it gives you                                    | Size        |
-|------------------------------------|------------------------------------------------------|-------------|
-| **Cosmos**                         | text + image + video base, world physics            | 15.75B      |
-| **Nemotron 0.6B streaming ASR**    | low-latency speech input, voice activity detection  | 0.6B        |
-| **8B SFT** (the one we're training) | agentic reasoning, tool use, notebook fluency      | 8B base + LoRA |
-| **ACE-Step (upgraded)**            | music generation, audio rhythm, beat tracking        | 4B          |
-
-All four are **always present**. The model size and capability differ by
-how they're merged and what extra wiring is added.
-
-## The taxonomy
+## The taxonomy (4 models)
 
 ```
-            ┌─────────────────────────────────────────────────┐
-            │         CORE STACK (always, in every Omni)     │
-            │  Cosmos  +  Nemotron 0.6B ASR  +  8B SFT      │
-            │  + upgraded ACE-Step                           │
-            └────────────────────────┬────────────────────────┘
-                                     │
-                  ┌──────────────────┴──────────────────┐
-                  │                                     │
-            ┌─────▼─────┐                       ┌──────▼──────┐
-            │ OmniStep  │                       │ OmniSenter  │
-            │           │                       │  (32A8B)    │
-            │  ~12B /   │                       │             │
-            │  ~3B act  │                       │  32B-total  │
-            │  dense    │                       │  8B-active  │
-            │  MoE-lite │                       │  top-1 MoE  │
-            │           │                       │             │
-            │  cosm +   │                       │  OmniStep + │
-            │  nemotron │                       │  Senter core│
-            │  + ACE    │                       │  + sparse-  │
-            │  + 8B     │                       │  upcycle to │
-            │           │                       │  32B MoE    │
-            └─────┬─────┘                       └──────┬──────┘
-                  │                                     │
-        ┌─────────┴────────┐                  ┌────────┴─────────┐
-        │                  │                  │                  │
-   ┌────▼──────┐      ┌────▼──────┐      ┌────▼──────┐     ┌────▼──────┐
-   │ OmniStep  │      │ OmniStep  │      │ OmniSenter│     │ OmniSenter│
-   │ Standard  │      │   Ohm     │      │ Standard  │     │   Ohm     │
-   │           │      │           │      │           │     │  (flagship)│
-   │ no self-  │      │ CMA-ES +  │      │ no self-  │     │ CMA-ES +  │
-   │ evolution │      │ atomic    │      │ evolution │     │ atomic    │
-   │           │      │ swap      │      │           │     │ swap      │
-   └───────────┘      └───────────┘      └───────────┘     └───────────┘
+                  Cosmos + Nemotron ASR + Agentic SFT + ACE-Step
+                  (these four blocks are in every Omni model)
+                                      │
+        ┌─────────────────────────────┼─────────────────────────────┐
+        │                             │                             │
+        ▼                             ▼                             ▼
+   OmniStep                      OmniStep Ohm                  Senter (32A8B MoE)
+   8B active                     8B + Ohm engine              agentic flagship
+   multimodal+music+                                        (no Ohm)
+   agentic, no Ohm                       │                         │
+                                         │                         │
+                                         └────────┬────────────────┘
+                                                  │
+                                                  ▼
+                                            Senter Ohm
+                                       32A8B + Ohm engine
+                                       THE FLAGSHIP
 ```
 
-**Two models. Two variants each. Four total.**
+**Read this diagram bottom-up for the build order:**
+
+1. **OmniStep** (8B) — the agentic SFT we're training right now,
+   merged with Cosmos + ACE-Step text encoder. Multimodal+music+agentic
+   in one 8B. The "small" model in the lineup.
+2. **OmniStep Ohm** — same 8B + the Ohm self-evolution engine. The
+   self-evolving 8B.
+3. **Senter** (32A8B MoE) — the 32B MoE built by sparse-upcycling
+   OmniStep. 8B active per token, 32B total. The "agentic flagship"
+   without self-evolution.
+4. **Senter Ohm** — Senter + the Ohm engine. **The flagship.** The
+   32A8B MoE that self-evolves.
 
 ## The models, in plain English
 
 ### OmniStep
 
-The smaller one. Cosmos + Nemotron 0.6B streaming ASR + the 8B SFT
-+ upgraded ACE-Step, merged. **~12B total, ~3B active** in a MoE-lite
-configuration.
+The 8B with **everything in it** (except Ohm): Cosmos for vision, Nemotron
+0.6B for speech input, the agentic SFT for tool use + planning, ACE-Step
+for music. It's the model that fits on a single 24GB GPU at 1M context
+with the right offload config. Use it as: the **standalone** in the
+local model server, the Evolution Radio's brain, the note-taker's brain.
 
-What it does well:
-- **Music generation** (ACE-Step is mandatory here)
-- **Vision** (Cosmos backbone)
-- **Streaming speech input** (Nemotron 0.6B ASR)
-- **General agentic chat** (the 8B SFT, the one we're training)
+**Recognition test:** a `Cosmos × ACE-Step` Darwin merge, then fine-tuned
+with the agentic SFT data.
 
-What it does NOT have:
-- The Senter agentic core (tool use at scale, notebook management)
-- The Ohm self-evolution engine
+### OmniStep Ohm
 
-It comes in two variants: **OmniStep Standard** and **OmniStep Ohm**.
+OmniStep + the Ohm self-evolution engine. The 8B that gets better over
+time. Same footprint as OmniStep, just with the evolution runtime
+attached. Useful when the local model server is long-lived and you
+want the model to keep improving without re-training.
 
-### OmniSenter (the flagship)
+**Recognition test:** same GGUF as OmniStep, plus a `.ohm` bundle
+(genome + validation set + evolution config).
 
-The bigger one. Same four blocks (Cosmos + Nemotron ASR + 8B SFT +
-ACE-Step), then **sparse-upcycled** to **~32B total / ~8B active** in
-a top-1 routed MoE, with the **Senter agentic core** wired in.
+### Senter (32A8B MoE)
 
-What it does well:
-- Everything OmniStep does, plus
-- **Tool use, function calling, planning, notebook** (the Senter core)
-- The full agentic experience, scaled up
+The **agentic flagship** (without self-evolution). 32B-total, 8B-active
+per token, top-1 routed MoE. Built by sparse-upcycling OmniStep:
+the FFN becomes 4 parallel experts + a router, and the active 8B
+per token chooses which experts to fire.
 
-It also comes in two variants: **OmniSenter Standard** and
-**OmniSenter Ohm**.
+Use Senter when the workload needs the **real** agentic heavyweight:
+complex multi-step planning, large notebook, deep reasoning. This is
+the model that goes on the **auxiliary** slot of Hermes Agent when
+you're not skimping on inference budget.
 
-### Standard vs Ohm
+**Recognition test:** a 32B-total MoE with 8B active per token, the
+agents + notebook wired in, no Ohm engine.
 
-The **Standard** variant is the merged model. It doesn't change on its
-own.
+### Senter Ohm (the flagship)
 
-The **Ohm** variant is the merged model **+ the self-evolution engine
-bundled**. That means:
+Senter + the Ohm self-evolution engine. **The flagship model.** 32A8B
+that self-evolves. Use it when Senter is the daily driver AND you want
+it to keep getting better.
 
+The Ohm engine is a 200–400 line runtime that wraps the model with:
 - a 14-dim **genome** (the CMA-ES search vector)
 - a 500-example **validation set** (held out from training)
 - a **strict-acceptance** policy (never serve a worse checkpoint)
 - an **atomic swap** mechanism (the model only changes when the new
   generation wins)
 
-An Ohm model ships as a `.ohm` bundle — weights + genome + validation
-set + evolution config. Drop it into a llama-server with the `--ohm`
-flag and it self-evolves in the background, off the request path.
+A Senter Ohm model is shipped as a `.ohm` bundle — weights + genome +
+validation set + evolution config. Drop it into a llama-server with the
+`--ohm` flag and it self-evolves in the background, off the request path.
 
-The Ohm engine is a 200–400 line runtime that wraps any of the four
-Omni models. It's not exclusive to the flagship.
-
-### What happened to "Senter Ohm 32A8B"?
-
-That's the old name. **Senter Ohm 32A8B is now just OmniSenter Ohm.**
-The "Senter" part is implicit — OmniSenter is always agentic. The
-"Ohm" part is the variant suffix. The "32A8B" is the size in the
-mathematical convention (32B total, 8B active). You'll see both names
-in the docs; the new one is preferred.
+**This is the model the blog is actually about.**
 
 ## What "Ohm" means in different places
 
-- **As a variant suffix** (`OmniStep Ohm`, `OmniSenter Ohm`): the model
+- **As a suffix on a model name** (`Senter Ohm`, `OmniStep Ohm`): the model
   has the self-evolution engine bundled.
-- **As a file extension** (`.ohm`): a model bundle with weights + genome
-  + validation set.
-- **As a runtime concept** (`ohm_runtime`): the Python module that
-  runs the CMA-ES loop.
-- **As a paper** (the Ohm paper, TBD): the writeup of the
-  strict-acceptance policy and the atomic swap protocol.
+- **As a file extension** (`.ohm`): a model bundle with weights + genome +
+  validation set.
+- **As a runtime concept** (`ohm_runtime`): the Python module that runs
+  the CMA-ES loop.
+- **As a paper** (the Ohm paper, TBD): the writeup of the strict-acceptance
+  policy and the atomic swap protocol.
 
-## Why this convention?
+## The current state (2026-06-08)
 
-Three reasons:
+The models currently published on HuggingFace under `sovthpaw/` are the
+**v1 transitional** lineage:
 
-1. **You can tell what a model does from its name.** "OmniSenter Ohm"
-   tells you it's multimodal + agentic + self-evolving. No need to
-   crack open the config.
-2. **The capability suffix is open-ended.** When we eventually ship
-   `OmniSenter Step Ohm` (a hypothetical future variant with extra
-   stepping layers), the convention still works.
-3. **It maps to the engineering org.** The four core blocks
-   (Cosmos / Nemotron / 8B SFT / ACE-Step) are shared across all Omni
-   models. The Senter agentic core is a separate component. The Ohm
-   engine is a separate component. The naming tracks the actual code
-   boundaries.
+- `sovthpaw/omnistep-12a3b` — 12B total / 3B active, transitional
+  OmniStep baseline
+- `sovthpaw/Omni-Senter-3B` — 3B early Senter (predecessor of Senter)
+- `sovthpaw/OmniSenter-Base-16B` — 16B base, multimodal (predecessor
+  of Senter 32A8B)
 
-## What about the older "OmniSenter" usage?
-
-You'll see "OmniSenter" used in three ways going forward:
-
-1. **The project** — OmniSenter is the umbrella project name, the
-   GitHub org scope, the vision. It's the _thing_ being built.
-2. **OmniSenter Standard** — a specific model in the family (the
-   flagship, no self-evolution).
-3. **OmniSenter Ohm** — the flagship with the self-evolution engine.
-
-If you see a blog post or README that uses "Senter Ohm" (without the
-"Omni" prefix) or "OmniSenter" (without a variant suffix), that's a
-pre-2026-06-08 artifact and is in the process of being cleaned up.
-The current naming is **OmniStep Standard / OmniStep Ohm /
-OmniSenter Standard / OmniSenter Ohm** — four models, two capabilities.
+The Stage 1 SFT (8B agentic, in progress) is the seed for the new
+**OmniStep** when merged with Cosmos + ACE-Step. The Stage 3 sparse
+upcycle produces the new **Senter** (32A8B). Stage 5 wires in the
+Ohm engine for **Senter Ohm**.
 
 ## How to use this post
 
 If you're new to the project, read this first. Then:
 - For the flagship and its 32A8B math → `senter-ohm-flagship.md` and
-  `senter-ohm-32a8b-math.md` (note: the 32A8B math post is being
-  retitled to `omnisenter-flagship-math.md` shortly).
-- For the training pipeline → `the-5-stage-pipeline.md`.
+  `senter-ohm-32a8b-math.md`.
+- For the training pipeline → `the-5-stage-pipeline.md` and
+  `stages-2-to-4-prep.md`.
 - For how Senter talks to Hermes → `senter-as-hermes-auxiliary.md` and
   `the-notebook-schema.md`.
 - For the model merging research → `generative-darwin-evolution.md` and

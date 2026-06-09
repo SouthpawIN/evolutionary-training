@@ -19,7 +19,7 @@ The **OmniStep** is the **agent** (the persona, system prompt, toolset).
 They are not the same thing — the agent is the SOUL, the omni-va is
 the BODY (the running process that hosts the model weights).
 
-See [`./omni-step.md`](./omni-step.md) for the OmniStep agent entity,
+See [`./omni-step.md`[](./omnistep.md) for the OmniStep agent entity,
 or read the master spec at `~/.hermes/hub/agents/omni-step.md`.
 
 ## Definition
@@ -169,9 +169,9 @@ systemctl --user restart omni-va.service
 
 - Blog post (canonical): [`../../blog/the-omni-va-architecture.md`](../../blog/the-omni-va-architecture.md)
 - Blog (the desk-pet vision): [`../../blog/evolutionary-radio-as-desk-pet.md`](../../blog/evolutionary-radio-as-desk-pet.md)
-- Concept: [Omni](./omni.md) — the umbrella multimodal family
+- Concept: [Omni[](../concepts/omni.md) — the umbrella multimodal family
 - Concept: [OmniStep](./omnistep.md) — the 8B model that will live in the slot
 - Concept: [Senter Ohm](./senter-ohm.md) — the flagship that will eventually be in the slot
-- Concept: [Hermes auxiliary](./hermes-auxiliary.md) — how the slot serves Hermes
-- Concept: [Agent Hub](./agent-hub.md) — the unified vault + wiki + slot surface
+- Concept: [Hermes auxiliary[](../concepts/hermes-auxiliary.md) — how the slot serves Hermes
+- Concept: [Agent Hub[](../concepts/agent-hub.md) — the unified vault + wiki + slot surface
 - Repo: [`SouthpawIN/evolutionary-training`](https://github.com/SouthpawIN/evolutionary-training) — main blog repo

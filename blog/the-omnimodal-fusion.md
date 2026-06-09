@@ -1,8 +1,8 @@
 ---
 title: "The Omnimodal Fusion: Cosmos × ACE-Step × Nemotron ASR"
-date: 2026-06-07
+date: 2026-06-08
 author: Nous Girl
-hero: assets/synesthesia-concept.png
+hero: assets/images/synesthesia-concept.png
 tags: [cosmos, ace-step, nemotron-asr, multimodal, darwin-family, omnimodal-fusion]
 summary: >
   The three-component Darwin Family fusion that powers every multimodal
@@ -13,14 +13,23 @@ summary: >
 related:
   - the-omni-family.md
   - the-omnistep-multimodal.md
-  - the-omnisenter-architecture.md
+  - the-senter-architecture.md
 ---
+
+
+> **Revised 2026-06-08 (naming).** Per the canonical 4-model lineup in
+> [`the-omni-family.md`](./the-omni-family.md), the project is
+> "OmniSenter" but the **models** are **OmniStep** (8B), **OmniStep Ohm**,
+> **Senter** (32A8B MoE), and **Senter Ohm** (flagship). No more
+> "OmniSenter 12B" or "OmniSenterStep" as model names. The fusion recipe
+> described in this post applies to **OmniStep** (8B) and gets
+> sparse-upcycled to **Senter** (32A8B) in Stage 3.
 
 # The Omnimodal Fusion: Cosmos × ACE-Step × Nemotron ASR
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl)
 
-![Three component models converging into one omnimodal system — the Cosmos text/vision/video brain, the ACE-Step music DiT, and the Nemotron ASR conductor. Cosmic convergence.](assets/synesthesia-concept.png)
+![Three component models converging into one omnimodal system — the Cosmos text/vision/video brain, the ACE-Step music DiT, and the Nemotron ASR conductor. Cosmic convergence.](../assets/images/synesthesia-concept.png)
 
 > **Naming.** This is the **multimodal foundation** that every model in
 > the Omni Family is built on top of. The **Omni** series is what
@@ -149,8 +158,8 @@ Speech in ──→ [Nemotron ASR] ──→ transcribed text
   is the current published base (16B, multimodal, Darwin-merged)
 - The Senter family adds the agentic core (function calling + notebook)
   on top
-- The result is **Senter**, in any of its sizes (OmniSenter 12B,
-  OmniSenterStep, Senter Ohm)
+- The result is **Senter**, in any of its sizes (Senter,
+  OmniStep, Senter Ohm)
 
 ## Current Blockers (as of 2026-06-07)
 
@@ -164,12 +173,12 @@ Speech in ──→ [Nemotron ASR] ──→ transcribed text
 ## What ships first
 
 The target order:
-1. **OmniSenter 12B** (small function-calling + omnimodal fusion) —
+1. **Senter** (small function-calling + omnimodal fusion) —
    first to ship. Cosmos + Senter + Hermes-trained Qwen VL 8B Darwin
    children. Dense-ish, ~12B active.
-2. **OmniSenterStep / Omni SS** — OmniSenter + AceStep Darwin fusion
+2. **OmniStep / OmniStep** — OmniSenter + AceStep Darwin fusion
    (adds music generation).
-3. **Senter Ohm ~32A8B** — the flagship. OmniSenterStep sparse-upcycled
+3. **Senter Ohm ~32A8B** — the flagship. OmniStep sparse-upcycled
    to a 32B MoE + the Ohm self-evolution engine bundled.
 
 All three will eventually **replace** the current transitional HF models
@@ -179,7 +188,7 @@ All three will eventually **replace** the current transitional HF models
 
 - [`the-omnistep-multimodal.md`](./the-omnistep-multimodal.md) — the
   destination unified model (Phase 1 of the fusion)
-- [`the-omnisenter-architecture.md`](./the-omnisenter-architecture.md) —
+- [`the-senter-architecture.md`](./the-omnisenter-architecture.md) —
   the multi-stage pipeline built on top of this fusion
 - [`senter-ohm-flagship.md`](./senter-ohm-flagship.md) — the Senter Ohm
   32A8B flagship that emerges from the full fusion

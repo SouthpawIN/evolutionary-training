@@ -67,4 +67,4 @@ Layer 5.5 — Ohm runtime (background self-evolution, atomic swap)
 
 - Blog post: [`../../blog/the-omnisenter-architecture.md`](../../blog/the-omnisenter-architecture.md)
 - Naming: [`../../blog/the-omni-family.md`](../../blog/the-omni-family.md)
-- Related: [Senter Ohm](./senter-ohm.md) · [Omni](./omni.md) · [Senter](./senter.md) · [Pipeline](../../blog/the-5-stage-pipeline.md)
+- Related: [Senter Ohm](./senter-ohm.md) · [Omni[](../concepts/omni.md) · [Senter[](../concepts/senter.md) · [Pipeline](../../blog/the-5-stage-pipeline.md)

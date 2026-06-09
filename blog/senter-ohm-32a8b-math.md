@@ -13,6 +13,16 @@ related:
   - the-5-stage-pipeline.md
 ---
 
+> **Revised 2026-06-08.** Renaming: "Senter Ohm 32A8B" is now just
+> **"Senter Ohm"** (the flagship). "OmniSenter 12B" is now **"Senter"**
+> (the 32A8B MoE agentic model). "OmniSenterStep" / "Omni SS" is now
+> **"OmniStep"** (the 8B with Cosmos + ASR + ACE-Step + agentic). "Omni
+> Senter" is the project name, not a model. See
+> [`the-omni-family.md`](./the-omni-family.md) for the canonical 4-model
+> lineup. Any reference to "12B" or "OmniSenter [as a model]" in this
+> post is pre-revision and should be read as referring to Senter (32A8B)
+> or OmniStep (8B) per the new naming.
+
 # Senter Ohm 32A8B: The Math
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl)
@@ -22,7 +32,7 @@ Per-layer params, active vs total, 4-bit vs bf16 disk, VRAM at inference,
 VRAM at training. With tables.
 
 > **Naming.** This post is specifically about **Senter Ohm**, the 32A8B
-> MoE flagship. The smaller siblings — **OmniSenter 12B** (small function
+> MoE flagship. The smaller siblings — **Senter** (small function
 > calling + omnimodal fusion) and **OmniStep** (multimodal + music) — have
 > their own sizing. Read [`the-omni-family.md`](./the-omni-family.md) for
 > the full taxonomy.
@@ -199,7 +209,7 @@ download, then the model is local forever.
   the Stage 3 deep dive with the math
 - [`the-5-stage-pipeline.md`](./the-5-stage-pipeline.md) — the build
   roadmap
-- [omnisenter-architecture](the-omnisenter-architecture.md)
+- [senter-architecture](./the-omnisenter-architecture.md)
   — the system overview
 
 ## TOWARDS SELF-IMPROVEMENT

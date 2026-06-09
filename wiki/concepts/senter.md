@@ -5,7 +5,7 @@
 
 ## Definition
 
-**Senter** is what happens when you take an [Omni](./omni.md) and wire
+**Senter** is what happens when you take an [Omni[](../concepts/omni.md) and wire
 the **agentic core** into it. Function calling, tool use, planning, and
 — most importantly — **the notebook**. The notebook is what makes
 Senter useful as a long-running auxiliary to Hermes Agent: it's the
@@ -60,5 +60,5 @@ The 256K context window exists **for the notebook**. See
 
 - Naming source-of-truth: [`../../blog/the-omni-family.md`](../../blog/the-omni-family.md)
 - Blog post: [`../../blog/senter-as-hermes-auxiliary.md`](../../blog/senter-as-hermes-auxiliary.md)
-- Related: [Omni](./omni.md) · [Senter Ohm](./senter-ohm.md) · [Notebook](./notebook.md) · [Hermes auxiliary](./hermes-auxiliary.md)
+- Related: [Omni[](../concepts/omni.md) · [Senter Ohm](./senter-ohm.md) · [Notebook](./notebook.md) · [Hermes auxiliary[](../concepts/hermes-auxiliary.md)
 - HF (early): [`sovthpaw/Omni-Senter-3B`](https://huggingface.co/sovthpaw/Omni-Senter-3B)

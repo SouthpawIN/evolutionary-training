@@ -148,9 +148,9 @@ that Chris mentioned.
 
 - Blog (canonical): [`../../blog/evolutionary-radio-as-desk-pet.md`](../../blog/evolutionary-radio-as-desk-pet.md)
 - Blog (older integration post): [`../../blog/omnisenter-integration.md`](../../blog/omnisenter-integration.md)
-- Concept: [Omni VA](./omni-va.md) — the slot the radio's brain lives in
+- Concept: [Omni VA[](../concepts/omni-va.md) — the slot the radio's brain lives in
 - Concept: [Ohm](./ohm.md) — the self-evolution engine (will eventually power the radio's evolution)
-- Concept: [Agent Hub](./agent-hub.md) — the unified vault + wiki + radio surface
+- Concept: [Agent Hub[](../concepts/agent-hub.md) — the unified vault + wiki + radio surface
 - Repo: [`SouthpawIN/evolutionary-radio`](https://github.com/SouthpawIN/evolutionary-radio) — the radio upstream
 - Repo: [`SouthpawIN/nous-girl-agent`](https://github.com/SouthpawIN/nous-girl-agent) — the vendored copy + radio_bridge
 - Skill: `evolutionary-radio` — see `~/.hermes/skills/`

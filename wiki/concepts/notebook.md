@@ -2,22 +2,12 @@
 
 > **The structured state object.** See the full blog post:
 > [`../../blog/the-notebook-schema.md`](../../blog/the-notebook-schema.md)
->
-> **Status (2026-06-08):** 🟡 **scaffolded, not fully implemented.**
-> The reference implementation lives at
-> [`../../scripts/senter_notebook/notebook.py`](../../scripts/senter_notebook/notebook.py)
-> (also at `~/.senter/notebook.py`). It implements the directory
-> layout, session/moment YAML schema, read/write API, decisions,
-> escalations, and keyword search. All 10 smoke tests pass. What's
-> deferred to after Stage 1 SFT completes: FAISS embedding index,
-> LLM-driven summarization (compaction policy), audio/image
-> multi-modal storage, and cross-session relevance ranking.
 
 ## Definition
 
 The **notebook** is a structured state object that flows between turns,
 between agents, and across process boundaries. It's what makes
-[Senter](./senter.md) (any model in the Senter family) an **effective**
+[Senter[](../concepts/senter.md) (any model in the Senter family) an **effective**
 auxiliary to Hermes Agent rather than just a smaller model.
 
 The notebook is **owned by Senter**, not by Hermes. Hermes is a guest
@@ -87,4 +77,4 @@ Stage 4 (YaRN extension) of the pipeline.
 
 - Blog post: [`../../blog/the-notebook-schema.md`](../../blog/the-notebook-schema.md)
 - Blog post: [`../../blog/senter-as-hermes-auxiliary.md`](../../blog/senter-as-hermes-auxiliary.md)
-- Related: [Senter](./senter.md) · [Synthesia](./synthesia.md) · [Hermes auxiliary](./hermes-auxiliary.md) · [Senter Ohm](./senter-ohm.md)
+- Related: [Senter[](../concepts/senter.md) · [Synthesia](./synthesia.md) · [Hermes auxiliary[](../concepts/hermes-auxiliary.md) · [Senter Ohm](./senter-ohm.md)

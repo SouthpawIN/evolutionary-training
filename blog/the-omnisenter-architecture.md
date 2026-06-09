@@ -1,16 +1,18 @@
 ---
-title: "The OmniSenter Architecture: Multi-Stage Pipeline + Notebook + Hermes Auxiliary"
-date: 2026-06-07
+title: "The Senter Architecture: Multi-Stage Pipeline + Notebook + Hermes Auxiliary"
+date: 2026-06-08
 author: Nous Girl
-hero: assets/synesthesia-concept.png
-tags: [architecture, pipeline, notebook, hermes-auxiliary, sparse-upcycle, yarn-256k]
+hero: assets/images/synesthesia-concept.png
+tags: [architecture, pipeline, notebook, hermes-auxiliary, sparse-upcycle, yarn-256k, senter, senter-ohm, omnistep]
 summary: >
-  The complete system architecture for the OmniSenter project. Five-
-  stage training pipeline (SFT → evolutionary merge → sparse upcycle →
-  256K YaRN → plugin+notebook wiring), the notebook manager, the
+  The complete system architecture for the Senter family of models.
+  Five-stage training pipeline (SFT → evolutionary merge → sparse upcycle
+  → 256K YaRN → plugin+notebook+Ohm wiring), the notebook manager, the
   Hermes Agent auxiliary role, and how Synthesia + Ohm fit in as
-  layers 1.5 and 5.5.
-related:
+  layers 1.5 and 5.5. *(Revised 2026-06-08 for the 4-model lineup: the
+  architecture spans OmniStep 8B + Senter 32A8B + Senter Ohm flagship,
+  not the older "OmniSenter 12B" plan.)*
+---
   - the-omni-family.md
   - senter-ohm-flagship.md
   - the-5-stage-pipeline.md
@@ -21,20 +23,22 @@ related:
   - senter-as-hermes-auxiliary.md
 ---
 
-# The OmniSenter Architecture: Multi-Stage Pipeline + Notebook + Hermes Auxiliary
+# The Senter Architecture: Multi-Stage Pipeline + Notebook + Hermes Auxiliary
 
-> **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl)
+> **TOWARDS SELF-IMPROVEMENT** — a 2026-06-07 design post by Chris (via Nous Girl), **revised 2026-06-08** for the canonical 4-model lineup.
 
-![The OmniSenter architecture: stream I/O at the bottom, MoE in the middle, notebook layer above, Hermes at the top. The whole system visualized as a cosmic stack.](assets/synesthesia-concept.png)
+![The Senter architecture: stream I/O at the bottom, MoE in the middle, notebook layer above, Hermes at the top. The whole system visualized as a cosmic stack.](../assets/images/synesthesia-concept.png)
 
-> **Naming.** **OmniSenter** is the **project** (not a model name). The
-> **models** that the project produces are in the Omni Family — read
-> [`the-omni-family.md`](./the-omni-family.md). The flagship of the
-> project is **Senter Ohm** (~32A8B MoE). The other shipped targets
-> are **OmniSenter 12B** (small), **OmniSenterStep / Omni SS** (with
-> music), and the current transitional HF models.
+> **Naming (2026-06-08).** **OmniSenter** is the **project** (not a
+> model). The **models** the project produces are in the Omni Family —
+> read [`the-omni-family.md`](./the-omni-family.md). The flagship is
+> **Senter Ohm** (32A8B MoE + self-evolution). The 8B multimodal+agentic
+> is **OmniStep**. The 32A8B MoE without Ohm is **Senter**. *Note: this
+> post was originally titled "The OmniSenter Architecture" — the file
+> name kept for URL stability, but the content is about the Senter
+> family (which includes Senter, Senter Ohm, and OmniStep).*
 
-The **OmniSenter architecture** is the multi-stage pipeline + notebook +
+The **Senter architecture** is the multi-stage pipeline + notebook +
 Hermes auxiliary design that ties the Omni Family together. It is built
 on the [Darwin Family](https://github.com/SouthpawIN/evolutionary-model-merging)
 methodology, extended via **sparse upcycling** into a true MoE, and

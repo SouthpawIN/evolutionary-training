@@ -71,4 +71,4 @@ Ohm MoE. Trained on a mix of:
 ## See also
 
 - Blog post: [`../../blog/the-synthesia-layer.md`](../../blog/the-synthesia-layer.md)
-- Related: [Notebook schema](./notebook.md) · [Senter as Hermes auxiliary](./hermes-auxiliary.md) · [Senter Ohm](./senter-ohm.md)
+- Related: [Notebook schema](./notebook.md) · [Senter as Hermes auxiliary[](../concepts/hermes-auxiliary.md) · [Senter Ohm](./senter-ohm.md)

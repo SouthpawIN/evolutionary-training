@@ -1,22 +1,22 @@
 # OmniSenter Stages 2 → 4: The Orchestration Recipe
 
-> **🚧 REVISION BANNER (2026-06-09)** — This doc was written under the
-> pre-2026-06-08 architecture where Stage 2 was "merge 3 specialized 8B
-> variants." The new architecture rule (per `AGENTS.md`) makes Stage 2
-> a **composite** of the 8B SFT + ACE-Step + Cosmos heads + Nemotron
-> ASR. The corrected, current Stage 2 plan is at
-> [`../docs/stage-2-omnistep-plan.md`](../docs/stage-2-omnistep-plan.md).
-> The 3-variant merge below is still valid as a *future Stage 2.5* for
-> specialist deltas feeding the MoE upcycle in Stage 3 — keep the
-> commands for reference but don't run them as Stage 2.
-
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-08 ops doc by Nous Girl
 > *The exact commands to take a finished Stage 1 SFT checkpoint and turn
-> it into a deployable 32A8B OmniSenter Ohm MoE with 256K context.*
+> it into a deployable 32A8B Senter Ohm MoE with 256K context.*
+>
+> **Revised 2026-06-08 (naming).** "Senter Ohm 32A8B" is now just
+> "Senter Ohm" (the flagship). "OmniSenter 12B" is now "Senter" (32A8B
+> MoE). "OmniSenterStep" is now "OmniStep" (8B). "OmniSenter" is the
+> project name, not a model. This post is the **ops doc** for building
+> Senter Ohm from the 8B SFT. The output dirs in the table below are
+> still named `senter-ohm-*` for build-pipeline consistency; the
+> corresponding HF / Ollama names will be `senter` and `senter-ohm`.
+> See [`the-omni-family.md`](./the-omni-family.md) for the canonical
+> 4-model lineup.
 
 This is the orchestration document for **Stages 2, 3, and 4** of the
-OmniSenter Ohm build. It assumes Stage 1 has produced
-`omnisenter-ohm-8b-sft/` (the 8B agentic SFT). It does NOT cover Stage 1
+Senter Ohm build. It assumes Stage 1 has produced
+`senter-ohm-8b-sft/` (the 8B agentic SFT). It does NOT cover Stage 1
 (that's `train_omnisenter_sft_fixed.py`, running now) or Stage 5
 (plugins + notebook + Ohm runtime + Hermes integration).
 
@@ -24,10 +24,10 @@ OmniSenter Ohm build. It assumes Stage 1 has produced
 
 | Stage | What | Script | Input | Output | Time on 2×3090 |
 |---|---|---|---|---|---|
-| 2 | Darwin merge 3 specialized 8B variants | `cosmos_qwen3_darwin_merge.py` | 3 × 8B checkpoints | `omnisenter-ohm-8b-merged/` | ~10 min |
-| 3 | Sparse upcycle to 32A8B MoE | `sparse_upcycle.py` (multimodal-expansion) | merged 8B + 4 specialist deltas | `omnisenter-ohm-moe-32a8b/` | ~6-12 hr |
+| 2 | Darwin merge 3 specialized 8B variants | `cosmos_qwen3_darwin_merge.py` | 3 × 8B checkpoints | `senter-ohm-8b-merged/` | ~10 min |
+| 3 | Sparse upcycle to 32A8B MoE | `sparse_upcycle.py` (multimodal-expansion) | merged 8B + 4 specialist deltas | `senter-ohm-32a8b/` | ~6-12 hr |
 | 3.5 | Router warm-up SFT | new (`stage3_router_warmup.py`) | MoE 32A8B | MoE 32A8B warm | ~2-4 hr |
-| 4 | YaRN RoPE 256K + long-context SFT | `train_long_context.py` + `yarn_256k_config.py` | MoE 32A8B warm | `omnisenter-ohm-moe-32a8b-256k/` | ~8-16 hr |
+| 4 | YaRN RoPE 256K + long-context SFT | `train_long_context.py` + `yarn_256k_config.py` | MoE 32A8B warm | `senter-ohm-32a8b-256k/` | ~8-16 hr |
 
 Total Stage 2→4 wall time: **~20-30 hours** of GPU time. Sequential —
 each stage needs the previous artifact.
@@ -50,13 +50,13 @@ By the end of Stage 4, we have on disk:
 │   ├── omnisenter-8b-reasoning/            # math/coding specialist
 │   └── omnisenter-8b-personality/          # chat/safety specialist
 ├── gen-2-merged/                           # Stage 2 OUTPUT
-│   └── omnisenter-ohm-8b-merged/           # CMA-ES Darwin merge of 3 variants
+│   └── senter-ohm-8b-merged/           # CMA-ES Darwin merge of 3 variants
 ├── gen-3-moe/                              # Stage 3 OUTPUT
-│   └── omnisenter-ohm-moe-32a8b/           # 6 experts, top-1 router
+│   └── senter-ohm-32a8b/           # 6 experts, top-1 router
 ├── gen-3-warm/                             # Stage 3.5 OUTPUT
-│   └── omnisenter-ohm-moe-32a8b-warm/      # router knows what to do
+│   └── senter-ohm-32a8b-warm/      # router knows what to do
 └── gen-4-256k/                             # Stage 4 OUTPUT (deployable)
-    └── omnisenter-ohm-moe-32a8b-256k/      # 256K context, ready for Stage 5
+    └── senter-ohm-32a8b-256k/      # 256K context, ready for Stage 5
 ```
 
 ## Stage 2 — Evolutionary Merge
@@ -104,7 +104,7 @@ cd ~/projects/evolutionary-training
 python3 scripts/cosmos_qwen3_darwin_merge.py \
     --cosmos-path evolution/gen-1-sft/omnisenter-sft-20260606_213858/checkpoint-3954 \
     --qwen-path   evolution/gen-2-variants/omnisenter-8b-agentic/checkpoint-final \
-    --output      evolution/gen-2-merged/omnisenter-ohm-8b-merged \
+    --output      evolution/gen-2-merged/senter-ohm-8b-merged \
     --rho-b 0.5 --tau 0.4 \
     --genome-json evolution/gen-2-merged/merged_genome.json
 ```
@@ -140,7 +140,7 @@ parent pair).
 ```bash
 cd ~/projects/multimodal-expansion
 python3 sparse_upcycle.py \
-    --base     ~/projects/evolutionary-training/evolution/gen-2-merged/omnisenter-ohm-8b-merged \
+    --base     ~/projects/evolutionary-training/evolution/gen-2-merged/senter-ohm-8b-merged \
     --deltas   \
         ~/projects/evolutionary-training/evolution/gen-2-variants/omnisenter-8b-agentic/delta.safetensors \
         ~/projects/evolutionary-training/evolution/gen-2-variants/omnisenter-8b-reasoning/delta.safetensors \
@@ -149,7 +149,7 @@ python3 sparse_upcycle.py \
         ~/Models/LTX-2/ltx_text_expert/delta.safetensors \
     --num-experts 6 --top-k 1 --shared-expert 0 \
     --router-init small \
-    --output    ~/projects/evolutionary-training/evolution/gen-3-moe/omnisenter-ohm-moe-32a8b
+    --output    ~/projects/evolutionary-training/evolution/gen-3-moe/senter-ohm-32a8b
 ```
 
 The router starts as a small random init. The experts start as the base
@@ -165,10 +165,10 @@ We need a short SFT pass that teaches the router to discriminate.
 ```bash
 cd ~/projects/evolutionary-training
 python3 scripts/stage3_router_warmup.py \
-    --moe-path evolution/gen-3-moe/omnisenter-ohm-moe-32a8b \
+    --moe-path evolution/gen-3-moe/senter-ohm-32a8b \
     --data    training-data/prepared/router_warmup.jsonl \
     --epochs  1 --lr 1e-5 --freeze-non-router \
-    --output-dir evolution/gen-3-warm/omnisenter-ohm-moe-32a8b-warm
+    --output-dir evolution/gen-3-warm/senter-ohm-32a8b-warm
 ```
 
 **Dataset:** `router_warmup.jsonl` = ~5K examples each clearly labeled
@@ -194,8 +194,8 @@ so VRAM is bounded.
 ```bash
 cd ~/projects/evolutionary-training
 python3 scripts/yarn_256k_config.py \
-    --input  evolution/gen-3-warm/omnisenter-ohm-moe-32a8b-warm \
-    --output evolution/gen-4-256k/omnisenter-ohm-moe-32a8b-256k \
+    --input  evolution/gen-3-warm/senter-ohm-32a8b-warm \
+    --output evolution/gen-4-256k/senter-ohm-32a8b-256k \
     --original-max-seq-len 8192 \
     --target-max-seq-len 262144 \
     --yarn-attn-factor 8.0 \
@@ -213,10 +213,10 @@ a retrain).
 ```bash
 cd ~/projects/evolutionary-training
 python3 scripts/train_long_context.py \
-    --resume-from evolution/gen-4-256k/omnisenter-ohm-moe-32a8b-256k \
+    --resume-from evolution/gen-4-256k/senter-ohm-32a8b-256k \
     --data       training-data/prepared/long_context_sft.jsonl \
     --epochs 1 --lr 2e-5 --max-seq-len 32768 \
-    --output-dir evolution/gen-4-256k/omnisenter-ohm-moe-32a8b-256k-finetuned
+    --output-dir evolution/gen-4-256k/senter-ohm-32a8b-256k-finetuned
 ```
 
 **Dataset:** `long_context_sft.jsonl` = ~2-5K long-context examples
@@ -270,7 +270,7 @@ Before kicking off Stage 4, verify:
 
 - [`the-5-stage-pipeline.md`](./the-5-stage-pipeline.md) — the
   high-level overview of the 5 stages
-- [`omnisenter-flagship.md`](./omnisenter-flagship.md) — the design doc
+- [`senter-ohm-flagship.md`](./senter-ohm-flagship.md) — the design doc
   for the flagship (the 32A8B MoE this recipe builds)
 - [`sparse-upcycling-deep-dive.md`](./sparse-upcycling-deep-dive.md) —
   the math behind Stage 3
