@@ -99,6 +99,12 @@ title: Blog
 
 <div class="blog-card">
 <div class="blog-card">
+<h3><a href="turbofit-the-backend.html">TurboFit: The Unified Local LLM Backend</a></h3>
+<p class="meta">2026-06-22 · <span class="read-time">15 min read</span></p>
+<p>The opinionated unified backend for the entire ecosystem. One command picks the best model, launches it detached, wires Hermes, done. Catalog schema, scaling ladder, named presets. <strong>🆕 NEW</strong></p>
+</div>
+
+<div class="blog-card">
 <h3><a href="southpaw-curated-local-models.html">Southpaw's Curated Local Models</a></h3>
 <p class="meta">2026-06-10 · <span class="read-time">10 min read</span></p>
 <p>Four local models, two RTX 3090s, one curated stack. Darwin Reason (28B, 38 tok/s), Prism Eagle (27B hybrid, 121 tok/s MTP), Darwin Apex (36B MoE, 107 tok/s NextN), and Carnice Apex (35A3B, wake-on-ping). Why each earns its slot and how to switch with one command.</p>

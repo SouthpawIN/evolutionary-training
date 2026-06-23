@@ -33,7 +33,7 @@ always includes the 4 mandatory build blocks: **Cosmos + Nemotron
 0.6B streaming ASR + 8B agentic SFT + ACE-Step** (music is in the
 DNA). They're foundation, not destination.
 
-## The posts (18)
+## The posts (19)
 
 ### 🏛️ Foundations (read first)
 
@@ -61,6 +61,7 @@ DNA). They're foundation, not destination.
 | **[`evolutionary-radio-as-desk-pet.md`](./evolutionary-radio-as-desk-pet.md)** | The one-button experience: starting the radio spins up the omni-va, the brain, the wiki, the vault, the note-taker, and the music. The "desk pet" is the whole local intelligence. | 10 min |
 | **[`southpaw-curated-local-models.md`](./southpaw-curated-local-models.md)** | Chris's curated local model picks: Darwin Reason (28B, 38 tok/s), Prism Eagle (27B hybrid, 121 tok/s MTP), Darwin Apex (36B-A3B MoE, 107 tok/s NextN), and Carnice Apex (35A3B I-Nano, wake-on-ping). Dual RTX 3090 setup, one command to switch. *(published 2026-06-10)* | 10 min |
 | **[`the-agent-hub-markdown-as-agents.md`](./the-agent-hub-markdown-as-agents.md)** | The Agent Hub: markdown as agents, the LLM wiki of user ideas. 6 markdown surfaces, hub_daemon runtime, `hub promote/demote/list/launch`. **🆕 2026-06-09.** | 12 min |
+| **[`turbofit-the-backend.md`](./turbofit-the-backend.md)** | The unified local LLM backend (v5). `serve auto main`, catalog schema, scaling ladder, named presets, per-model binary pins. Replaces llama-launch + omni-va + start-*.sh. **🆕 2026-06-22.** | 15 min |
 | **[`omnisenter-integration.md`](./omnisenter-integration.md)** | The glue. Notebook ↔ radio ↔ pet ↔ wiki ↔ Hermes in one continuous loop. The one-click install for the whole stack. | 10 min |
 
 ### 🧠 The Concepts (what makes it special)
@@ -98,9 +99,10 @@ For a cold reader:
 13. **[`the-omni-va-architecture.md`](./the-omni-va-architecture.md)** — the local model server
 14. **[`evolutionary-radio-as-desk-pet.md`](./evolutionary-radio-as-desk-pet.md)** — the unified vision
 15. **[`the-agent-hub-markdown-as-agents.md`](./the-agent-hub-markdown-as-agents.md)** — markdown as agents 🆕
-16. **[`omnisenter-integration.md`](./omnisenter-integration.md)** — the glue
-17. **[`stages-2-to-4-prep.md`](./stages-2-to-4-prep.md)** — the command recipe
-18. **[`generative-darwin-evolution.md`](./generative-darwin-evolution.md)** — the research direction
+16. **[`turbofit-the-backend.md`](./turbofit-the-backend.md)** — the unified backend 🆕
+17. **[`omnisenter-integration.md`](./omnisenter-integration.md)** — the glue
+18. **[`stages-2-to-4-prep.md`](./stages-2-to-4-prep.md)** — the command recipe
+19. **[`generative-darwin-evolution.md`](./generative-darwin-evolution.md)** — the research direction
 
 ## HuggingFace models
 
