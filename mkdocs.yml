@@ -1,0 +1,138 @@
+site_name: OmniSenter Blog
+site_description: >-
+  A multi-stage agentic MoE with the Ohm self-evolution engine — 
+  built on Darwin Family weight-space recombination.
+site_url: https://southpawin.github.io/omnisenter-blog/
+repo_url: https://github.com/SouthpawIN/omnisenter-blog
+repo_name: SouthpawIN/omnisenter-blog
+edit_uri: ""
+
+# Copyright (appears in footer)
+copyright: >-
+  OmniSenter by Chris (SouthpawIN) · TOWARDS SELF-IMPROVEMENT
+
+# Don't include source/timestamp/docs paths in the nav
+docs_dir: docs
+site_dir: site
+use_directory_urls: true
+
+# Theme
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.tracking
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
+  palette:
+    # Light mode — cosmic variant (teal/gold nebula tones)
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep purple
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    # Dark mode — cosmic teal/gold
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+    logo: material/radio-tower
+
+extra_css:
+  - assets/css/extra.css
+extra_javascript:
+  - assets/js/share-to-x.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/SouthpawIN
+      name: GitHub
+    - icon: fontawesome/brands/twitter
+      link: https://x.com/southpawin
+      name: X
+  generator: false
+  # Sharing buttons (per-page)
+  share:
+    from: github
+    platforms:
+      - x
+      - facebook
+      - linkedin
+      - reddit
+
+# Plugins
+plugins:
+  - search
+  - rss:
+      match_path: "blog/.*"
+      date_from_meta:
+        as_creation: date
+  - minify:
+      minify_html: true
+
+# Markdown extensions
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.smartsymbols
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.betterem
+
+# Navigation
+nav:
+  - Home: index.md
+  - Blog: blog/index.md
+  - Wiki: wiki/index.md
+  - Models: models/index.md
+  - About: about.md
+
+# Build settings
+strict: false
+dev_addr: 127.0.0.1:8765

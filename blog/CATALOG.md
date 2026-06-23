@@ -59,6 +59,7 @@ DNA). They're foundation, not destination.
 |---|---|---|
 | **[`the-omni-va-architecture.md`](./the-omni-va-architecture.md)** | The local model server: wake-on-ping, liquid VRAM, auto-heal. Hosts Carnice → OmniStep → Senter → Senter Ohm in turn. The bedrock of the local stack. | 12 min |
 | **[`evolutionary-radio-as-desk-pet.md`](./evolutionary-radio-as-desk-pet.md)** | The one-button experience: starting the radio spins up the omni-va, the brain, the wiki, the vault, the note-taker, and the music. The "desk pet" is the whole local intelligence. | 10 min |
+| **[`southpaw-curated-local-models.md`](./southpaw-curated-local-models.md)** | Chris's curated local model picks: Darwin Reason (28B, 38 tok/s), Prism Eagle (27B hybrid, 121 tok/s MTP), Darwin Apex (36B-A3B MoE, 107 tok/s NextN), and Carnice Apex (35A3B I-Nano, wake-on-ping). Dual RTX 3090 setup, one command to switch. *(published 2026-06-10)* | 10 min |
 | **[`the-agent-hub-markdown-as-agents.md`](./the-agent-hub-markdown-as-agents.md)** | The Agent Hub: markdown as agents, the LLM wiki of user ideas. 6 markdown surfaces, hub_daemon runtime, `hub promote/demote/list/launch`. **🆕 2026-06-09.** | 12 min |
 | **[`omnisenter-integration.md`](./omnisenter-integration.md)** | The glue. Notebook ↔ radio ↔ pet ↔ wiki ↔ Hermes in one continuous loop. The one-click install for the whole stack. | 10 min |
 

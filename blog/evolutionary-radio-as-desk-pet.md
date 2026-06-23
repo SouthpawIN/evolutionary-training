@@ -298,9 +298,7 @@ Still to build (this is the work-in-progress list):
   runs hourly via `wiki-compact.timer` systemd timer, defers
   politely when free VRAM < 4 GB. Writes to `~/.hermes/wiki/index.md`
   (the human-readable Wikipedia view that Hermes can preload).
-| `/wiki/*` write endpoints** on omni-va proxy (currently
-  read-only via the proxy — writes go through `wiki_manager.py`
-  directly).
+- **`/wiki/*` write endpoints** on omni-va proxy — ⚠️ PARTIAL (write tested via direct `wiki_manager.py`, proxy endpoints still need wiring for `/wiki/write`)
   All wired up (see the swap procedure in the omni-va arch post).
 
 ## The chat interface is Hermes (per Chris 2026-06-09)
@@ -398,10 +396,50 @@ If you want to **build** on it:
   note-taker daemon loop
 - `~/.hermes/vault/templates/` — add more templates as needed
 
+## TurboFit Backend — the unified local model server
+
+> **2026-06-21 update.** The omni-va local model server is now powered by **TurboFit**.
+> TurboFit IS the backend for the Evolutionary Radio. The standalone `omni-va`
+> service and `llama-launch` scripts are superseded — everything flows through
+> `turbofit serve`.
+
+The radio's brain (OmniStep 8B, Senter 32A8B, etc.) is launched and managed by
+TurboFit. Instead of manually starting `omni-va.service` or editing systemd units
+to change the model, the radio now calls the TurboFit CLI:
+
+```bash
+# Start the best model that fits current VRAM — the radio's one-button start
+turbofit serve auto main
+
+# When VRAM pressure hits (e.g. training starts, game launches), TurboFit
+# automatically downscales to a smaller model — the radio keeps working
+# at lower quality rather than crashing or deferring entirely
+turbofit serve downscale
+
+# Check what's running
+turbofit serve status
+```
+
+**What changed:** the radio's `start_radio.sh` no longer starts `omni-va.service`
+directly. Instead, it calls `turbofit serve auto main`, which picks the best
+tier (OmniStep 8B → Senter 32A8B → Senter Ohm) for the current VRAM budget,
+runs the wake-on-ping proxy on `:8082`, and handles auto-rotation automatically.
+The polite VRAM pattern still works the same — TurboFit is the implementation
+of that pattern.
+
+**The four roles** (Brain, Gold Judge, Hermes Aux, Wikipedia Compactor) remain
+unchanged. They all call the same `http://127.0.0.1:8082/v1` endpoint. The
+only difference is that TurboFit is the process that owns port 8082 now, not
+a hand-rolled `llama-proxy`.
+
+See [`the-omni-va-architecture.md`](./the-omni-va-architecture.md) for the
+full TurboFit integration note, and the
+[turbofit skill](../turbofit/SKILL.md) for the complete CLI reference.
+
 ## See also
 
 - [`the-omni-family.md`](./the-omni-family.md) — canonical 4-model naming
-- [`the-omni-va-architecture.md`](./the-omni-va-architecture.md) — the local model server
+- [`the-omni-va-architecture.md`](./the-omni-va-architecture.md) — the local model server (now TurboFit)
 - [`senter-as-hermes-auxiliary.md`](./senter-as-hermes-auxiliary.md) — the dual role
 - [`the-omnisenter-architecture.md`](./the-omnisenter-architecture.md) — the Senter family arch (sibling)
 - [`the-5-stage-pipeline.md`](./the-5-stage-pipeline.md) — how Senter is built

@@ -619,13 +619,19 @@ full standalone + aux platform.
 
 ## TODO (the parts I haven't built yet)
 
-- [ ] Wiki storage format: markdown + sqlite-vec for semantic search
-- [ ] Note-taker process: slim Hermes loop, background daemon
-- [ ] `/wiki` endpoints on omni-va proxy: read, write, search
-- [ ] `/hermes/launch` endpoint: spawn Hermes agent with --wiki preload
-- [ ] Wiki → Hermes preloading: structured context block in system prompt
-- [ ] "Opt-in" mode flag in `~/.hermes/wiki/config.yaml`
-- [ ] Two-mode split: 8B standalone-only vs 32A8B standalone+aux
+> **Updated 2026-06-10:** Several items ✅ completed since original publish.
+
+- [x] Wiki storage format: markdown + sqlite-vec for semantic search — ✅ DONE 2026-06-09 (`~/.hermes/bin/wiki_embed.py`, all-MiniLM-L6-v2 + sqlite-vec 0.1.9)
+- [x] Note-taker process: slim Hermes loop, background daemon — ✅ DONE 2026-06-09 (`~/.hermes/bin/note_taker.py`, `note-taker.service` running, defers politely during training)
+- [x] Agent Hub runtime — ✅ DONE 2026-06-09 (`~/.hermes/bin/hub_daemon.py`, 425 lines, 4 agents seeded)
+- [x] Gold Judge config — ✅ DONE 2026-06-08 (`auxiliary.gold_judge` in `~/.hermes/config.yaml`, `~/.hermes/bin/gold_judge.py`)
+- [x] Vault templates — ✅ DONE 2026-06-08 (`~/.hermes/vault/templates/`, 4 templates + README)
+- [x] Wiki compaction — ✅ DONE 2026-06-09 (`~/.hermes/bin/wiki_compact.py`, `wiki-compact.timer` hourly, defers during training)
+- [ ] `/hermes/launch` endpoint: spawn Hermes agent with `--wiki` preload (spec'd, not built — blocked on wiring the `hermes` CLI into the proxy)
+- [ ] Wiki → Hermes preloading: structured context block in system prompt (depends on `/hermes/launch`)
+- [ ] `/wiki` write endpoints on omni-va proxy: currently writes go through `wiki_manager.py` directly
+- [ ] Two-mode split: 8B standalone-only vs 32A8B standalone+aux (future, when Senter is built)
+- [ ] `/hermes/launch` endpoint on omni-va proxy (see above)
 
 ## TOWARDS SELF-IMPROVEMENT
 

@@ -26,6 +26,15 @@ related:
 
 > **TOWARDS SELF-IMPROVEMENT** — a 2026-06-08 architecture post by Chris (via Nous Girl)
 
+> ⚠️ **2026-06-21 UPDATE — TurboFit supersedes this standalone architecture.**
+> The omni-va concept described here is now **subsumed by TurboFit**. The
+> wake-on-ping pattern, the liquid VRAM probing, the auto-rotate tiers — all
+> of it lives in TurboFit now. `turbofit serve auto aux` is the new omni-va
+> (the main role is `turbofit serve auto main`). `turbofit serve downscale`
+> replaces the manual tier-picking. This document is preserved as the
+> canonical architecture reference for the *pattern*, but the **implementation**
+> is TurboFit. See the TurboFit Backend section at the end for the migration.
+
 > **Naming.** **Omni VA** is the **service** (always-on local model
 > server, wake-on-ping). The **model** it currently hosts is
 > **Carnice 35A3B I-Nano** (a Qwen 3.5 MoE 35B-A3B at IQ2_K) — a
@@ -342,6 +351,61 @@ $EDITOR ~/.config/systemd/user/omni-va.service  # change GGUF path
 systemctl --user daemon-reload
 systemctl --user restart omni-va.service
 ```
+
+## TurboFit Backend — the omni-va is now TurboFit (2026-06-21)
+
+> **The standalone omni-va architecture described above is now powered by
+> TurboFit.** All the concepts remain — wake-on-ping, liquid VRAM, auto-rotate
+> tiers, the single GGUF slot — but the implementation is TurboFit.
+
+The omni-va's two roles map directly to TurboFit commands:
+
+| Old Concept | TurboFit Command | What it does |
+|---|---|---|
+| omni-va (main slot) | `turbofit serve auto main` | Picks best model for available VRAM, runs wake-on-ping proxy on :8082 |
+| omni-va (aux role) | `turbofit serve auto aux` | Lighter model for Hermes aux tasks, shares GPU budget |
+| Manual tier-picking | `turbofit serve downscale` | Automatically drops to a smaller model under VRAM pressure |
+| Model swap procedure | `turbofit serve auto <role>` | One command — no systemd edits, no daemon-reload |
+
+**The wake-on-ping architecture** documented above (proxy probes VRAM, picks
+`--ngl` tier, spawns llama-server, kills after 30 min idle) is exactly what
+TurboFit does under the hood. The proxy logic, the tier table, the auto-heal
+policy — all preserved. TurboFit just makes it a single CLI instead of
+hand-maintained systemd units.
+
+**What's the same:**
+- Port `:8082` for the main slot, same OpenAI-compatible `/v1/chat/completions`
+- Wake-on-ping: 0 MB VRAM when idle, loads on first request
+- Liquid VRAM probe at request time
+- Auto-heal: `Restart=on-failure` equivalent
+- Idle-kill after 30 min of no traffic
+
+**What's different:**
+- No more `omni-va.service` systemd unit — TurboFit manages the lifecycle
+- `turbofit serve downscale` replaces the manual "edit the service file" swap
+- The aux role (`serve auto aux`) is a first-class concept, not an afterthought
+- `turbofit serve string <alias>` prints the launch string without starting — useful for debugging
+
+**Migration from the standalone omni-va:**
+
+```bash
+# Stop the old omni-va
+systemctl --user stop omni-va.service
+systemctl --user disable omni-va.service
+
+# Start TurboFit instead (picks the right model for aux)
+turbofit serve auto aux
+
+# Or for the main slot (what the radio uses)
+turbofit serve auto main
+
+# Under VRAM pressure (training, gaming)
+turbofit serve downscale
+```
+
+The `~/.hermes/config.yaml` aux wiring (9 of 10 tasks pointing to
+`http://127.0.0.1:8082/v1`) work unchanged — TurboFit listens on the same
+port with the same API.
 
 ## See also
 

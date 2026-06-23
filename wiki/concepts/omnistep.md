@@ -4,6 +4,10 @@
 > reference (2026-06-08+): `OmniStep = Cosmos + Nemotron 0.6B ASR + 8B
 > agentic SFT + ACE-Step`. ALL Omni models always include ACE-Step —
 > music is in the DNA.
+>
+> **Updated 2026-06-12:** New OmniStep is built via 3-way merge
+> (SFT-merged Qwen3-8B + Cosmos3-Nano text body + ACE-Step attached
+> modules). CMA-ES evolving 9 candidates. See Status section.
 
 ## Definition
 

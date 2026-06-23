@@ -98,6 +98,11 @@ title: Blog
 </div>
 
 <div class="blog-card">
+<div class="blog-card">
+<h3><a href="southpaw-curated-local-models.html">Southpaw's Curated Local Models</a></h3>
+<p class="meta">2026-06-10 · <span class="read-time">10 min read</span></p>
+<p>Four local models, two RTX 3090s, one curated stack. Darwin Reason (28B, 38 tok/s), Prism Eagle (27B hybrid, 121 tok/s MTP), Darwin Apex (36B MoE, 107 tok/s NextN), and Carnice Apex (35A3B, wake-on-ping). Why each earns its slot and how to switch with one command.</p>
+</div>
 <h3><a href="evolutionary-radio-as-desk-pet.html">The Evolutionary Radio is the Desk Pet</a></h3>
 <p class="meta">2026-06-08 · <span class="read-time">12 min read</span></p>
 <p>One button starts the whole local intelligence stack: omni-va + brain + wiki + vault + compactor. The local model IS the gold judge, the Hermes aux, and the brain. The unified vision post (Chris's 2026-06-08 epiphany).</p>
